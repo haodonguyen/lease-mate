@@ -100,6 +100,34 @@ describe("listing service", () => {
     });
   });
 
+  it("rejects listings where availability extends beyond the lease end date", () => {
+    const input = normaliseListingFormInput({
+      title: "Carlton lease transfer",
+      suburb: "Carlton",
+      postcode: "3053",
+      listingType: "temporary_sublet",
+      consentStatus: "approved",
+      housingType: "private_rental",
+      rentPerWeek: "510",
+      bondAmount: "2040",
+      bedrooms: "1",
+      bathrooms: "1",
+      availableFrom: "2027-03-01",
+      availableUntil: "2027-04-01",
+      leaseEnds: "2027-02-01",
+      description: "A detailed listing description for a renter.",
+      imageUrl: "https://images.unsplash.com/photo-1",
+      highlights: "Close to tram",
+    });
+
+    expect(input).toEqual({
+      ok: false,
+      errors: {
+        leaseEnds: "Lease end date must be on or after the available dates",
+      },
+    });
+  });
+
   it("builds a stable slug and JSON highlights for Prisma create", () => {
     const data = buildListingCreateData(
       {

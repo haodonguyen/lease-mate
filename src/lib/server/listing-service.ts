@@ -91,6 +91,15 @@ export function normaliseListingFormInput(input: unknown) {
     };
   }
 
+  if (!leaseEndCoversAvailability(parsed.data)) {
+    return {
+      ok: false as const,
+      errors: {
+        leaseEnds: "Lease end date must be on or after the available dates",
+      },
+    };
+  }
+
   return { ok: true as const, data: parsed.data };
 }
 
@@ -226,4 +235,12 @@ function isIsoDate(value: string) {
 
   const date = new Date(`${value}T00:00:00.000Z`);
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
+function leaseEndCoversAvailability(data: Pick<ListingFormData, "availableFrom" | "availableUntil" | "leaseEnds">) {
+  const leaseEnds = new Date(`${data.leaseEnds}T00:00:00.000Z`);
+  const availableFrom = new Date(`${data.availableFrom}T00:00:00.000Z`);
+  const availableUntil = data.availableUntil ? new Date(`${data.availableUntil}T00:00:00.000Z`) : undefined;
+
+  return availableFrom <= leaseEnds && (!availableUntil || availableUntil <= leaseEnds);
 }

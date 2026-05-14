@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  parseJsonRequest,
   parseAnalyticsEventInput,
   parseListingStatusInput,
   parseReportStatusInput,
@@ -31,6 +32,19 @@ describe("api validation", () => {
     expect(parseAnalyticsEventInput({ name: " " })).toEqual({
       ok: false,
       error: "Analytics event name is required",
+    });
+  });
+
+  it("returns a validation result for malformed JSON request bodies", async () => {
+    const request = new Request("http://localhost/api/listings", {
+      method: "POST",
+      body: "{",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    await expect(parseJsonRequest(request)).resolves.toEqual({
+      ok: false,
+      error: "Invalid JSON request body",
     });
   });
 });

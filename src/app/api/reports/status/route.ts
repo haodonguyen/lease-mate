@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { canModerate, getCurrentUser } from "@/lib/server/auth";
-import { parseReportStatusInput } from "@/lib/server/api-validation";
+import { parseJsonRequest, parseReportStatusInput } from "@/lib/server/api-validation";
 import { prisma } from "@/lib/server/db";
 
 export async function PATCH(request: Request) {
@@ -9,7 +9,12 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ ok: false, error: "Admin access required" }, { status: 403 });
   }
 
-  const parsed = parseReportStatusInput(await request.json());
+  const body = await parseJsonRequest(request);
+  if (!body.ok) {
+    return NextResponse.json({ ok: false, error: body.error }, { status: 400 });
+  }
+
+  const parsed = parseReportStatusInput(body.data);
   if (!parsed.ok) {
     return NextResponse.json({ ok: false, error: parsed.error }, { status: 400 });
   }

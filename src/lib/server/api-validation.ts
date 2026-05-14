@@ -48,6 +48,14 @@ export function parseAnalyticsEventInput(input: unknown) {
   return { ok: true as const, data: parsed.data };
 }
 
+export async function parseJsonRequest(request: Request) {
+  try {
+    return { ok: true as const, data: await request.json() };
+  } catch {
+    return { ok: false as const, error: "Invalid JSON request body" };
+  }
+}
+
 function firstIssue(error: z.ZodError) {
   return error.issues[0]?.message ?? "Invalid request";
 }

@@ -14,7 +14,15 @@ export async function getCurrentUser() {
   return prisma.user.findUnique({ where: { email } });
 }
 
+export function isDemoAuthEnabled(environment = process.env.NODE_ENV) {
+  return environment !== "production";
+}
+
 export async function setDemoUser(email: string) {
+  if (!isDemoAuthEnabled()) {
+    return null;
+  }
+
   const user = demoUsers.find((candidate) => candidate.email === email);
   if (!user) {
     return null;
