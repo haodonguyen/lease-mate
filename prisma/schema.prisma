@@ -1,0 +1,197 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  RENTER
+  OWNER
+  ADMIN
+}
+
+enum ListingType {
+  LEASE_TRANSFER
+  TEMPORARY_SUBLET
+  ROOM_REPLACEMENT
+}
+
+enum ConsentStatus {
+  APPROVED
+  PENDING
+  NOT_STARTED
+}
+
+enum HousingType {
+  PRIVATE_RENTAL
+  STUDENT_ACCOMMODATION
+  SHARE_HOUSE
+}
+
+enum ListingStatus {
+  DRAFT
+  PUBLISHED
+  PAUSED
+  REMOVED
+}
+
+enum EnquiryStatus {
+  NEW
+  RESPONDED
+  ARCHIVED
+}
+
+enum ReportStatus {
+  OPEN
+  REVIEWED
+  DISMISSED
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+}
+
+model User {
+  id             String          @id @default(cuid())
+  name           String
+  email          String          @unique
+  role           UserRole        @default(RENTER)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  listings       Listing[]
+  enquiries      Enquiry[]
+  reports        Report[]
+  savedListings  SavedListing[]
+  notifications  Notification[]
+  analyticsEvents AnalyticsEvent[]
+}
+
+model Listing {
+  id                    String          @id @default(cuid())
+  slug                  String          @unique
+  title                 String
+  suburb                String
+  state                 String          @default("VIC")
+  postcode              String
+  listingType           ListingType
+  consentStatus         ConsentStatus
+  housingType           HousingType
+  status                ListingStatus   @default(PUBLISHED)
+  rentPerWeek           Int
+  bondAmount            Int
+  bedrooms              Int
+  bathrooms             Int
+  availableFrom         DateTime
+  availableUntil        DateTime?
+  leaseEnds             DateTime
+  imageUrl              String
+  description           String
+  highlights            String
+  hasWrittenConsent     Boolean         @default(false)
+  bondTransferDiscussed Boolean         @default(false)
+  agentOrLandlordAware  Boolean         @default(false)
+  newRenterAddedToLease Boolean         @default(false)
+  understandsSubletRisk Boolean         @default(false)
+  viewCount             Int             @default(0)
+  ownerId               String
+  owner                 User            @relation(fields: [ownerId], references: [id])
+  photos                ListingPhoto[]
+  enquiries             Enquiry[]
+  reports               Report[]
+  savedBy               SavedListing[]
+  analyticsEvents       AnalyticsEvent[]
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  @@index([status, suburb])
+  @@index([ownerId])
+}
+
+model ListingPhoto {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String
+  sortOrder Int      @default(0)
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model Enquiry {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  status    EnquiryStatus @default(NEW)
+  listingId String
+  listing   Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?         @relation(fields: [userId], references: [id])
+  createdAt DateTime      @default(now())
+
+  @@index([listingId, status])
+}
+
+model Report {
+  id        String       @id @default(cuid())
+  reason    String
+  details   String?
+  status    ReportStatus @default(OPEN)
+  listingId String
+  listing   Listing      @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?        @relation(fields: [userId], references: [id])
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([status])
+}
+
+model SavedListing {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listingId])
+}
+
+model Notification {
+  id        String             @id @default(cuid())
+  type      String
+  channel   String
+  recipient String
+  subject   String
+  body      String
+  status    NotificationStatus @default(QUEUED)
+  userId    String?
+  user      User?              @relation(fields: [userId], references: [id])
+  createdAt DateTime           @default(now())
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  name      String
+  metadata  String?
+  userId    String?
+  listingId String?
+  user      User?    @relation(fields: [userId], references: [id])
+  listing   Listing? @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([name, createdAt])
+}
+
+model WaitlistSignup {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  suburb    String
+  role      String
+  createdAt DateTime @default(now())
+}
