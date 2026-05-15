@@ -35,6 +35,16 @@ DATABASE_URL="postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require" npx pris
 DATABASE_URL="postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require" npm run db:seed
 ```
 
+## Troubleshooting
+
+If the deployed site returns `HTTP 500`, open Vercel logs for the latest deployment. A common first deployment error is:
+
+```text
+Environment variable not found: DATABASE_URL
+```
+
+Fix this by adding `DATABASE_URL` in `Project -> Settings -> Environment Variables`, then redeploying.
+
 ## Prisma Datasource
 
 LeaseMate is configured for PostgreSQL:

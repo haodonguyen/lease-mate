@@ -6,6 +6,10 @@ LeaseMate is a Victoria-first lease transfer and rental takeover marketplace for
 
 The product focuses on a real Australian rental pain point: lease transfers and room replacements are often urgent, informal, and trust-sensitive. LeaseMate turns that messy workflow into structured listings, readiness checks, enquiries, saved listings, moderation, and startup validation analytics.
 
+## Live Demo
+
+https://lease-mate-three.vercel.app/
+
 ![LeaseMate marketplace screenshot](./public/leasemate-screenshot.png)
 
 ## What This Project Is About
@@ -145,6 +149,8 @@ LeaseMate is prepared for Vercel deployment with an explicit `vercel.json` build
 Use a hosted PostgreSQL database such as Neon, Supabase, or Vercel Postgres and configure `DATABASE_URL` in Vercel environment variables.
 
 See [docs/vercel-deployment.md](./docs/vercel-deployment.md) for the deployment checklist.
+
+If the live deployment returns `HTTP 500`, check that `DATABASE_URL` exists in Vercel under `Project -> Settings -> Environment Variables` and that the database has been initialized with `npx prisma db push`.
 
 ## GitHub-Safe Files
 
