@@ -1,5 +1,7 @@
 # LeaseMate
 
+[![LeaseMate CI](https://github.com/haodonguyen/lease-mate/actions/workflows/ci.yml/badge.svg)](https://github.com/haodonguyen/lease-mate/actions/workflows/ci.yml)
+
 LeaseMate is a Victoria-first lease transfer and rental takeover marketplace for renters who currently rely on Facebook groups, screenshots, comments, and private messages to find someone to take over a lease.
 
 The product focuses on a real Australian rental pain point: lease transfers and room replacements are often urgent, informal, and trust-sensitive. LeaseMate turns that messy workflow into structured listings, readiness checks, enquiries, saved listings, moderation, and startup validation analytics.
@@ -28,7 +30,7 @@ This is built as a realistic graduate/junior software engineering portfolio proj
 - Search and filters by suburb, listing type, and readiness status.
 - Shareable listing detail pages.
 - Lease readiness and safety rules with unit tests.
-- Prisma-backed local database.
+- Prisma-backed PostgreSQL database.
 - Demo role switching for renter, owner, and admin flows.
 - Listing creation flow.
 - Owner dashboard with listing status controls and enquiries.
@@ -46,7 +48,7 @@ This is built as a realistic graduate/junior software engineering portfolio proj
 - React
 - TypeScript
 - Prisma ORM
-- SQLite for local development
+- PostgreSQL
 - Zod validation
 - Vitest
 - Playwright
@@ -86,7 +88,7 @@ The Prisma schema includes:
 - `AnalyticsEvent`
 - `WaitlistSignup`
 
-The app uses SQLite locally so anyone can run the project without cloud credentials. The schema is designed so it can later move to PostgreSQL on Supabase, Neon, or another hosted provider.
+The app uses PostgreSQL through Prisma so the same database model can run locally, in CI, and in production on Vercel with Neon, Supabase, or Vercel Postgres.
 
 ## Getting Started
 
@@ -97,6 +99,8 @@ npm run db:push
 npm run db:seed
 npm run dev
 ```
+
+Update `.env` with a local Postgres connection string or a development database URL before running the database commands.
 
 Open:
 
@@ -134,6 +138,14 @@ Current coverage includes:
 - Marketplace search E2E flow.
 - Listing enquiry E2E flow.
 
+## Deployment
+
+LeaseMate is prepared for Vercel deployment with an explicit `vercel.json` build configuration and a `vercel-build` script that generates the Prisma Client before building Next.js.
+
+Use a hosted PostgreSQL database such as Neon, Supabase, or Vercel Postgres and configure `DATABASE_URL` in Vercel environment variables.
+
+See [docs/vercel-deployment.md](./docs/vercel-deployment.md) for the deployment checklist.
+
 ## GitHub-Safe Files
 
 Files intended to be committed:
@@ -144,7 +156,6 @@ Files intended to be committed:
 - `tests/**`
 - `public/leasemate-screenshot.png`
 - `README.md`
-- `TODO.md`
 - `package.json`
 - `package-lock.json`
 - `tsconfig.json`
@@ -160,7 +171,7 @@ Files intentionally ignored:
 - `.env`
 - `node_modules/`
 - `.next/`
-- `prisma/dev.db`
+- local database files
 - `test-results/`
 - `playwright-report/`
 - log files
@@ -182,9 +193,8 @@ This project demonstrates:
 ## Future Improvements
 
 - Replace demo role switcher with Auth.js.
-- Move SQLite to PostgreSQL on Supabase or Neon.
 - Add real image uploads with Supabase Storage or UploadThing.
 - Send production emails with Resend.
 - Add suburb-level rental insights.
 - Add richer moderation actions and audit logs.
-- Add deployment pipeline for Vercel.
+- Add automated production migrations after the MVP data model settles.
