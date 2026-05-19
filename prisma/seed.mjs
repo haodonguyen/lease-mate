@@ -1,6 +1,16 @@
 import { PrismaClient } from "@prisma/client";
+import { randomBytes, scrypt as scryptCallback } from "crypto";
+import { promisify } from "util";
 
 const prisma = new PrismaClient();
+const scrypt = promisify(scryptCallback);
+
+async function hashPassword(password) {
+  const salt = randomBytes(16).toString("hex");
+  const derivedKey = await scrypt(password, salt, 64);
+
+  return `scrypt:${salt}:${derivedKey.toString("hex")}`;
+}
 
 const users = [
   {
@@ -107,6 +117,8 @@ const listings = [
 ];
 
 async function main() {
+  const demoPasswordHash = await hashPassword("LeaseMate123!");
+
   await prisma.analyticsEvent.deleteMany();
   await prisma.notification.deleteMany();
   await prisma.savedListing.deleteMany();
@@ -115,10 +127,17 @@ async function main() {
   await prisma.listingPhoto.deleteMany();
   await prisma.listing.deleteMany();
   await prisma.waitlistSignup.deleteMany();
+  await prisma.session.deleteMany();
   await prisma.user.deleteMany();
 
   for (const user of users) {
-    await prisma.user.create({ data: user });
+    await prisma.user.create({
+      data: {
+        ...user,
+        passwordHash: demoPasswordHash,
+        emailVerifiedAt: new Date(),
+      },
+    });
   }
 
   const owner = await prisma.user.findUniqueOrThrow({

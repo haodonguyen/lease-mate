@@ -1,4 +1,4 @@
-import type { Listing } from "@prisma/client";
+import type { Listing, UserRole } from "@prisma/client";
 import { z } from "zod";
 import {
   listingToChecklist,
@@ -209,13 +209,25 @@ export async function listOwnerListings(ownerId: string) {
   });
 }
 
-export async function updateListingStatus(listingId: string, ownerId: string, status: "PUBLISHED" | "PAUSED") {
-  const listing = await prisma.listing.findFirst({
-    where: { id: listingId, ownerId },
+export function canUpdateListingStatus(actor: { id: string; role: UserRole }, listingOwnerId: string) {
+  return actor.role === "ADMIN" || (actor.role === "OWNER" && actor.id === listingOwnerId);
+}
+
+export async function updateListingStatus(
+  listingId: string,
+  actor: { id: string; role: UserRole },
+  status: "PUBLISHED" | "PAUSED",
+) {
+  const listing = await prisma.listing.findUnique({
+    where: { id: listingId },
   });
 
   if (!listing) {
     throw new Error("Listing not found");
+  }
+
+  if (!canUpdateListingStatus(actor, listing.ownerId)) {
+    throw new Error("Listing access denied");
   }
 
   return prisma.listing.update({

@@ -1,10 +1,9 @@
 "use client";
 
-import { Building2, Heart, Home, MapPin, Search, ShieldCheck } from "lucide-react";
+import { MapPin, Search, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { DemoRoleSwitcher } from "./auth/demo-role-switcher";
 import {
   formatListingType,
   getListingReadiness,
@@ -13,7 +12,6 @@ import {
 
 interface MarketplaceProps {
   listings: LeaseListing[];
-  currentUserEmail?: string;
   analytics?: {
     views: number;
     enquiries: number;
@@ -23,7 +21,7 @@ interface MarketplaceProps {
   };
 }
 
-export function Marketplace({ listings, currentUserEmail, analytics }: MarketplaceProps) {
+export function Marketplace({ listings, analytics }: MarketplaceProps) {
   const [query, setQuery] = useState("");
   const [listingType, setListingType] = useState("all");
   const [readiness, setReadiness] = useState("all");
@@ -42,8 +40,7 @@ export function Marketplace({ listings, currentUserEmail, analytics }: Marketpla
   }, [listings, query, listingType, readiness]);
 
   return (
-    <main className="page-shell">
-      <Header currentUserEmail={currentUserEmail} />
+    <main>
       <section className="hero">
         <div className="hero-copy">
           <span className="eyebrow">
@@ -144,40 +141,6 @@ export function Marketplace({ listings, currentUserEmail, analytics }: Marketpla
         )}
       </section>
     </main>
-  );
-}
-
-function Header({ currentUserEmail }: { currentUserEmail?: string }) {
-  return (
-    <header className="topbar">
-      <div className="topbar-inner">
-        <Link href="/" className="brand" aria-label="LeaseMate home">
-          <span className="brand-mark">
-            <Home size={21} />
-          </span>
-          <span>LeaseMate</span>
-        </Link>
-        <nav className="nav-actions" aria-label="Primary actions">
-          <DemoRoleSwitcher currentEmail={currentUserEmail} />
-          <Link className="secondary-button" href="/saved">
-            Saved
-          </Link>
-          <Link className="secondary-button" href="/dashboard">
-            Dashboard
-          </Link>
-          <Link className="secondary-button" href="/admin">
-            Admin
-          </Link>
-          <button className="icon-button" type="button" aria-label="Saved listings">
-            <Heart size={18} />
-          </button>
-          <Link className="primary-button" href="/listings/new">
-            <Building2 size={18} />
-            List transfer
-          </Link>
-        </nav>
-      </div>
-    </header>
   );
 }
 

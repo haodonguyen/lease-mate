@@ -10,9 +10,19 @@ const demoUsers = [
   { email: "admin@leasemate.dev", label: "Admin" },
 ];
 
-export function DemoRoleSwitcher({ currentEmail }: { currentEmail?: string }) {
+export function DemoRoleSwitcher({
+  currentEmail,
+  showDemoSwitcher,
+}: {
+  currentEmail?: string;
+  showDemoSwitcher: boolean;
+}) {
   const router = useRouter();
   const [email, setEmail] = useState(currentEmail ?? demoUsers[0].email);
+
+  if (!showDemoSwitcher) {
+    return null;
+  }
 
   async function switchRole(nextEmail: string) {
     setEmail(nextEmail);
@@ -27,7 +37,7 @@ export function DemoRoleSwitcher({ currentEmail }: { currentEmail?: string }) {
   return (
     <label className="role-switcher">
       <Shield size={16} />
-      <span>Demo role</span>
+      <span>Dev role</span>
       <select value={email} onChange={(event) => switchRole(event.target.value)}>
         {demoUsers.map((user) => (
           <option key={user.email} value={user.email}>

@@ -1,6 +1,16 @@
 import type { UserRole } from "@prisma/client";
 import { cookies } from "next/headers";
+import { z } from "zod";
+import { isDemoAuthEnabled } from "../demo-auth";
 import { prisma } from "./db";
+import { verifyPassword } from "./password";
+import {
+  createSessionToken,
+  getSessionExpiry,
+  hashSessionToken,
+  isSessionExpired,
+  SESSION_COOKIE_NAME,
+} from "./session";
 
 export const demoUsers = [
   { email: "renter@leasemate.dev", name: "Riley Nguyen", role: "RENTER" as const },
@@ -8,15 +18,47 @@ export const demoUsers = [
   { email: "admin@leasemate.dev", name: "Alex Morgan", role: "ADMIN" as const },
 ];
 
+const loginSchema = z.object({
+  email: z.string().trim().email(),
+  password: z.string().min(8),
+});
+
+export type LoginInput = z.output<typeof loginSchema>;
+
 export async function getCurrentUser() {
+  const authenticatedUser = await getCurrentAuthenticatedUser();
+  if (authenticatedUser) {
+    return authenticatedUser;
+  }
+
+  return getCurrentDemoUser();
+}
+
+export async function getCurrentAuthenticatedUser() {
+  const store = await cookies();
+  const sessionToken = store.get(SESSION_COOKIE_NAME)?.value;
+
+  if (sessionToken) {
+    const user = await getUserForSessionToken(sessionToken);
+    if (user) {
+      return user;
+    }
+  }
+
+  return null;
+}
+
+export async function getCurrentDemoUser() {
+  if (!isDemoAuthEnabled()) {
+    return null;
+  }
+
   const store = await cookies();
   const email = store.get("leasemate_user")?.value ?? demoUsers[0].email;
   return prisma.user.findUnique({ where: { email } });
 }
 
-export function isDemoAuthEnabled(environment = process.env.NODE_ENV) {
-  return environment !== "production";
-}
+export { isDemoAuthEnabled };
 
 export async function setDemoUser(email: string) {
   if (!isDemoAuthEnabled()) {
@@ -36,6 +78,91 @@ export async function setDemoUser(email: string) {
   });
 
   return user;
+}
+
+export function isValidLoginInput(input: unknown) {
+  const parsed = loginSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return {
+      ok: false as const,
+      errors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  return { ok: true as const, data: parsed.data };
+}
+
+export async function verifyLoginCredentials(input: LoginInput) {
+  const user = await prisma.user.findUnique({ where: { email: input.email.toLowerCase() } });
+  if (!user) {
+    return null;
+  }
+
+  const verified = await verifyPassword(input.password, user.passwordHash);
+  return verified ? user : null;
+}
+
+export async function createUserSession(userId: string) {
+  const token = createSessionToken();
+  const tokenHash = hashSessionToken(token);
+  const expiresAt = getSessionExpiry();
+
+  await prisma.session.create({
+    data: {
+      tokenHash,
+      userId,
+      expiresAt,
+    },
+  });
+
+  const store = await cookies();
+  store.set(SESSION_COOKIE_NAME, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    expires: expiresAt,
+  });
+
+  return token;
+}
+
+export async function clearCurrentSession() {
+  const store = await cookies();
+  const sessionToken = store.get(SESSION_COOKIE_NAME)?.value;
+
+  if (sessionToken) {
+    await prisma.session.deleteMany({
+      where: { tokenHash: hashSessionToken(sessionToken) },
+    });
+  }
+
+  store.set(SESSION_COOKIE_NAME, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 0,
+  });
+}
+
+async function getUserForSessionToken(token: string) {
+  const session = await prisma.session.findUnique({
+    where: { tokenHash: hashSessionToken(token) },
+    include: { user: true },
+  });
+
+  if (!session) {
+    return null;
+  }
+
+  if (isSessionExpired(session.expiresAt)) {
+    await prisma.session.delete({ where: { id: session.id } });
+    return null;
+  }
+
+  return session.user;
 }
 
 export function canManageListings(role: UserRole) {

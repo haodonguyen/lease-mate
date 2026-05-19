@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildListingCreateData,
+  canUpdateListingStatus,
   getListingReadinessFromRecord,
   normaliseListingFormInput,
 } from "../src/lib/server/listing-service";
@@ -174,5 +175,15 @@ describe("listing service", () => {
     });
 
     expect(readiness.visibilityLabel).toBe("Ready to transfer");
+  });
+
+  it("allows admins and owning owners to update listing status", () => {
+    expect(canUpdateListingStatus({ id: "owner_1", role: "OWNER" }, "owner_1")).toBe(true);
+    expect(canUpdateListingStatus({ id: "admin_1", role: "ADMIN" }, "owner_1")).toBe(true);
+  });
+
+  it("rejects renters and non-owning owners from listing status updates", () => {
+    expect(canUpdateListingStatus({ id: "renter_1", role: "RENTER" }, "owner_1")).toBe(false);
+    expect(canUpdateListingStatus({ id: "owner_2", role: "OWNER" }, "owner_1")).toBe(false);
   });
 });

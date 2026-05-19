@@ -22,9 +22,13 @@ export async function PATCH(request: Request) {
   }
 
   try {
-    const listing = await updateListingStatus(parsed.data.listingId, user.id, parsed.data.status);
+    const listing = await updateListingStatus(parsed.data.listingId, user, parsed.data.status);
     return NextResponse.json({ ok: true, listing });
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message === "Listing access denied") {
+      return NextResponse.json({ ok: false, error: "Listing access denied" }, { status: 403 });
+    }
+
     return NextResponse.json({ ok: false, error: "Listing not found" }, { status: 404 });
   }
 }

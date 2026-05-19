@@ -3,21 +3,18 @@ import { WaitlistForm } from "@/components/waitlist-form";
 import { listingRecordToLeaseListing } from "@/lib/listing-view";
 import { listPublishedListings } from "@/lib/server/listing-service";
 import { getAnalyticsSummary } from "@/lib/server/analytics-service";
-import { getCurrentUser } from "@/lib/server/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [records, analytics, currentUser] = await Promise.all([
+  const [records, analytics] = await Promise.all([
     listPublishedListings(),
     getAnalyticsSummary(),
-    getCurrentUser(),
   ]);
 
   return (
     <>
       <Marketplace
-        currentUserEmail={currentUser?.email}
         listings={records.map(listingRecordToLeaseListing)}
         analytics={analytics}
       />

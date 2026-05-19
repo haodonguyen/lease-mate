@@ -56,18 +56,33 @@ enum NotificationStatus {
 }
 
 model User {
-  id             String          @id @default(cuid())
-  name           String
-  email          String          @unique
-  role           UserRole        @default(RENTER)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  listings       Listing[]
-  enquiries      Enquiry[]
-  reports        Report[]
-  savedListings  SavedListing[]
-  notifications  Notification[]
+  id              String          @id @default(cuid())
+  name            String
+  email           String          @unique
+  passwordHash    String?
+  emailVerifiedAt DateTime?
+  role            UserRole        @default(RENTER)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  sessions        Session[]
+  listings        Listing[]
+  enquiries       Enquiry[]
+  reports         Report[]
+  savedListings   SavedListing[]
+  notifications   Notification[]
   analyticsEvents AnalyticsEvent[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Listing {
