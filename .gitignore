@@ -9,3 +9,4 @@ playwright-report/
 playwright-report
 *.log
 .vercel
+code-review.md
