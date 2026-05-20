@@ -99,77 +99,79 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
   }
 
   return (
-    <form className="form-grid wide-form" onSubmit={submitListing}>
-      <div className="form-field">
-        <label htmlFor="title">Title</label>
-        <input id="title" name="title" defaultValue={initialValues.title} required />
-      </div>
-      <div className="form-row">
+    <form className="form-grid wide-form listing-workflow-form" onSubmit={submitListing}>
+      <fieldset className="form-section">
+        <legend>Property basics</legend>
         <div className="form-field">
-          <label htmlFor="suburb">Suburb</label>
-          <input id="suburb" name="suburb" defaultValue={initialValues.suburb} required />
+          <label htmlFor="title">Title</label>
+          <input id="title" name="title" defaultValue={initialValues.title} required />
         </div>
-        <div className="form-field">
-          <label htmlFor="postcode">Postcode</label>
-          <input id="postcode" name="postcode" defaultValue={initialValues.postcode} required />
+        <div className="form-row">
+          <div className="form-field">
+            <label htmlFor="suburb">Suburb</label>
+            <input id="suburb" name="suburb" defaultValue={initialValues.suburb} required />
+          </div>
+          <div className="form-field">
+            <label htmlFor="postcode">Postcode</label>
+            <input id="postcode" name="postcode" defaultValue={initialValues.postcode} required />
+          </div>
         </div>
-      </div>
-      <div className="form-row">
-        <div className="form-field">
-          <label htmlFor="listingType">Listing type</label>
-          <select id="listingType" name="listingType" defaultValue={initialValues.listingType}>
-            <option value="lease_transfer">Lease transfer</option>
-            <option value="room_replacement">Room replacement</option>
-            <option value="temporary_sublet">Temporary sublet</option>
-          </select>
+        <div className="form-row">
+          <div className="form-field">
+            <label htmlFor="listingType">Listing type</label>
+            <select id="listingType" name="listingType" defaultValue={initialValues.listingType}>
+              <option value="lease_transfer">Lease transfer</option>
+              <option value="room_replacement">Room replacement</option>
+              <option value="temporary_sublet">Temporary sublet</option>
+            </select>
+          </div>
+          <div className="form-field">
+            <label htmlFor="housingType">Housing type</label>
+            <select id="housingType" name="housingType" defaultValue={initialValues.housingType}>
+              <option value="private_rental">Private rental</option>
+              <option value="share_house">Share house</option>
+              <option value="student_accommodation">Student accommodation</option>
+            </select>
+          </div>
         </div>
-        <div className="form-field">
-          <label htmlFor="consentStatus">Consent status</label>
-          <select id="consentStatus" name="consentStatus" defaultValue={initialValues.consentStatus}>
-            <option value="approved">Approved</option>
-            <option value="pending">Pending</option>
-            <option value="not_started">Not started</option>
-          </select>
+      </fieldset>
+
+      <fieldset className="form-section">
+        <legend>Lease terms</legend>
+        <div className="form-row">
+          <div className="form-field">
+            <label htmlFor="rentPerWeek">Rent per week</label>
+            <input id="rentPerWeek" name="rentPerWeek" type="number" defaultValue={initialValues.rentPerWeek} required />
+          </div>
+          <div className="form-field">
+            <label htmlFor="bondAmount">Bond</label>
+            <input id="bondAmount" name="bondAmount" type="number" defaultValue={initialValues.bondAmount} required />
+          </div>
         </div>
-      </div>
-      <div className="form-field">
-        <label htmlFor="housingType">Housing type</label>
-        <select id="housingType" name="housingType" defaultValue={initialValues.housingType}>
-          <option value="private_rental">Private rental</option>
-          <option value="share_house">Share house</option>
-          <option value="student_accommodation">Student accommodation</option>
-        </select>
-      </div>
-      <div className="form-row">
-        <div className="form-field">
-          <label htmlFor="rentPerWeek">Rent per week</label>
-          <input id="rentPerWeek" name="rentPerWeek" type="number" defaultValue={initialValues.rentPerWeek} required />
+        <div className="form-row">
+          <div className="form-field">
+            <label htmlFor="bedrooms">Bedrooms</label>
+            <input id="bedrooms" name="bedrooms" type="number" defaultValue={initialValues.bedrooms} required />
+          </div>
+          <div className="form-field">
+            <label htmlFor="bathrooms">Bathrooms</label>
+            <input id="bathrooms" name="bathrooms" type="number" defaultValue={initialValues.bathrooms} required />
+          </div>
         </div>
-        <div className="form-field">
-          <label htmlFor="bondAmount">Bond</label>
-          <input id="bondAmount" name="bondAmount" type="number" defaultValue={initialValues.bondAmount} required />
+        <div className="form-row">
+          <div className="form-field">
+            <label htmlFor="availableFrom">Available from</label>
+            <input id="availableFrom" name="availableFrom" type="date" defaultValue={initialValues.availableFrom} required />
+          </div>
+          <div className="form-field">
+            <label htmlFor="leaseEnds">Lease ends</label>
+            <input id="leaseEnds" name="leaseEnds" type="date" defaultValue={initialValues.leaseEnds} required />
+          </div>
         </div>
-      </div>
-      <div className="form-row">
-        <div className="form-field">
-          <label htmlFor="bedrooms">Bedrooms</label>
-          <input id="bedrooms" name="bedrooms" type="number" defaultValue={initialValues.bedrooms} required />
-        </div>
-        <div className="form-field">
-          <label htmlFor="bathrooms">Bathrooms</label>
-          <input id="bathrooms" name="bathrooms" type="number" defaultValue={initialValues.bathrooms} required />
-        </div>
-      </div>
-      <div className="form-row">
-        <div className="form-field">
-          <label htmlFor="availableFrom">Available from</label>
-          <input id="availableFrom" name="availableFrom" type="date" defaultValue={initialValues.availableFrom} required />
-        </div>
-        <div className="form-field">
-          <label htmlFor="leaseEnds">Lease ends</label>
-          <input id="leaseEnds" name="leaseEnds" type="date" defaultValue={initialValues.leaseEnds} required />
-        </div>
-      </div>
+      </fieldset>
+
+      <fieldset className="form-section">
+        <legend>Photo and description</legend>
       <div className="form-field">
         <label htmlFor="imageUrl">Image URL</label>
         <input
@@ -226,19 +228,34 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
         <label htmlFor="highlights">Highlights</label>
         <textarea id="highlights" name="highlights" defaultValue={initialValues.highlights} />
       </div>
-      <div className="check-grid">
-        {[
-          { name: "hasWrittenConsent", label: "Written consent", checked: initialValues.hasWrittenConsent },
-          { name: "bondTransferDiscussed", label: "Bond discussed", checked: initialValues.bondTransferDiscussed },
-          { name: "agentOrLandlordAware", label: "Provider aware", checked: initialValues.agentOrLandlordAware },
-          { name: "newRenterAddedToLease", label: "New renter step ready", checked: initialValues.newRenterAddedToLease },
-          { name: "understandsSubletRisk", label: "Risk acknowledged", checked: initialValues.understandsSubletRisk },
-        ].map(({ name, label, checked }) => (
-          <label key={name}>
-            <input type="checkbox" name={name} defaultChecked={checked} /> {label}
-          </label>
-        ))}
-      </div>
+      </fieldset>
+
+      <fieldset className="form-section">
+        <legend>Readiness checklist</legend>
+        <div className="form-row">
+          <div className="form-field">
+            <label htmlFor="consentStatus">Consent status</label>
+            <select id="consentStatus" name="consentStatus" defaultValue={initialValues.consentStatus}>
+              <option value="approved">Approved</option>
+              <option value="pending">Pending</option>
+              <option value="not_started">Not started</option>
+            </select>
+          </div>
+        </div>
+        <div className="check-grid">
+          {[
+            { name: "hasWrittenConsent", label: "Written consent", checked: initialValues.hasWrittenConsent },
+            { name: "bondTransferDiscussed", label: "Bond discussed", checked: initialValues.bondTransferDiscussed },
+            { name: "agentOrLandlordAware", label: "Provider aware", checked: initialValues.agentOrLandlordAware },
+            { name: "newRenterAddedToLease", label: "New renter step ready", checked: initialValues.newRenterAddedToLease },
+            { name: "understandsSubletRisk", label: "Risk acknowledged", checked: initialValues.understandsSubletRisk },
+          ].map(({ name, label, checked }) => (
+            <label key={name}>
+              <input type="checkbox" name={name} defaultChecked={checked} /> {label}
+            </label>
+          ))}
+        </div>
+      </fieldset>
       <button className="primary-button" type="submit">
         <PlusCircle size={18} />
         {isEditMode ? "Save changes" : "Create listing"}

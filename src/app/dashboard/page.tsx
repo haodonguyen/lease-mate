@@ -36,11 +36,20 @@ export default async function DashboardPage() {
         <div className="stat-pill"><strong>{analytics.enquiries}</strong><span>total enquiries</span></div>
         <div className="stat-pill"><strong>{analytics.saves}</strong><span>saves</span></div>
       </div>
+      <div className="section-heading-row dashboard-workflow-heading">
+        <div>
+          <span className="eyebrow">Owner workflow</span>
+          <h2>Review, edit, and manage listing visibility</h2>
+          <p className="muted">Keep lease details current before sharing the page back into rental groups.</p>
+        </div>
+        <Link className="primary-button compact-button" href="/listings/new">New listing</Link>
+      </div>
       <div className="table-list">
         {listings.map((listing) => (
-          <article className="detail-panel" key={listing.id}>
+          <article className="detail-panel listing-management-card" key={listing.id}>
             <div className="split-row">
               <div>
+                <span className={`status-dot ${listing.status.toLowerCase()}`}>{listing.status.toLowerCase()}</span>
                 <h2>{listing.title}</h2>
                 <p className="muted">{listing.suburb} · {listing.status} · {listing.enquiries.length} enquiries · {listing.reports.length} reports</p>
               </div>
@@ -57,8 +66,18 @@ export default async function DashboardPage() {
                 <p>{enquiry.message}</p>
               </div>
             ))}
+            {listing.enquiries.length === 0 ? (
+              <p className="muted listing-card-note">No enquiries yet. Improve the listing details and share the public page.</p>
+            ) : null}
           </article>
         ))}
+        {listings.length === 0 ? (
+          <div className="empty-state">
+            <strong>No listings yet</strong>
+            <p className="muted">Create your first lease transfer listing to start collecting enquiries.</p>
+            <Link className="primary-button compact-button" href="/listings/new">Create listing</Link>
+          </div>
+        ) : null}
       </div>
     </main>
   );

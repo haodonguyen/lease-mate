@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Search, ShieldCheck } from "lucide-react";
+import { CalendarDays, Home, MapPin, Search, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -25,6 +25,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
   const [query, setQuery] = useState("");
   const [listingType, setListingType] = useState("all");
   const [readiness, setReadiness] = useState("all");
+  const hasActiveFilters = query.trim() !== "" || listingType !== "all" || readiness !== "all";
 
   const filteredListings = useMemo(() => {
     return listings.filter((listing) => {
@@ -39,9 +40,23 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
     });
   }, [listings, query, listingType, readiness]);
 
+  function clearFilters() {
+    setQuery("");
+    setListingType("all");
+    setReadiness("all");
+  }
+
   return (
     <main>
       <section className="hero">
+        <Image
+          className="hero-background"
+          src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1600&q=80"
+          alt=""
+          width={1600}
+          height={900}
+          priority
+        />
         <div className="hero-copy">
           <span className="eyebrow">
             <ShieldCheck size={18} />
@@ -52,6 +67,14 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
             Structured, shareable lease-transfer listings for renters who need a
             professional alternative to messy Facebook posts and risky DMs.
           </p>
+          <div className="hero-actions">
+            <Link className="primary-button" href="/listings/new">
+              List a transfer
+            </Link>
+            <Link className="secondary-button" href="#listings">
+              Browse listings
+            </Link>
+          </div>
           <div className="stat-row" aria-label="LeaseMate product metrics">
             <div className="stat-pill">
               <strong>{listings.length}</strong>
@@ -67,28 +90,28 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
             </div>
           </div>
         </div>
-
-        <div className="hero-panel">
-          <Image
-            src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80"
-            alt="Modern rental apartment living room"
-            width={1200}
-            height={900}
-            priority
-          />
-          <div className="hero-panel-footer">
-            <div>
-              <strong>Shareable listing pages</strong>
-              <span>Designed to be posted back into groups, chats, and student communities.</span>
-            </div>
-            <Link className="secondary-button" href="#listings">
-              Browse
-            </Link>
-          </div>
-        </div>
       </section>
 
       <section className="section" id="listings">
+        <div className="section-heading-row">
+          <div>
+            <span className="eyebrow">
+              <SlidersHorizontal size={16} />
+              Marketplace
+            </span>
+            <h2>Find a lease transfer that is ready to inspect</h2>
+            <p className="muted">
+              Showing {filteredListings.length} of {listings.length} active listings.
+            </p>
+          </div>
+          {hasActiveFilters ? (
+            <button className="secondary-button compact-button" type="button" onClick={clearFilters}>
+              <X size={16} />
+              Clear filters
+            </button>
+          ) : null}
+        </div>
+
         <div className="toolbar" aria-label="Listing filters">
           <label className="field">
             <Search size={18} />
@@ -155,7 +178,9 @@ function ListingCard({ listing }: { listing: LeaseListing }) {
 
   return (
     <article className="listing-card">
-      <Image src={listing.imageUrl} alt={listing.title} width={900} height={667} />
+      <Link className="listing-card-image" href={`/listings/${listing.slug}`} aria-label={`View ${listing.title}`}>
+        <Image src={listing.imageUrl} alt={listing.title} width={900} height={667} />
+      </Link>
       <div className="listing-card-body">
         <div className="card-topline">
           <span className={`badge ${badgeClass}`}>
@@ -170,6 +195,16 @@ function ListingCard({ listing }: { listing: LeaseListing }) {
             <MapPin size={14} aria-hidden="true" /> {listing.suburb}, {listing.state}{" "}
             {listing.postcode}
           </p>
+        </div>
+        <div className="listing-card-summary">
+          <span>
+            <CalendarDays size={14} />
+            From {formatShortDate(listing.availableFrom)}
+          </span>
+          <span>
+            <Home size={14} />
+            {listing.bedrooms} bed · {listing.bathrooms} bath
+          </span>
         </div>
         <div className="meta-grid">
           <div className="meta-item">
@@ -191,4 +226,11 @@ function ListingCard({ listing }: { listing: LeaseListing }) {
       </div>
     </article>
   );
+}
+
+function formatShortDate(value: string) {
+  return new Intl.DateTimeFormat("en-AU", {
+    day: "numeric",
+    month: "short",
+  }).format(new Date(value));
 }
