@@ -1,14 +1,20 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { listingRecordToLeaseListing } from "@/lib/listing-view";
 import { getListingReadiness } from "@/lib/listings";
-import { getCurrentUser } from "@/lib/server/auth";
+import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 import { listSavedListings } from "@/lib/server/social-service";
 
 export const dynamic = "force-dynamic";
 
 export default async function SavedPage() {
-  const user = await getCurrentUser();
-  const saved = user ? await listSavedListings(user.id) : [];
+  const user = await getCurrentAuthenticatedUser();
+
+  if (!user) {
+    redirect("/login?next=/saved");
+  }
+
+  const saved = await listSavedListings(user.id);
 
   return (
     <main className="section">
@@ -16,7 +22,7 @@ export default async function SavedPage() {
       <div className="page-heading">
         <span className="eyebrow">Renter shortlist</span>
         <h1>Saved listings</h1>
-        <p className="muted">Persisted saved listings for the current demo renter.</p>
+        <p className="muted">Homes you have saved to your LeaseMate account.</p>
       </div>
       <div className="listing-grid">
         {saved.map((item) => {
@@ -34,6 +40,13 @@ export default async function SavedPage() {
           );
         })}
       </div>
+      {saved.length === 0 ? (
+        <div className="empty-state">
+          <strong>No saved listings yet</strong>
+          <p className="muted">Save lease transfers from listing pages to compare them here.</p>
+          <Link className="primary-button compact-button" href="/">Browse listings</Link>
+        </div>
+      ) : null}
     </main>
   );
 }

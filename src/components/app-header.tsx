@@ -1,14 +1,19 @@
-import { Building2, Heart, Home, LogIn } from "lucide-react";
+import { Building2, Home, LogIn } from "lucide-react";
 import Link from "next/link";
 import { DemoRoleSwitcher } from "@/components/auth/demo-role-switcher";
 import { LogoutButton } from "@/components/auth/logout-button";
+import { getAccountActionHref } from "@/lib/account-navigation";
 import { getCurrentAuthenticatedUser, getCurrentDemoUser, isDemoAuthEnabled } from "@/lib/server/auth";
 
 export async function AppHeader() {
   const authenticatedUser = await getCurrentAuthenticatedUser();
   const demoUser = authenticatedUser ? null : await getCurrentDemoUser();
   const currentUser = authenticatedUser ?? demoUser;
-  const listTransferHref = authenticatedUser ? "/listings/new" : "/login?next=/listings/new";
+  const isAuthenticated = Boolean(authenticatedUser);
+  const savedHref = getAccountActionHref({ isAuthenticated, targetPath: "/saved" });
+  const dashboardHref = getAccountActionHref({ isAuthenticated, targetPath: "/dashboard" });
+  const adminHref = getAccountActionHref({ isAuthenticated, targetPath: "/admin" });
+  const listTransferHref = getAccountActionHref({ isAuthenticated, targetPath: "/listings/new" });
 
   return (
     <header className="topbar">
@@ -24,20 +29,17 @@ export async function AppHeader() {
             currentEmail={currentUser?.email}
             showDemoSwitcher={isDemoAuthEnabled()}
           />
-          <Link className="secondary-button" href="/saved">
+          <Link className="secondary-button" href={savedHref}>
             Saved
           </Link>
-          <Link className="secondary-button" href="/dashboard">
+          <Link className="secondary-button" href={dashboardHref}>
             Dashboard
           </Link>
           {currentUser?.role === "ADMIN" ? (
-            <Link className="secondary-button" href="/admin">
+            <Link className="secondary-button" href={adminHref}>
               Admin
             </Link>
           ) : null}
-          <Link className="secondary-button" href="/saved" aria-label="Saved listings">
-            <Heart size={18} />
-          </Link>
           <Link className="primary-button" href={listTransferHref}>
             <Building2 size={18} />
             List transfer

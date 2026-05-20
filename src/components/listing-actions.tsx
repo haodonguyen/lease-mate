@@ -1,12 +1,27 @@
 "use client";
 
 import { Bookmark, Flag, Share2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function ListingActions({ listingSlug, listingId }: { listingSlug: string; listingId: string }) {
+export function ListingActions({
+  listingSlug,
+  listingId,
+  isAuthenticated,
+}: {
+  listingSlug: string;
+  listingId: string;
+  isAuthenticated: boolean;
+}) {
+  const router = useRouter();
   const [message, setMessage] = useState("");
 
   async function saveListing() {
+    if (!isAuthenticated) {
+      router.push(`/login?next=/listings/${listingSlug}`);
+      return;
+    }
+
     const response = await fetch("/api/saved-listings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

@@ -1,19 +1,24 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ListingStatusButton } from "@/components/dashboard-controls";
-import { canManageListings, getCurrentUser } from "@/lib/server/auth";
+import { canManageListings, getCurrentAuthenticatedUser } from "@/lib/server/auth";
 import { getAnalyticsSummary } from "@/lib/server/analytics-service";
 import { listOwnerListings } from "@/lib/server/listing-service";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const user = await getCurrentUser();
+  const user = await getCurrentAuthenticatedUser();
 
-  if (!user || !canManageListings(user.role)) {
+  if (!user) {
+    redirect("/login?next=/dashboard");
+  }
+
+  if (!canManageListings(user.role)) {
     return (
       <main className="section">
         <Link className="secondary-button" href="/">Back to marketplace</Link>
-        <div className="notice">Switch to Owner or Admin role to view the listing dashboard.</div>
+        <div className="notice">Use an Owner or Admin account to view the listing dashboard.</div>
       </main>
     );
   }

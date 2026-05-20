@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { parseJsonRequest } from "@/lib/server/api-validation";
-import { getCurrentUser } from "@/lib/server/auth";
+import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 import { checkRateLimit, getRateLimitKey } from "@/lib/server/rate-limit";
 import { saveListing } from "@/lib/server/social-service";
 
 export async function POST(request: Request) {
-  const user = await getCurrentUser();
+  const user = await getCurrentAuthenticatedUser();
   if (!user) return NextResponse.json({ ok: false, error: "Login required" }, { status: 401 });
 
   const limit = checkRateLimit({ key: getRateLimitKey(request, "saved-listings", user.id), limit: 30, windowMs: 60_000 });

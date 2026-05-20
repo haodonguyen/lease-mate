@@ -1,19 +1,24 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ReportModerationButton } from "@/components/admin-controls";
-import { canModerate, getCurrentUser } from "@/lib/server/auth";
+import { canModerate, getCurrentAuthenticatedUser } from "@/lib/server/auth";
 import { getAnalyticsSummary } from "@/lib/server/analytics-service";
 import { prisma } from "@/lib/server/db";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const user = await getCurrentUser();
+  const user = await getCurrentAuthenticatedUser();
 
-  if (!user || !canModerate(user.role)) {
+  if (!user) {
+    redirect("/login?next=/admin");
+  }
+
+  if (!canModerate(user.role)) {
     return (
       <main className="section">
         <Link className="secondary-button" href="/">Back to marketplace</Link>
-        <div className="notice">Switch to Admin role to view moderation.</div>
+        <div className="notice">Use an Admin account to view moderation.</div>
       </main>
     );
   }

@@ -6,6 +6,7 @@ import { EnquiryForm } from "./enquiry-form";
 import { ListingActions } from "@/components/listing-actions";
 import { formatListingType, getListingReadiness } from "@/lib/listings";
 import { listingRecordToLeaseListing } from "@/lib/listing-view";
+import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 import { getListingBySlugFromDb } from "@/lib/server/listing-service";
 import { trackEvent } from "@/lib/server/analytics-service";
 
@@ -24,6 +25,7 @@ export default async function ListingPage({
   }
 
   await trackEvent({ name: "listing_view", listingId: record.id, metadata: { suburb: record.suburb } });
+  const authenticatedUser = await getCurrentAuthenticatedUser();
   const listing = listingRecordToLeaseListing(record);
   const readiness = getListingReadiness(listing);
   const badgeClass =
@@ -133,7 +135,11 @@ export default async function ListingPage({
               {listing.lister.role}. {listing.lister.responseTime}.
             </p>
             <EnquiryForm listingSlug={listing.slug} listingTitle={listing.title} />
-            <ListingActions listingSlug={listing.slug} listingId={listing.id} />
+            <ListingActions
+              listingSlug={listing.slug}
+              listingId={listing.id}
+              isAuthenticated={Boolean(authenticatedUser)}
+            />
             <div className="notice">
               LeaseMate does not handle rent, bond, legal approval, or payments in this MVP.
               Renters should confirm written consent through the official rental provider process.
