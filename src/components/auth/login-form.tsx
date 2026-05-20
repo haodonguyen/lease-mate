@@ -63,8 +63,8 @@ export function LoginForm({ defaultEmail = "", defaultPassword = "", redirectTo 
           required
         />
       </div>
-      <button className="primary-button" type="submit" disabled={isPending}>
-        <LogIn size={18} />
+      <button className="primary-button" type="submit" disabled={isPending} aria-busy={isPending}>
+        {isPending ? <span className="button-spinner" aria-hidden="true" /> : <LogIn size={18} />}
         {isPending ? "Signing in" : "Sign in"}
       </button>
       {message ? <div className="notice">{message}</div> : null}

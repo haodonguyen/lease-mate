@@ -13,6 +13,36 @@
   --shadow: 0 18px 45px rgba(32, 33, 31, 0.1);
 }
 
+@keyframes fade-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -110,7 +140,8 @@ img {
   transition:
     transform 160ms ease,
     border-color 160ms ease,
-    background 160ms ease;
+    background 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .icon-button {
@@ -124,6 +155,7 @@ img {
   background: var(--green);
   color: white;
   font-weight: 750;
+  box-shadow: 0 8px 20px rgba(31, 122, 90, 0.18);
 }
 
 .secondary-button {
@@ -137,6 +169,41 @@ img {
 .primary-button:hover,
 .secondary-button:hover {
   transform: translateY(-1px);
+}
+
+.primary-button:hover {
+  box-shadow: 0 12px 26px rgba(31, 122, 90, 0.24);
+}
+
+.icon-button:focus-visible,
+.primary-button:focus-visible,
+.secondary-button:focus-visible,
+.role-switcher select:focus-visible,
+.field input:focus-visible,
+.field select:focus-visible,
+.form-field input:focus-visible,
+.form-field select:focus-visible,
+.form-field textarea:focus-visible,
+.waitlist-form input:focus-visible,
+.waitlist-form select:focus-visible {
+  outline: 3px solid rgba(35, 100, 170, 0.22);
+  outline-offset: 2px;
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.78;
+  transform: none;
+}
+
+.button-spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
 }
 
 .hero {
@@ -177,6 +244,7 @@ img {
   max-width: 720px;
   display: grid;
   gap: 22px;
+  animation: fade-slide-up 520ms ease both;
 }
 
 .eyebrow {
@@ -232,6 +300,15 @@ img {
   border: 1px solid var(--line);
   background: var(--surface);
   border-radius: 8px;
+  animation: soft-pop 420ms ease both;
+}
+
+.stat-pill:nth-child(2) {
+  animation-delay: 80ms;
+}
+
+.stat-pill:nth-child(3) {
+  animation-delay: 150ms;
 }
 
 .hero .stat-pill {
@@ -270,6 +347,7 @@ img {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
+  animation: fade-slide-up 360ms ease both;
 }
 
 .section-heading-row {
@@ -278,6 +356,7 @@ img {
   gap: 18px;
   align-items: flex-end;
   margin-bottom: 16px;
+  animation: fade-slide-up 340ms ease both;
 }
 
 .section-heading-row h2 {
@@ -313,6 +392,20 @@ img {
   background: var(--surface-strong);
   color: var(--ink);
   outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.field input:hover,
+.field select:hover,
+.form-field input:hover,
+.form-field select:hover,
+.form-field textarea:hover,
+.waitlist-form input:hover,
+.waitlist-form select:hover {
+  border-color: rgba(31, 122, 90, 0.34);
 }
 
 .field input {
@@ -335,6 +428,30 @@ img {
   border-radius: 8px;
   background: var(--surface-strong);
   box-shadow: 0 8px 24px rgba(32, 33, 31, 0.06);
+  animation: fade-slide-up 360ms ease both;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.listing-card:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.listing-card:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.listing-card:nth-child(4) {
+  animation-delay: 210ms;
+}
+
+.listing-card:hover,
+.listing-card:focus-within {
+  border-color: rgba(31, 122, 90, 0.35);
+  box-shadow: 0 14px 34px rgba(32, 33, 31, 0.1);
+  transform: translateY(-3px);
 }
 
 .listing-card-image {
@@ -508,6 +625,7 @@ img {
   border-radius: 8px;
   background: var(--surface-strong);
   padding: 18px;
+  animation: fade-slide-up 360ms ease both;
 }
 
 .detail-panel h2 {
@@ -588,6 +706,29 @@ img {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface-strong);
+  animation: fade-slide-up 340ms ease both;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.form-section:focus-within {
+  border-color: rgba(31, 122, 90, 0.38);
+  box-shadow: 0 12px 28px rgba(32, 33, 31, 0.08);
+  transform: translateY(-1px);
+}
+
+.listing-workflow-form .form-section:nth-of-type(2) {
+  animation-delay: 60ms;
+}
+
+.listing-workflow-form .form-section:nth-of-type(3) {
+  animation-delay: 120ms;
+}
+
+.listing-workflow-form .form-section:nth-of-type(4) {
+  animation-delay: 180ms;
 }
 
 .form-section legend {
@@ -629,12 +770,17 @@ img {
   background: var(--surface-strong);
   color: var(--muted);
   font-weight: 800;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 180ms ease;
 }
 
 .image-preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  animation: soft-pop 220ms ease both;
 }
 
 .image-preview.invalid,
@@ -666,6 +812,7 @@ img {
   color: #173b65;
   line-height: 1.45;
   font-size: 0.9rem;
+  animation: fade-slide-up 220ms ease both;
 }
 
 .role-switcher {
@@ -749,6 +896,11 @@ img {
   border-radius: 8px;
   padding: 0 12px;
   background: var(--surface-strong);
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
 }
 
 .check-grid {
@@ -767,6 +919,21 @@ img {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.check-grid label:has(input:checked) {
+  border-color: #b9dfcf;
+  background: #edf7f2;
+  color: var(--green-dark);
+}
+
+.check-grid label:focus-within,
+.check-grid label:hover {
+  transform: translateY(-1px);
 }
 
 .action-stack {
@@ -944,5 +1111,20 @@ img {
 
   .action-stack.horizontal {
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
   }
 }

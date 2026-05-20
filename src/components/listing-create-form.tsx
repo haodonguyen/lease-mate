@@ -64,6 +64,7 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
   const [message, setMessage] = useState("");
   const [imageUrl, setImageUrl] = useState(initialValues.imageUrl);
   const [imageLoadError, setImageLoadError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const imagePreview = getListingImagePreviewState(imageUrl, imageLoadError);
   const isEditMode = mode === "edit";
 
@@ -78,24 +79,37 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
     const formData = new FormData(event.currentTarget);
     const payload = Object.fromEntries(formData.entries());
 
-    const response = await fetch(isEditMode ? `/api/listings/${listingId}` : "/api/listings", {
-      method: isEditMode ? "PATCH" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const result = await response.json();
+    try {
+      setIsSubmitting(true);
+      setMessage("");
 
-    if (!response.ok || !result.ok) {
+      const response = await fetch(isEditMode ? `/api/listings/${listingId}` : "/api/listings", {
+        method: isEditMode ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        setMessage(
+          isEditMode
+            ? "Could not update listing. Check required details and your account access."
+            : "Could not create listing. Check required details and your account access.",
+        );
+        return;
+      }
+
+      router.push(`/listings/${result.listing.slug}`);
+      router.refresh();
+    } catch {
       setMessage(
         isEditMode
-          ? "Could not update listing. Check required details and your account access."
-          : "Could not create listing. Check required details and your demo role.",
+          ? "Could not update listing. Please try again."
+          : "Could not create listing. Please try again.",
       );
-      return;
+    } finally {
+      setIsSubmitting(false);
     }
-
-    router.push(`/listings/${result.listing.slug}`);
-    router.refresh();
   }
 
   return (
@@ -256,9 +270,9 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
           ))}
         </div>
       </fieldset>
-      <button className="primary-button" type="submit">
-        <PlusCircle size={18} />
-        {isEditMode ? "Save changes" : "Create listing"}
+      <button className="primary-button" type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
+        {isSubmitting ? <span className="button-spinner" aria-hidden="true" /> : <PlusCircle size={18} />}
+        {isSubmitting ? (isEditMode ? "Saving changes" : "Creating listing") : isEditMode ? "Save changes" : "Create listing"}
       </button>
       {message ? <div className="notice">{message}</div> : null}
     </form>
