@@ -101,6 +101,33 @@ describe("listing service", () => {
     });
   });
 
+  it("rejects image URLs that cannot be loaded by a browser as public http resources", () => {
+    const input = normaliseListingFormInput({
+      title: "Carlton lease transfer",
+      suburb: "Carlton",
+      postcode: "3053",
+      listingType: "lease_transfer",
+      consentStatus: "approved",
+      housingType: "private_rental",
+      rentPerWeek: "510",
+      bondAmount: "2040",
+      bedrooms: "1",
+      bathrooms: "1",
+      availableFrom: "2026-08-01",
+      leaseEnds: "2027-02-01",
+      description: "A detailed listing description for a renter.",
+      imageUrl: "ftp://example.com/photo.jpg",
+      highlights: "Close to tram",
+    });
+
+    expect(input).toEqual({
+      ok: false,
+      errors: {
+        imageUrl: "Image URL must use http or https",
+      },
+    });
+  });
+
   it("rejects listings where availability extends beyond the lease end date", () => {
     const input = normaliseListingFormInput({
       title: "Carlton lease transfer",

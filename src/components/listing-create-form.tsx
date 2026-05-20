@@ -1,15 +1,27 @@
 "use client";
 
-import { PlusCircle } from "lucide-react";
+import { ImageIcon, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { getListingImagePreviewState } from "@/lib/image-preview";
+
+const defaultImageUrl = "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80";
 
 export function ListingCreateForm() {
   const router = useRouter();
   const [message, setMessage] = useState("");
+  const [imageUrl, setImageUrl] = useState(defaultImageUrl);
+  const [imageLoadError, setImageLoadError] = useState(false);
+  const imagePreview = getListingImagePreviewState(imageUrl, imageLoadError);
 
   async function submitListing(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (imagePreview.status === "empty" || imagePreview.status === "invalid" || imagePreview.status === "error") {
+      setMessage(imagePreview.message);
+      return;
+    }
+
     const formData = new FormData(event.currentTarget);
     const payload = Object.fromEntries(formData.entries());
 
@@ -99,9 +111,43 @@ export function ListingCreateForm() {
         <input
           id="imageUrl"
           name="imageUrl"
-          defaultValue="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80"
+          type="url"
+          value={imageUrl}
+          onChange={(event) => {
+            setImageUrl(event.target.value);
+            setImageLoadError(false);
+            setMessage("");
+          }}
+          aria-describedby="imageUrl-help imageUrl-preview-status"
           required
         />
+        <p id="imageUrl-help" className="field-help">
+          Use a public photo URL from the listing, inspection gallery, or a trusted image host.
+        </p>
+        <div className={`image-preview ${imagePreview.status}`} aria-live="polite">
+          {imagePreview.status === "ready" ? (
+            // eslint-disable-next-line @next/next/no-img-element -- User-supplied preview URLs are shown before they are saved or allow-listed for Next Image.
+            <img
+              src={imagePreview.url}
+              alt="Listing preview"
+              onLoad={() => setImageLoadError(false)}
+              onError={() => setImageLoadError(true)}
+            />
+          ) : imagePreview.status === "error" ? (
+            <>
+              <ImageIcon size={28} />
+              <span>Preview unavailable</span>
+            </>
+          ) : (
+            <>
+              <ImageIcon size={28} />
+              <span>Image preview</span>
+            </>
+          )}
+        </div>
+        <p id="imageUrl-preview-status" className={`preview-status ${imagePreview.status}`}>
+          {imagePreview.message}
+        </p>
       </div>
       <div className="form-field">
         <label htmlFor="description">Description</label>

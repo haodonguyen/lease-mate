@@ -36,7 +36,13 @@ const listingFormSchema = z.object({
   availableUntil: z.string().trim().optional(),
   leaseEnds: z.string().trim(),
   description: z.string().trim().min(20, "Description must be at least 20 characters"),
-  imageUrl: z.string().trim().url("Image URL must be valid"),
+  imageUrl: z
+    .string()
+    .trim()
+    .url("Image URL must be valid")
+    .refine((value) => value.startsWith("http://") || value.startsWith("https://"), {
+      message: "Image URL must use http or https",
+    }),
   highlights: z.union([z.string(), z.array(z.string())]).transform((value) => {
     const items = Array.isArray(value) ? value : value.split(/\r?\n/);
     return items.map((item) => item.trim()).filter(Boolean).slice(0, 6);
