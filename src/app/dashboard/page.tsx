@@ -46,6 +46,7 @@ export default async function DashboardPage() {
               </div>
               <div className="action-stack horizontal">
                 <Link className="secondary-button" href={`/listings/${listing.slug}`}>Open</Link>
+                <Link className="secondary-button" href={`/listings/${listing.slug}/edit`}>Edit</Link>
                 <ListingStatusButton listingId={listing.id} nextStatus={listing.status === "PUBLISHED" ? "PAUSED" : "PUBLISHED"} />
               </div>
             </div>

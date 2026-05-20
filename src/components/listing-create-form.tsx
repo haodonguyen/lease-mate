@@ -7,12 +7,65 @@ import { getListingImagePreviewState } from "@/lib/image-preview";
 
 const defaultImageUrl = "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80";
 
-export function ListingCreateForm() {
+export interface ListingFormValues {
+  title: string;
+  suburb: string;
+  postcode: string;
+  listingType: "lease_transfer" | "temporary_sublet" | "room_replacement";
+  consentStatus: "approved" | "pending" | "not_started";
+  housingType: "private_rental" | "student_accommodation" | "share_house";
+  rentPerWeek: number;
+  bondAmount: number;
+  bedrooms: number;
+  bathrooms: number;
+  availableFrom: string;
+  leaseEnds: string;
+  imageUrl: string;
+  description: string;
+  highlights: string;
+  hasWrittenConsent: boolean;
+  bondTransferDiscussed: boolean;
+  agentOrLandlordAware: boolean;
+  newRenterAddedToLease: boolean;
+  understandsSubletRisk: boolean;
+}
+
+const defaultValues: ListingFormValues = {
+  title: "Carlton lease transfer near tram",
+  suburb: "Carlton",
+  postcode: "3053",
+  listingType: "lease_transfer",
+  consentStatus: "approved",
+  housingType: "private_rental",
+  rentPerWeek: 510,
+  bondAmount: 2040,
+  bedrooms: 1,
+  bathrooms: 1,
+  availableFrom: "2026-08-01",
+  leaseEnds: "2027-02-01",
+  imageUrl: defaultImageUrl,
+  description: "A clean lease transfer listing with inspection availability, transport access, and consent already discussed.",
+  highlights: "Written consent received\nClose to tram\nFlexible inspection",
+  hasWrittenConsent: true,
+  bondTransferDiscussed: true,
+  agentOrLandlordAware: true,
+  newRenterAddedToLease: true,
+  understandsSubletRisk: true,
+};
+
+interface ListingCreateFormProps {
+  mode?: "create" | "edit";
+  listingId?: string;
+  initialValues?: ListingFormValues;
+}
+
+export function ListingCreateForm({ mode = "create", listingId, initialValues = defaultValues }: ListingCreateFormProps) {
   const router = useRouter();
   const [message, setMessage] = useState("");
-  const [imageUrl, setImageUrl] = useState(defaultImageUrl);
+  const [imageUrl, setImageUrl] = useState(initialValues.imageUrl);
   const [imageLoadError, setImageLoadError] = useState(false);
   const imagePreview = getListingImagePreviewState(imageUrl, imageLoadError);
+  const isEditMode = mode === "edit";
 
   async function submitListing(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -25,15 +78,19 @@ export function ListingCreateForm() {
     const formData = new FormData(event.currentTarget);
     const payload = Object.fromEntries(formData.entries());
 
-    const response = await fetch("/api/listings", {
-      method: "POST",
+    const response = await fetch(isEditMode ? `/api/listings/${listingId}` : "/api/listings", {
+      method: isEditMode ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     const result = await response.json();
 
     if (!response.ok || !result.ok) {
-      setMessage("Could not create listing. Check required details and your demo role.");
+      setMessage(
+        isEditMode
+          ? "Could not update listing. Check required details and your account access."
+          : "Could not create listing. Check required details and your demo role.",
+      );
       return;
     }
 
@@ -45,22 +102,22 @@ export function ListingCreateForm() {
     <form className="form-grid wide-form" onSubmit={submitListing}>
       <div className="form-field">
         <label htmlFor="title">Title</label>
-        <input id="title" name="title" defaultValue="Carlton lease transfer near tram" required />
+        <input id="title" name="title" defaultValue={initialValues.title} required />
       </div>
       <div className="form-row">
         <div className="form-field">
           <label htmlFor="suburb">Suburb</label>
-          <input id="suburb" name="suburb" defaultValue="Carlton" required />
+          <input id="suburb" name="suburb" defaultValue={initialValues.suburb} required />
         </div>
         <div className="form-field">
           <label htmlFor="postcode">Postcode</label>
-          <input id="postcode" name="postcode" defaultValue="3053" required />
+          <input id="postcode" name="postcode" defaultValue={initialValues.postcode} required />
         </div>
       </div>
       <div className="form-row">
         <div className="form-field">
           <label htmlFor="listingType">Listing type</label>
-          <select id="listingType" name="listingType" defaultValue="lease_transfer">
+          <select id="listingType" name="listingType" defaultValue={initialValues.listingType}>
             <option value="lease_transfer">Lease transfer</option>
             <option value="room_replacement">Room replacement</option>
             <option value="temporary_sublet">Temporary sublet</option>
@@ -68,42 +125,49 @@ export function ListingCreateForm() {
         </div>
         <div className="form-field">
           <label htmlFor="consentStatus">Consent status</label>
-          <select id="consentStatus" name="consentStatus" defaultValue="approved">
+          <select id="consentStatus" name="consentStatus" defaultValue={initialValues.consentStatus}>
             <option value="approved">Approved</option>
             <option value="pending">Pending</option>
             <option value="not_started">Not started</option>
           </select>
         </div>
       </div>
-      <input type="hidden" name="housingType" value="private_rental" />
+      <div className="form-field">
+        <label htmlFor="housingType">Housing type</label>
+        <select id="housingType" name="housingType" defaultValue={initialValues.housingType}>
+          <option value="private_rental">Private rental</option>
+          <option value="share_house">Share house</option>
+          <option value="student_accommodation">Student accommodation</option>
+        </select>
+      </div>
       <div className="form-row">
         <div className="form-field">
           <label htmlFor="rentPerWeek">Rent per week</label>
-          <input id="rentPerWeek" name="rentPerWeek" type="number" defaultValue="510" required />
+          <input id="rentPerWeek" name="rentPerWeek" type="number" defaultValue={initialValues.rentPerWeek} required />
         </div>
         <div className="form-field">
           <label htmlFor="bondAmount">Bond</label>
-          <input id="bondAmount" name="bondAmount" type="number" defaultValue="2040" required />
+          <input id="bondAmount" name="bondAmount" type="number" defaultValue={initialValues.bondAmount} required />
         </div>
       </div>
       <div className="form-row">
         <div className="form-field">
           <label htmlFor="bedrooms">Bedrooms</label>
-          <input id="bedrooms" name="bedrooms" type="number" defaultValue="1" required />
+          <input id="bedrooms" name="bedrooms" type="number" defaultValue={initialValues.bedrooms} required />
         </div>
         <div className="form-field">
           <label htmlFor="bathrooms">Bathrooms</label>
-          <input id="bathrooms" name="bathrooms" type="number" defaultValue="1" required />
+          <input id="bathrooms" name="bathrooms" type="number" defaultValue={initialValues.bathrooms} required />
         </div>
       </div>
       <div className="form-row">
         <div className="form-field">
           <label htmlFor="availableFrom">Available from</label>
-          <input id="availableFrom" name="availableFrom" type="date" defaultValue="2026-08-01" required />
+          <input id="availableFrom" name="availableFrom" type="date" defaultValue={initialValues.availableFrom} required />
         </div>
         <div className="form-field">
           <label htmlFor="leaseEnds">Lease ends</label>
-          <input id="leaseEnds" name="leaseEnds" type="date" defaultValue="2027-02-01" required />
+          <input id="leaseEnds" name="leaseEnds" type="date" defaultValue={initialValues.leaseEnds} required />
         </div>
       </div>
       <div className="form-field">
@@ -154,30 +218,30 @@ export function ListingCreateForm() {
         <textarea
           id="description"
           name="description"
-          defaultValue="A clean lease transfer listing with inspection availability, transport access, and consent already discussed."
+          defaultValue={initialValues.description}
           required
         />
       </div>
       <div className="form-field">
         <label htmlFor="highlights">Highlights</label>
-        <textarea id="highlights" name="highlights" defaultValue={"Written consent received\nClose to tram\nFlexible inspection"} />
+        <textarea id="highlights" name="highlights" defaultValue={initialValues.highlights} />
       </div>
       <div className="check-grid">
         {[
-          ["hasWrittenConsent", "Written consent"],
-          ["bondTransferDiscussed", "Bond discussed"],
-          ["agentOrLandlordAware", "Provider aware"],
-          ["newRenterAddedToLease", "New renter step ready"],
-          ["understandsSubletRisk", "Risk acknowledged"],
-        ].map(([name, label]) => (
+          { name: "hasWrittenConsent", label: "Written consent", checked: initialValues.hasWrittenConsent },
+          { name: "bondTransferDiscussed", label: "Bond discussed", checked: initialValues.bondTransferDiscussed },
+          { name: "agentOrLandlordAware", label: "Provider aware", checked: initialValues.agentOrLandlordAware },
+          { name: "newRenterAddedToLease", label: "New renter step ready", checked: initialValues.newRenterAddedToLease },
+          { name: "understandsSubletRisk", label: "Risk acknowledged", checked: initialValues.understandsSubletRisk },
+        ].map(({ name, label, checked }) => (
           <label key={name}>
-            <input type="checkbox" name={name} defaultChecked /> {label}
+            <input type="checkbox" name={name} defaultChecked={checked} /> {label}
           </label>
         ))}
       </div>
       <button className="primary-button" type="submit">
         <PlusCircle size={18} />
-        Create listing
+        {isEditMode ? "Save changes" : "Create listing"}
       </button>
       {message ? <div className="notice">{message}</div> : null}
     </form>

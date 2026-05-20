@@ -114,6 +114,13 @@ export function buildListingCreateData(data: ListingFormData, ownerId: string) {
 
   return {
     slug,
+    ...buildListingUpdateData(data),
+    ownerId,
+  };
+}
+
+export function buildListingUpdateData(data: ListingFormData) {
+  return {
     title: data.title,
     suburb: data.suburb,
     postcode: data.postcode,
@@ -135,7 +142,6 @@ export function buildListingCreateData(data: ListingFormData, ownerId: string) {
     agentOrLandlordAware: data.agentOrLandlordAware,
     newRenterAddedToLease: data.newRenterAddedToLease,
     understandsSubletRisk: data.understandsSubletRisk,
-    ownerId,
   };
 }
 
@@ -217,6 +223,48 @@ export async function listOwnerListings(ownerId: string) {
 
 export function canUpdateListingStatus(actor: { id: string; role: UserRole }, listingOwnerId: string) {
   return actor.role === "ADMIN" || (actor.role === "OWNER" && actor.id === listingOwnerId);
+}
+
+export function canEditListing(actor: { id: string; role: UserRole }, listingOwnerId: string) {
+  return actor.role === "ADMIN" || (actor.role === "OWNER" && actor.id === listingOwnerId);
+}
+
+export async function updateListingDetails(listingId: string, actor: { id: string; role: UserRole }, input: unknown) {
+  const normalised = normaliseListingFormInput(input);
+
+  if (!normalised.ok) {
+    return normalised;
+  }
+
+  const listing = await prisma.listing.findUnique({
+    where: { id: listingId },
+  });
+
+  if (!listing) {
+    throw new Error("Listing not found");
+  }
+
+  if (!canEditListing(actor, listing.ownerId)) {
+    throw new Error("Listing access denied");
+  }
+
+  const updatedListing = await prisma.listing.update({
+    where: { id: listingId },
+    data: {
+      ...buildListingUpdateData(normalised.data),
+      photos: {
+        deleteMany: {},
+        create: [
+          {
+            url: normalised.data.imageUrl,
+            alt: normalised.data.title,
+          },
+        ],
+      },
+    },
+  });
+
+  return { ok: true as const, listing: updatedListing };
 }
 
 export async function updateListingStatus(
