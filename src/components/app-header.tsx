@@ -2,10 +2,13 @@ import { Building2, Heart, Home, LogIn } from "lucide-react";
 import Link from "next/link";
 import { DemoRoleSwitcher } from "@/components/auth/demo-role-switcher";
 import { LogoutButton } from "@/components/auth/logout-button";
-import { getCurrentUser, isDemoAuthEnabled } from "@/lib/server/auth";
+import { getCurrentAuthenticatedUser, getCurrentDemoUser, isDemoAuthEnabled } from "@/lib/server/auth";
 
 export async function AppHeader() {
-  const currentUser = await getCurrentUser();
+  const authenticatedUser = await getCurrentAuthenticatedUser();
+  const demoUser = authenticatedUser ? null : await getCurrentDemoUser();
+  const currentUser = authenticatedUser ?? demoUser;
+  const listTransferHref = authenticatedUser ? "/listings/new" : "/login?next=/listings/new";
 
   return (
     <header className="topbar">
@@ -35,11 +38,11 @@ export async function AppHeader() {
           <Link className="secondary-button" href="/saved" aria-label="Saved listings">
             <Heart size={18} />
           </Link>
-          <Link className="primary-button" href="/listings/new">
+          <Link className="primary-button" href={listTransferHref}>
             <Building2 size={18} />
             List transfer
           </Link>
-          {currentUser ? (
+          {authenticatedUser ? (
             <LogoutButton />
           ) : (
             <Link className="secondary-button" href="/login">

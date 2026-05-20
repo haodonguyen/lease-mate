@@ -7,9 +7,10 @@ import { useState } from "react";
 interface LoginFormProps {
   defaultEmail?: string;
   defaultPassword?: string;
+  redirectTo?: string;
 }
 
-export function LoginForm({ defaultEmail = "", defaultPassword = "" }: LoginFormProps) {
+export function LoginForm({ defaultEmail = "", defaultPassword = "", redirectTo }: LoginFormProps) {
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [isPending, setIsPending] = useState(false);
@@ -34,7 +35,7 @@ export function LoginForm({ defaultEmail = "", defaultPassword = "" }: LoginForm
       return;
     }
 
-    router.push(result.user.role === "RENTER" ? "/saved" : "/dashboard");
+    router.push(redirectTo ?? (result.user.role === "RENTER" ? "/saved" : "/dashboard"));
     router.refresh();
   }
 
