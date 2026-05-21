@@ -8,13 +8,16 @@ export function ListingActions({
   listingSlug,
   listingId,
   isAuthenticated,
+  isSaved,
 }: {
   listingSlug: string;
   listingId: string;
   isAuthenticated: boolean;
+  isSaved: boolean;
 }) {
   const router = useRouter();
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(isSaved ? "Already in your shortlist." : "");
+  const [saved, setSaved] = useState(isSaved);
 
   async function saveListing() {
     if (!isAuthenticated) {
@@ -27,7 +30,14 @@ export function ListingActions({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ listingSlug }),
     });
-    setMessage(response.ok ? "Saved to your shortlist." : "Could not save this listing.");
+    if (response.ok) {
+      setSaved(true);
+      setMessage("Saved to your shortlist.");
+      router.refresh();
+      return;
+    }
+
+    setMessage("Could not save this listing.");
   }
 
   async function reportListing() {
@@ -57,7 +67,7 @@ export function ListingActions({
     <div className="action-stack">
       <button className="secondary-button" type="button" onClick={saveListing}>
         <Bookmark size={17} />
-        Save
+        {saved ? "Saved" : "Save"}
       </button>
       <button className="secondary-button" type="button" onClick={shareListing}>
         <Share2 size={17} />

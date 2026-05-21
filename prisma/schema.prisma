@@ -55,6 +55,13 @@ enum NotificationStatus {
   SENT
 }
 
+enum SavedListingShortlistStatus {
+  INTERESTED
+  INSPECTING
+  APPLIED
+  REJECTED
+}
+
 model User {
   id              String          @id @default(cuid())
   name            String
@@ -166,14 +173,18 @@ model Report {
 }
 
 model SavedListing {
-  id        String   @id @default(cuid())
-  userId    String
-  listingId String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  id              String                      @id @default(cuid())
+  userId          String
+  listingId       String
+  shortlistStatus SavedListingShortlistStatus @default(INTERESTED)
+  notes           String?
+  user            User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing         Listing                     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt       DateTime                    @default(now())
+  updatedAt       DateTime                    @updatedAt
 
   @@unique([userId, listingId])
+  @@index([userId, shortlistStatus])
 }
 
 model Notification {

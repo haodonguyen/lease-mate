@@ -3,7 +3,9 @@ import { expect, test } from "@playwright/test";
 test("search filters lease listings by suburb", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "LeaseMate" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Victoria's trusted lease transfer marketplace." }),
+  ).toBeVisible();
   await expect(page.locator(".listing-card")).toHaveCount(3);
 
   await page.getByLabel("Search listings").fill("Box Hill");

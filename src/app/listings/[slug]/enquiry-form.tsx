@@ -20,6 +20,7 @@ export function EnquiryForm({
 
   return (
     <form
+      id="enquiry-form"
       className="form-grid"
       onSubmit={async (event) => {
         event.preventDefault();

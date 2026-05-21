@@ -1,4 +1,4 @@
-import { ArrowLeft, Calendar, CheckCircle2, MapPin, ShieldAlert, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Calendar, CheckCircle2, FileText, MapPin, MessageSquare, ShieldAlert, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -26,6 +26,9 @@ export default async function ListingPage({
 
   await trackEvent({ name: "listing_view", listingId: record.id, metadata: { suburb: record.suburb } });
   const authenticatedUser = await getCurrentAuthenticatedUser();
+  const savedListing = authenticatedUser
+    ? record.savedBy.find((saved) => saved.userId === authenticatedUser.id)
+    : null;
   const listing = listingRecordToLeaseListing(record);
   const readiness = getListingReadiness(listing);
   const badgeClass =
@@ -52,16 +55,30 @@ export default async function ListingPage({
         </div>
       </header>
 
-      <section className="detail-hero">
+      <section className="detail-hero elevated-detail">
         <div className="detail-main">
-          <Image
-            className="detail-image"
-            src={listing.imageUrl}
-            alt={listing.title}
-            width={1200}
-            height={675}
-            priority
-          />
+          <div className="detail-gallery">
+            <Image
+              className="detail-image"
+              src={listing.imageUrl}
+              alt={listing.title}
+              width={1200}
+              height={675}
+              priority
+            />
+            <Image
+              src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=700&q=80"
+              alt="Kitchen preview"
+              width={560}
+              height={360}
+            />
+            <Image
+              src="https://images.unsplash.com/photo-1560184897-ae75f418493e?auto=format&fit=crop&w=700&q=80"
+              alt="Bedroom preview"
+              width={560}
+              height={360}
+            />
+          </div>
 
           <div className="detail-content">
             <div className="detail-topline">
@@ -80,14 +97,28 @@ export default async function ListingPage({
               </p>
             </div>
 
+            <div className="verification-panel">
+              <ShieldCheck size={22} />
+              <div>
+                <strong>Lease authenticity verified</strong>
+                <p>
+                  Proof of consent, transfer readiness, and key lease dates are visible before enquiry.
+                </p>
+              </div>
+            </div>
+
             <div className="meta-grid">
               <div className="meta-item">
                 <strong>${listing.rentPerWeek}</strong>
-                <span>per week</span>
+                <span>weekly rent</span>
               </div>
               <div className="meta-item">
                 <strong>${listing.bondAmount}</strong>
                 <span>bond</span>
+              </div>
+              <div className="meta-item">
+                <strong>{formatDate(listing.availableFrom)}</strong>
+                <span>available</span>
               </div>
               <div className="meta-item">
                 <strong>{readiness.score}%</strong>
@@ -130,15 +161,26 @@ export default async function ListingPage({
 
         <aside className="detail-sidebar">
           <div className="enquiry-card">
-            <h2>Contact {listing.lister.name}</h2>
+            <h2>Enquire now</h2>
             <p>
-              {listing.lister.role}. {listing.lister.responseTime}.
+              Direct message the current renter. {listing.lister.responseTime}.
             </p>
             <EnquiryForm listingSlug={listing.slug} listingTitle={listing.title} />
+            <div className="action-stack">
+              <a className="primary-button" href="#enquiry-form">
+                <MessageSquare size={17} />
+                Message renter
+              </a>
+              <a className="secondary-button" href="#enquiry-form">
+                <FileText size={17} />
+                Request documents
+              </a>
+            </div>
             <ListingActions
               listingSlug={listing.slug}
               listingId={listing.id}
               isAuthenticated={Boolean(authenticatedUser)}
+              isSaved={Boolean(savedListing)}
             />
             <div className="notice">
               LeaseMate does not handle rent, bond, legal approval, or payments in this MVP.

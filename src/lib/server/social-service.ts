@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { normaliseSavedListingUpdateInput } from "@/lib/saved-listings";
 import { prisma } from "./db";
 import { trackEvent } from "./analytics-service";
 
@@ -12,12 +13,41 @@ export async function saveListing(userId: string, listingSlug: string) {
   const listing = await prisma.listing.findUnique({ where: { slug: listingSlug } });
   if (!listing) return { ok: false as const, error: "Listing not found" };
 
-  await prisma.savedListing.upsert({
+  const savedListing = await prisma.savedListing.upsert({
     where: { userId_listingId: { userId, listingId: listing.id } },
     update: {},
     create: { userId, listingId: listing.id },
   });
   await trackEvent({ name: "listing_saved", userId, listingId: listing.id });
+
+  return { ok: true as const, savedListing };
+}
+
+export async function updateSavedListing(userId: string, savedListingId: string, input: unknown) {
+  const parsed = normaliseSavedListingUpdateInput(input);
+  if (!parsed.ok) return parsed;
+
+  const existing = await prisma.savedListing.findFirst({
+    where: { id: savedListingId, userId },
+  });
+  if (!existing) return { ok: false as const, error: "Saved listing not found" };
+
+  const savedListing = await prisma.savedListing.update({
+    where: { id: savedListingId },
+    data: parsed.data,
+  });
+
+  return { ok: true as const, savedListing };
+}
+
+export async function removeSavedListing(userId: string, savedListingId: string) {
+  const existing = await prisma.savedListing.findFirst({
+    where: { id: savedListingId, userId },
+  });
+  if (!existing) return { ok: false as const, error: "Saved listing not found" };
+
+  await prisma.savedListing.delete({ where: { id: savedListingId } });
+  await trackEvent({ name: "listing_unsaved", userId, listingId: existing.listingId });
 
   return { ok: true as const };
 }

@@ -1,6 +1,18 @@
 "use client";
 
-import { CalendarDays, Home, MapPin, Search, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
+import {
+  Bath,
+  BedDouble,
+  CalendarDays,
+  ChevronRight,
+  Heart,
+  Home,
+  MapPin,
+  Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -48,46 +60,83 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
 
   return (
     <main>
-      <section className="hero">
-        <Image
-          className="hero-background"
-          src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1600&q=80"
-          alt=""
-          width={1600}
-          height={900}
-          priority
-        />
-        <div className="hero-copy">
+      <section className="marketplace-hero">
+        <div className="marketplace-hero-copy">
           <span className="eyebrow">
             <ShieldCheck size={18} />
-            Victoria-first lease transfer board
+            Victoria-first lease transfer marketplace
           </span>
-          <h1>LeaseMate</h1>
+          <h1>
+            Victoria&apos;s trusted <span>lease transfer</span> marketplace.
+          </h1>
           <p>
-            Structured, shareable lease-transfer listings for renters who need a
-            professional alternative to messy Facebook posts and risky DMs.
+            Browse verified rental handovers, compare readiness, and contact outgoing
+            renters through a structured workflow instead of scattered social posts.
           </p>
-          <div className="hero-actions">
-            <Link className="primary-button" href="/listings/new">
-              List a transfer
-            </Link>
-            <Link className="secondary-button" href="#listings">
-              Browse listings
-            </Link>
+          <div className="hero-search" aria-label="Quick listing search">
+            <label>
+              <Search size={17} />
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search suburb"
+                aria-label="Search suburb"
+              />
+            </label>
+            <select
+              value={listingType}
+              onChange={(event) => setListingType(event.target.value)}
+              aria-label="Choose listing type"
+            >
+              <option value="all">Whole place</option>
+              <option value="lease_transfer">Lease transfer</option>
+              <option value="room_replacement">Room replacement</option>
+              <option value="temporary_sublet">Short stay</option>
+            </select>
+            <a className="primary-button" href="#listings">
+              Search listings
+            </a>
           </div>
-          <div className="stat-row" aria-label="LeaseMate product metrics">
-            <div className="stat-pill">
-              <strong>{listings.length}</strong>
-              <span>active listings</span>
-            </div>
-            <div className="stat-pill">
-              <strong>{analytics?.enquiries ?? 0}</strong>
-              <span>enquiries</span>
-            </div>
-            <div className="stat-pill">
-              <strong>{analytics?.waitlist ?? 0}</strong>
-              <span>waitlist</span>
-            </div>
+          <div className="popular-row" aria-label="Popular suburbs">
+            <span>Popular:</span>
+            {["Fitzroy", "South Yarra", "Carlton"].map((suburb) => (
+              <button key={suburb} type="button" onClick={() => setQuery(suburb)}>
+                {suburb}
+              </button>
+            ))}
+          </div>
+          <div className="marketplace-proof-row" aria-label="LeaseMate traction">
+            <span>{listings.length} active listings</span>
+            <span>{analytics?.enquiries ?? 0} renter enquiries</span>
+            <span>{analytics?.saves ?? 0} saved homes</span>
+          </div>
+        </div>
+
+        <div className="hero-collage" aria-label="Featured lease transfer homes">
+          <Image
+            className="hero-collage-large"
+            src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=80"
+            alt="Bright apartment living room"
+            width={720}
+            height={840}
+            priority
+          />
+          <Image
+            src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=600&q=80"
+            alt="Modern kitchen in rental apartment"
+            width={420}
+            height={420}
+          />
+          <Image
+            src="https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?auto=format&fit=crop&w=600&q=80"
+            alt="Melbourne terrace home"
+            width={420}
+            height={420}
+          />
+          <div className="trust-card">
+            <ShieldCheck size={20} />
+            <strong>100% verified</strong>
+            <span>All listings show consent status, transfer readiness, and renter checks.</span>
           </div>
         </div>
       </section>
@@ -99,9 +148,9 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
               <SlidersHorizontal size={16} />
               Marketplace
             </span>
-            <h2>Find a lease transfer that is ready to inspect</h2>
+            <h2>{filteredListings.length} properties found in Victoria</h2>
             <p className="muted">
-              Showing {filteredListings.length} of {listings.length} active listings.
+              Sort, compare, and shortlist rentals by readiness before you message the renter.
             </p>
           </div>
           {hasActiveFilters ? (
@@ -112,56 +161,83 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
           ) : null}
         </div>
 
-        <div className="toolbar" aria-label="Listing filters">
-          <label className="field">
-            <Search size={18} />
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search suburb, postcode, or title"
-              aria-label="Search listings"
-            />
-          </label>
+        <div className="marketplace-layout">
+          <aside className="filter-panel" aria-label="Listing filters">
+            <div className="filter-panel-heading">
+              <strong>Filters</strong>
+              <button type="button" onClick={clearFilters}>Reset</button>
+            </div>
+            <label className="field">
+              <Search size={18} />
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search suburb, postcode, or title"
+                aria-label="Search listings"
+              />
+            </label>
 
-          <label className="field">
-            <select
-              value={listingType}
-              onChange={(event) => setListingType(event.target.value)}
-              aria-label="Filter by listing type"
-            >
-              <option value="all">All listing types</option>
-              <option value="lease_transfer">Lease transfer</option>
-              <option value="room_replacement">Room replacement</option>
-              <option value="temporary_sublet">Temporary sublet</option>
-            </select>
-          </label>
+            <label className="filter-group">
+              <span>Listing type</span>
+              <select
+                value={listingType}
+                onChange={(event) => setListingType(event.target.value)}
+                aria-label="Filter by listing type"
+              >
+                <option value="all">All listing types</option>
+                <option value="lease_transfer">Whole house</option>
+                <option value="room_replacement">Room only</option>
+                <option value="temporary_sublet">Temporary stay</option>
+              </select>
+            </label>
 
-          <label className="field">
-            <select
-              value={readiness}
-              onChange={(event) => setReadiness(event.target.value)}
-              aria-label="Filter by readiness"
-            >
-              <option value="all">All readiness</option>
-              <option value="Ready to transfer">Ready to transfer</option>
-              <option value="Consent pending">Consent pending</option>
-              <option value="Needs caution">Needs caution</option>
-            </select>
-          </label>
+            <label className="filter-group">
+              <span>Readiness status</span>
+              <select
+                value={readiness}
+                onChange={(event) => setReadiness(event.target.value)}
+                aria-label="Filter by readiness"
+              >
+                <option value="all">All readiness</option>
+                <option value="Ready to transfer">Ready to transfer</option>
+                <option value="Consent pending">Consent pending</option>
+                <option value="Needs caution">Needs caution</option>
+              </select>
+            </label>
+          </aside>
+
+          {filteredListings.length > 0 ? (
+            <div className="marketplace-results">
+              {filteredListings.map((listing) => (
+                <ListingCard key={listing.id} listing={listing} />
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">
+              <strong>No matching listings</strong>
+              <p className="muted">Try a broader suburb, listing type, or readiness filter.</p>
+            </div>
+          )}
         </div>
+      </section>
 
-        {filteredListings.length > 0 ? (
-          <div className="listing-grid">
-            {filteredListings.map((listing) => (
-              <ListingCard key={listing.id} listing={listing} />
-            ))}
+      <section className="transfer-band">
+        <div>
+          <span className="eyebrow">Transfer with legal confidence</span>
+          <h2>Every transfer has a managed handover workflow.</h2>
+          <p>
+            LeaseMate keeps consent, bond, inspection, and renter communication steps visible
+            so applicants know what is ready before they enquire.
+          </p>
+          <div className="transfer-band-points">
+            <span><ShieldCheck size={16} /> Standard documentation</span>
+            <span><CalendarDays size={16} /> Lease dates and availability</span>
           </div>
-        ) : (
-          <div className="empty-state">
-            <strong>No matching listings</strong>
-            <p className="muted">Try a broader suburb, listing type, or readiness filter.</p>
-          </div>
-        )}
+        </div>
+        <Link className="primary-button" href="/listings/new">
+          Start transfer process
+          <ChevronRight size={18} />
+        </Link>
       </section>
     </main>
   );
@@ -177,9 +253,10 @@ function ListingCard({ listing }: { listing: LeaseListing }) {
         : "caution";
 
   return (
-    <article className="listing-card">
+    <article className="listing-card elevated-listing-card">
       <Link className="listing-card-image" href={`/listings/${listing.slug}`} aria-label={`View ${listing.title}`}>
         <Image src={listing.imageUrl} alt={listing.title} width={900} height={667} />
+        <span className={`floating-badge ${badgeClass}`}>{readiness.visibilityLabel}</span>
       </Link>
       <div className="listing-card-body">
         <div className="card-topline">
@@ -190,11 +267,12 @@ function ListingCard({ listing }: { listing: LeaseListing }) {
           <span className="muted">{formatListingType(listing.listingType)}</span>
         </div>
         <div>
-          <h2>{listing.title}</h2>
+          <h2>${listing.rentPerWeek}<span>/week</span></h2>
           <p>
             <MapPin size={14} aria-hidden="true" /> {listing.suburb}, {listing.state}{" "}
             {listing.postcode}
           </p>
+          <h3>{listing.title}</h3>
         </div>
         <div className="listing-card-summary">
           <span>
@@ -202,27 +280,26 @@ function ListingCard({ listing }: { listing: LeaseListing }) {
             From {formatShortDate(listing.availableFrom)}
           </span>
           <span>
+            <BedDouble size={14} />
+            {listing.bedrooms}
+          </span>
+          <span>
+            <Bath size={14} />
+            {listing.bathrooms}
+          </span>
+          <span>
             <Home size={14} />
-            {listing.bedrooms} bed · {listing.bathrooms} bath
+            {readiness.score}% ready
           </span>
         </div>
-        <div className="meta-grid">
-          <div className="meta-item">
-            <strong>${listing.rentPerWeek}</strong>
-            <span>per week</span>
-          </div>
-          <div className="meta-item">
-            <strong>{listing.bedrooms}</strong>
-            <span>bed</span>
-          </div>
-          <div className="meta-item">
-            <strong>{readiness.score}%</strong>
-            <span>ready</span>
-          </div>
+        <div className="card-actions-row">
+          <Link className="secondary-button compact-button" href={`/listings/${listing.slug}`}>
+            View listing
+          </Link>
+          <Link className="icon-save-link" href={`/listings/${listing.slug}`} aria-label={`Open ${listing.title} to save`}>
+            <Heart size={18} />
+          </Link>
         </div>
-        <Link className="secondary-button" href={`/listings/${listing.slug}`}>
-          View listing
-        </Link>
       </div>
     </article>
   );

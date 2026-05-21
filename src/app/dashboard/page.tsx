@@ -31,15 +31,19 @@ export default async function DashboardPage() {
   return (
     <main className="section">
       <Link className="secondary-button" href="/">Back to marketplace</Link>
-      <div className="page-heading">
-        <span className="eyebrow">Owner dashboard</span>
-        <h1>Manage listings and enquiries</h1>
-        <p className="muted">Signed in as {user.name} ({user.role}).</p>
+      <div className="dashboard-hero">
+        <div>
+          <span className="eyebrow">Owner dashboard</span>
+          <h1>Welcome back, {user.name}</h1>
+          <p className="muted">Manage your Victorian lease transfers and renter enquiries.</p>
+        </div>
+        <Link className="primary-button compact-button" href="/listings/new">Create new listing</Link>
       </div>
-      <div className="stat-row">
-        <div className="stat-pill"><strong>{listings.length}</strong><span>your listings</span></div>
+      <div className="dashboard-grid">
+        <div className="stat-pill"><strong>{listings.length.toString().padStart(2, "0")}</strong><span>active listings</span></div>
         <div className="stat-pill"><strong>{analytics.enquiries}</strong><span>total enquiries</span></div>
-        <div className="stat-pill"><strong>{analytics.saves}</strong><span>saves</span></div>
+        <div className="stat-pill"><strong>{analytics.views}</strong><span>total views</span></div>
+        <div className="stat-pill dark-stat"><strong>{analytics.saves}</strong><span>market strength</span></div>
       </div>
       <div className="section-heading-row dashboard-workflow-heading">
         <div>
@@ -48,6 +52,18 @@ export default async function DashboardPage() {
           <p className="muted">Keep lease details current before sharing the page back into rental groups.</p>
         </div>
         <Link className="primary-button compact-button" href="/listings/new">New listing</Link>
+      </div>
+      <div className="transfer-workflow">
+        {[
+          ["1. Consent", "Landlord has provided written consent for transfer.", "complete"],
+          ["2. Documents", "Incoming renter details and transfer paperwork are ready.", "progress"],
+          ["3. Completion", "Keys, bond, and final inventory handover.", "pending"],
+        ].map(([title, body, state]) => (
+          <div className={`workflow-card ${state}`} key={title}>
+            <strong>{title}</strong>
+            <p>{body}</p>
+          </div>
+        ))}
       </div>
       <div className="table-list">
         {listings.map((listing) => (
