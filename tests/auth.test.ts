@@ -7,6 +7,7 @@ import {
   getCurrentDemoUser,
   isDemoAuthEnabled,
   isValidLoginInput,
+  isValidSignupInput,
 } from "../src/lib/server/auth";
 
 describe("demo authentication guard", () => {
@@ -37,6 +38,36 @@ describe("auth rules", () => {
   it("validates login payload shape", () => {
     expect(isValidLoginInput({ email: "owner@leasemate.dev", password: "LeaseMate123!" }).ok).toBe(true);
     expect(isValidLoginInput({ email: "bad", password: "short" }).ok).toBe(false);
+  });
+
+  it("validates signup payload shape and limits public roles", () => {
+    expect(
+      isValidSignupInput({
+        name: "Sarah Jenkins",
+        email: "sarah@example.com.au",
+        password: "LeaseMate123!",
+        role: "OWNER",
+        acceptedTerms: true,
+      }).ok,
+    ).toBe(true);
+    expect(
+      isValidSignupInput({
+        name: "Alex Morgan",
+        email: "alex@example.com.au",
+        password: "LeaseMate123!",
+        role: "ADMIN",
+        acceptedTerms: true,
+      }).ok,
+    ).toBe(false);
+    expect(
+      isValidSignupInput({
+        name: "Riley",
+        email: "bad",
+        password: "short",
+        role: "RENTER",
+        acceptedTerms: false,
+      }).ok,
+    ).toBe(false);
   });
 
   it("enforces role capabilities", () => {

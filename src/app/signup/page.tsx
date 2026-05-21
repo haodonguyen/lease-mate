@@ -1,10 +1,17 @@
 import { FileCheck2, ShieldCheck, Users } from "lucide-react";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { SignupForm } from "@/components/auth/signup-form";
+import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 
 export const dynamic = "force-dynamic";
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const currentUser = await getCurrentAuthenticatedUser();
+  if (currentUser) {
+    redirect(currentUser.role === "RENTER" ? "/saved" : "/dashboard");
+  }
+
   return (
     <main className="auth-shell">
       <div className="auth-card signup-auth-card">

@@ -2,17 +2,44 @@
 
 import { Apple, ArrowRight, Chrome, Eye } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type AccountType = "RENTER" | "OWNER";
 
 export function SignupForm() {
+  const router = useRouter();
   const [accountType, setAccountType] = useState<AccountType>("RENTER");
   const [message, setMessage] = useState("");
+  const [isPending, setIsPending] = useState(false);
 
-  function submitSignup(event: React.FormEvent<HTMLFormElement>) {
+  async function submitSignup(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage("Account creation is ready for backend wiring. Please use the seeded sign-in accounts for this MVP.");
+    setMessage("");
+    setIsPending(true);
+
+    const formData = new FormData(event.currentTarget);
+    const response = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.get("name"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+        role: accountType,
+        acceptedTerms: formData.get("terms") === "on",
+      }),
+    });
+    const result = await response.json();
+    setIsPending(false);
+
+    if (!response.ok || !result.ok) {
+      setMessage(result.error ?? "Could not create your account.");
+      return;
+    }
+
+    router.push(result.user.role === "OWNER" ? "/listings/new" : "/saved");
+    router.refresh();
   }
 
   return (
@@ -23,6 +50,7 @@ export function SignupForm() {
           className={accountType === "RENTER" ? "active" : ""}
           onClick={() => setAccountType("RENTER")}
           aria-pressed={accountType === "RENTER"}
+          disabled={isPending}
         >
           Renter
         </button>
@@ -31,6 +59,7 @@ export function SignupForm() {
           className={accountType === "OWNER" ? "active" : ""}
           onClick={() => setAccountType("OWNER")}
           aria-pressed={accountType === "OWNER"}
+          disabled={isPending}
         >
           Property owner
         </button>
@@ -38,11 +67,11 @@ export function SignupForm() {
 
       <div className="form-field">
         <label htmlFor="signup-name">Full name</label>
-        <input id="signup-name" name="name" autoComplete="name" placeholder="e.g. Sarah Jenkins" required />
+        <input id="signup-name" name="name" autoComplete="name" placeholder="e.g. Sarah Jenkins" disabled={isPending} required />
       </div>
       <div className="form-field">
         <label htmlFor="signup-email">Email address</label>
-        <input id="signup-email" name="email" type="email" autoComplete="email" placeholder="sarah@example.com.au" required />
+        <input id="signup-email" name="email" type="email" autoComplete="email" placeholder="sarah@example.com.au" disabled={isPending} required />
       </div>
       <div className="form-field">
         <label htmlFor="signup-password">Password</label>
@@ -54,6 +83,7 @@ export function SignupForm() {
             autoComplete="new-password"
             placeholder="Min. 8 characters"
             minLength={8}
+            disabled={isPending}
             required
           />
           <Eye size={17} aria-hidden="true" />
@@ -61,16 +91,17 @@ export function SignupForm() {
       </div>
 
       <label className="auth-checkbox">
-        <input type="checkbox" name="terms" required />
+        <input type="checkbox" name="terms" disabled={isPending} required />
         <span>
           I agree to the <Link href="/signup">Terms of Service</Link> and{" "}
           <Link href="/signup">Privacy Policy</Link>, including Victorian lease transfer guidance.
         </span>
       </label>
 
-      <button className="primary-button" type="submit">
-        Create account
-        <ArrowRight size={17} />
+      <button className="primary-button" type="submit" disabled={isPending} aria-busy={isPending}>
+        {isPending ? <span className="button-spinner" aria-hidden="true" /> : null}
+        {isPending ? "Creating account" : "Create account"}
+        {!isPending ? <ArrowRight size={17} /> : null}
       </button>
 
       <div className="auth-divider">
@@ -78,11 +109,11 @@ export function SignupForm() {
       </div>
 
       <div className="auth-provider-grid">
-        <button className="secondary-button auth-provider-button" type="button">
+        <button className="secondary-button auth-provider-button" type="button" disabled={isPending}>
           <Chrome size={17} />
           Google
         </button>
-        <button className="secondary-button auth-provider-button" type="button">
+        <button className="secondary-button auth-provider-button" type="button" disabled={isPending}>
           <Apple size={17} />
           Apple
         </button>
