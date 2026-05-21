@@ -1,4 +1,4 @@
-import { Building2, Home, LogIn } from "lucide-react";
+import { Building2, Home, LogIn, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { DemoRoleSwitcher } from "@/components/auth/demo-role-switcher";
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -47,10 +47,16 @@ export async function AppHeader() {
           {authenticatedUser ? (
             <LogoutButton />
           ) : (
-            <Link className="secondary-button" href="/login">
-              <LogIn size={18} />
-              Sign in
-            </Link>
+            <>
+              <Link className="secondary-button" href="/signup">
+                <UserPlus size={18} />
+                Join
+              </Link>
+              <Link className="secondary-button" href="/login">
+                <LogIn size={18} />
+                Sign in
+              </Link>
+            </>
           )}
         </nav>
       </div>

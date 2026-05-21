@@ -1,3 +1,5 @@
+import { ShieldCheck, Users } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { LoginForm } from "@/components/auth/login-form";
 import { getSafeRedirectPath } from "@/lib/auth-redirect";
@@ -17,16 +19,9 @@ export default async function LoginPage({
   const redirectTo = getSafeRedirectPath(params?.next);
 
   return (
-    <main className="section auth-page">
-      <div className="page-heading">
-        <span className="eyebrow">Account access</span>
-        <h1>Sign in to LeaseMate</h1>
-        <p className="muted">
-          Use a seeded account to manage listings, enquiries, saved homes, and moderation workflows.
-        </p>
-      </div>
+    <main className="auth-shell auth-page">
       {currentUser ? (
-        <div className="detail-panel">
+        <div className="detail-panel auth-signed-in-panel">
           <h2>You are signed in as {currentUser.name}</h2>
           <p className="muted">{currentUser.email} · {currentUser.role}</p>
           <div className="action-stack horizontal">
@@ -39,9 +34,40 @@ export default async function LoginPage({
           </div>
         </div>
       ) : (
-        <div className="detail-panel auth-panel">
-          <LoginForm defaultEmail={demoDefaults.email} defaultPassword={demoDefaults.password} redirectTo={redirectTo} />
-          {demoDefaults.helperText ? <p className="muted">{demoDefaults.helperText}</p> : null}
+        <div className="auth-card">
+          <section className="auth-visual-panel">
+            <Image
+              src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1100&q=80"
+              alt="Bright Victorian apartment interior"
+              width={900}
+              height={1100}
+              priority
+            />
+            <div className="auth-visual-copy">
+              <span className="eyebrow">
+                <ShieldCheck size={17} />
+                Verified listings
+              </span>
+              <h1>Victoria Lease Collective</h1>
+              <p>
+                Join Victoria&apos;s trusted marketplace for professional lease transfers.
+                Secure, verified, and structured from first message.
+              </p>
+              <div className="auth-visual-points">
+                <span><ShieldCheck size={15} /> Verified listings</span>
+                <span><Users size={15} /> Secure documentation</span>
+              </div>
+            </div>
+          </section>
+          <section className="auth-form-panel">
+            <div className="auth-form-heading">
+              <span className="eyebrow">Sign in</span>
+              <h1>Welcome back</h1>
+              <p>Enter your details to manage saved homes, enquiries, and lease transfers.</p>
+            </div>
+            <LoginForm defaultEmail={demoDefaults.email} defaultPassword={demoDefaults.password} redirectTo={redirectTo} />
+            {demoDefaults.helperText ? <p className="muted auth-helper-text">{demoDefaults.helperText}</p> : null}
+          </section>
         </div>
       )}
     </main>
