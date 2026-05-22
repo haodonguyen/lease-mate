@@ -6,9 +6,11 @@ test("search filters lease listings by suburb", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Simplifying Victorian Lease Transfers." }),
   ).toBeVisible();
+  await expect(page.getByText("Built around Victorian rental guidance")).toBeVisible();
+  await expect(page.getByText("Verified by Consumer Affairs Victoria")).toHaveCount(0);
   await expect(page.locator(".listing-card")).toHaveCount(3);
 
-  await page.getByLabel("Search listings").fill("Box Hill");
+  await page.getByRole("textbox", { name: "Search listings" }).fill("Box Hill");
 
   await expect(page.locator(".listing-card")).toHaveCount(1);
   await expect(page.getByRole("heading", { name: "Private room close to Box Hill station" })).toBeVisible();
@@ -27,7 +29,48 @@ test("authenticated renter lands on personalized home", async ({ page }) => {
   await expect(page).toHaveURL(/127\.0\.0\.1:3110\/$/);
   await expect(page.getByRole("heading", { name: /Welcome back,/ })).toBeVisible();
   await expect(page.getByText("Recommended for you")).toBeVisible();
+  await expect(page.getByText("Your saved shortlist")).toBeVisible();
+  await expect(page.getByText("Based on currently available Victorian lease transfers.")).toBeVisible();
+  await expect(page.getByText("Richmond and Cremorne")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Simplifying Victorian Lease Transfers." })).toHaveCount(0);
+});
+
+test("authenticated renter can open and search the full marketplace", async ({ page }) => {
+  const response = await page.request.post("/api/auth/login", {
+    data: {
+      email: "renter@leasemate.dev",
+      password: "LeaseMate123!",
+    },
+  });
+  expect(response.ok()).toBeTruthy();
+
+  await page.goto("/");
+  await page.getByRole("link", { name: "Marketplace", exact: true }).click();
+
+  await expect(page).toHaveURL(/\/marketplace#listings$/);
+  await expect(page.locator(".listing-card")).toHaveCount(3);
+
+  await page.getByLabel("Search listings").fill("Box Hill");
+
+  await expect(page.locator(".listing-card")).toHaveCount(1);
+  await expect(page.getByRole("heading", { name: "Private room close to Box Hill station" })).toBeVisible();
+});
+
+test("renter navigation only shows renter account actions", async ({ page }) => {
+  const response = await page.request.post("/api/auth/login", {
+    data: {
+      email: "renter@leasemate.dev",
+      password: "LeaseMate123!",
+    },
+  });
+  expect(response.ok()).toBeTruthy();
+
+  await page.goto("/");
+  const header = page.locator("header");
+
+  await expect(header.getByRole("link", { name: "Saved listings" })).toBeVisible();
+  await expect(header.getByRole("link", { name: "Dashboard" })).toHaveCount(0);
+  await expect(header.getByRole("link", { name: "List transfer" })).toHaveCount(0);
 });
 
 test("listing enquiry submits through the API workflow", async ({ page }) => {

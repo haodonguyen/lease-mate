@@ -31,10 +31,6 @@ interface AuthenticatedHomeProps {
     status: string;
     enquiries: unknown[];
   }>;
-  analytics: {
-    enquiries: number;
-    saves: number;
-  };
 }
 
 export function AuthenticatedHome({
@@ -42,15 +38,13 @@ export function AuthenticatedHome({
   recommendedListings,
   savedListings,
   ownerListings,
-  analytics,
 }: AuthenticatedHomeProps) {
   const firstName = user.name.split(" ")[0] || user.name;
   const isManager = user.role === "OWNER" || user.role === "ADMIN";
   const activeTransfer = isManager ? ownerListings[0] : savedListings[0]?.listing;
-  const messageCount = isManager
-    ? ownerListings.reduce((total, listing) => total + listing.enquiries.length, 0)
-    : analytics.enquiries;
+  const enquiryCount = ownerListings.reduce((total, listing) => total + listing.enquiries.length, 0);
   const savedUpdates = savedListings.length;
+  const hasActiveTransfer = Boolean(activeTransfer);
 
   return (
     <main className="authenticated-home">
@@ -74,27 +68,41 @@ export function AuthenticatedHome({
           icon={<Search size={18} />}
           label="Search history"
           title={savedListings[0] ? `Continue search in ${savedListings[0].listing.suburb}` : "Start a suburb search"}
-          href="/#listings"
+          href="/marketplace#listings"
         />
         <HomeSignalCard
           icon={<Inbox size={18} />}
-          label={isManager ? "Enquiries" : "Inbox"}
-          title={`${messageCount} ${messageCount === 1 ? "message" : "messages"}`}
+          label={isManager ? "Enquiries" : "Your saved shortlist"}
+          title={
+            isManager
+              ? `${enquiryCount} ${enquiryCount === 1 ? "enquiry" : "enquiries"} across your listings`
+              : savedUpdates > 0
+                ? `${savedUpdates} saved ${savedUpdates === 1 ? "listing" : "listings"}`
+                : "No saved listings yet"
+          }
           href={isManager ? "/dashboard" : "/saved"}
         />
         <HomeSignalCard
           icon={<Bell size={18} />}
-          label="Updates"
-          title={`${savedUpdates} ${savedUpdates === 1 ? "listing" : "listings"} updated in saved`}
-          href="/saved"
+          label={isManager ? "Listing updates" : "Next action"}
+          title={
+            isManager
+              ? `${ownerListings.length} ${ownerListings.length === 1 ? "listing" : "listings"} in your dashboard`
+              : activeTransfer
+                ? "Review saved transfer readiness"
+                : "Browse verified listings"
+          }
+          href={isManager ? "/dashboard" : "/marketplace#listings"}
         />
         <div className="transfer-progress-card">
           <div className="transfer-progress-heading">
             <strong>Transfer progress</strong>
-            <span>Active</span>
+            <span>{hasActiveTransfer ? "Active" : "Not started"}</span>
           </div>
           <p>{activeTransfer ? getTransferLabel(activeTransfer) : "No active transfer yet"}</p>
-          <div className="progress-step">Step 3: Agent consent</div>
+          <div className="progress-step">
+            {hasActiveTransfer ? "Review consent and documents" : "Save a listing to start tracking"}
+          </div>
           <div className="progress-track" aria-hidden="true">
             <span />
           </div>
@@ -108,9 +116,9 @@ export function AuthenticatedHome({
         <div className="section-heading-row">
           <div>
             <h2>Recommended for you</h2>
-            <p className="muted">Based on your recent activity in Richmond and Cremorne.</p>
+            <p className="muted">Based on currently available Victorian lease transfers.</p>
           </div>
-          <Link className="text-link" href="/#listings">
+          <Link className="text-link" href="/marketplace#listings">
             View all recommendations <ChevronRight size={16} />
           </Link>
         </div>

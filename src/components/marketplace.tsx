@@ -108,7 +108,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
           </div>
           <div className="marketplace-proof-row" aria-label="LeaseMate traction">
             <span>{listings.length} active listings</span>
-            <span>Verified by Consumer Affairs Victoria</span>
+            <span>Built around Victorian rental guidance</span>
             <span>{analytics?.saves ?? 0} saved homes</span>
           </div>
         </div>
@@ -144,9 +144,9 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
 
       <section className="trust-strip" aria-label="Trusted and regulated ecosystem">
         <span>Trusted and regulated ecosystem</span>
-        <strong>Consumer Affairs Victoria</strong>
-        <strong>VCAT compatible</strong>
-        <strong>RTBA secure</strong>
+        <strong>Victorian rental guidance</strong>
+        <strong>VCAT-aware workflow</strong>
+        <strong>RTBA-ready checklist</strong>
       </section>
 
       <section className="landing-flow-section" id="how-it-works">

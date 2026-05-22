@@ -28,7 +28,6 @@ export default async function Home() {
         recommendedListings={listings}
         savedListings={savedListings}
         ownerListings={ownerListings}
-        analytics={analytics}
       />
     );
   }

@@ -10,6 +10,7 @@ export async function AppHeader() {
   const demoUser = authenticatedUser ? null : await getCurrentDemoUser();
   const currentUser = authenticatedUser ?? demoUser;
   const isAuthenticated = Boolean(authenticatedUser);
+  const canManage = currentUser?.role === "OWNER" || currentUser?.role === "ADMIN";
   const savedHref = getAccountActionHref({ isAuthenticated, targetPath: "/saved" });
   const dashboardHref = getAccountActionHref({ isAuthenticated, targetPath: "/dashboard" });
   const adminHref = getAccountActionHref({ isAuthenticated, targetPath: "/admin" });
@@ -29,13 +30,13 @@ export async function AppHeader() {
             currentEmail={currentUser?.email}
             showDemoSwitcher={isDemoAuthEnabled()}
           />
-          <Link className="nav-link" href="/#listings">
+          <Link className="nav-link" href="/marketplace#listings">
             Marketplace
           </Link>
-          <Link className="nav-link" href="/#how-it-works">
+          <Link className="nav-link" href="/marketplace#how-it-works">
             How it works
           </Link>
-          <Link className="nav-link" href="/#security">
+          <Link className="nav-link" href="/marketplace#security">
             Security
           </Link>
           {currentUser?.role === "ADMIN" ? (
@@ -45,19 +46,25 @@ export async function AppHeader() {
           ) : null}
           {authenticatedUser ? (
             <>
-              <Link className="icon-button" href="/#listings" aria-label="Search listings">
+              <Link className="icon-button" href="/marketplace#listings" aria-label="Open marketplace search">
                 <Search size={18} />
               </Link>
-              <Link className="icon-button" href={savedHref} aria-label="Saved listings">
-                <Bell size={18} />
-              </Link>
-              <Link className="secondary-button" href={dashboardHref}>
-                Dashboard
-              </Link>
-              <Link className="primary-button" href={listTransferHref}>
-                <Building2 size={18} />
-                List transfer
-              </Link>
+              {!canManage ? (
+                <Link className="icon-button" href={savedHref} aria-label="Saved listings">
+                  <Bell size={18} />
+                </Link>
+              ) : null}
+              {canManage ? (
+                <>
+                  <Link className="secondary-button" href={dashboardHref}>
+                    Dashboard
+                  </Link>
+                  <Link className="primary-button" href={listTransferHref}>
+                    <Building2 size={18} />
+                    List transfer
+                  </Link>
+                </>
+              ) : null}
               <LogoutButton />
             </>
           ) : (
