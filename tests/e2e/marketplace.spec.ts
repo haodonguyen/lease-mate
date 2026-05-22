@@ -4,7 +4,7 @@ test("search filters lease listings by suburb", async ({ page }) => {
   await page.goto("/");
 
   await expect(
-    page.getByRole("heading", { name: "Victoria's trusted lease transfer marketplace." }),
+    page.getByRole("heading", { name: "Simplifying Victorian Lease Transfers." }),
   ).toBeVisible();
   await expect(page.locator(".listing-card")).toHaveCount(3);
 
@@ -12,6 +12,22 @@ test("search filters lease listings by suburb", async ({ page }) => {
 
   await expect(page.locator(".listing-card")).toHaveCount(1);
   await expect(page.getByRole("heading", { name: "Private room close to Box Hill station" })).toBeVisible();
+});
+
+test("authenticated renter lands on personalized home", async ({ page }) => {
+  const response = await page.request.post("/api/auth/login", {
+    data: {
+      email: "renter@leasemate.dev",
+      password: "LeaseMate123!",
+    },
+  });
+  expect(response.ok()).toBeTruthy();
+
+  await page.goto("/");
+  await expect(page).toHaveURL(/127\.0\.0\.1:3110\/$/);
+  await expect(page.getByRole("heading", { name: /Welcome back,/ })).toBeVisible();
+  await expect(page.getByText("Recommended for you")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Simplifying Victorian Lease Transfers." })).toHaveCount(0);
 });
 
 test("listing enquiry submits through the API workflow", async ({ page }) => {

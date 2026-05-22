@@ -5,6 +5,7 @@ import {
   BedDouble,
   CalendarDays,
   ChevronRight,
+  ClipboardCheck,
   Heart,
   Home,
   MapPin,
@@ -67,11 +68,11 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
             Victoria-first lease transfer marketplace
           </span>
           <h1>
-            Victoria&apos;s trusted <span>lease transfer</span> marketplace.
+            Simplifying Victorian <span>Lease Transfers.</span>
           </h1>
           <p>
-            Browse verified rental handovers, compare readiness, and contact outgoing
-            renters through a structured workflow instead of scattered social posts.
+            The secure digital storefront for the Victorian property community. Move in
+            or move on with absolute legal confidence.
           </p>
           <div className="hero-search" aria-label="Quick listing search">
             <label>
@@ -107,7 +108,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
           </div>
           <div className="marketplace-proof-row" aria-label="LeaseMate traction">
             <span>{listings.length} active listings</span>
-            <span>{analytics?.enquiries ?? 0} renter enquiries</span>
+            <span>Verified by Consumer Affairs Victoria</span>
             <span>{analytics?.saves ?? 0} saved homes</span>
           </div>
         </div>
@@ -138,6 +139,38 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
             <strong>100% verified</strong>
             <span>All listings show consent status, transfer readiness, and renter checks.</span>
           </div>
+        </div>
+      </section>
+
+      <section className="trust-strip" aria-label="Trusted and regulated ecosystem">
+        <span>Trusted and regulated ecosystem</span>
+        <strong>Consumer Affairs Victoria</strong>
+        <strong>VCAT compatible</strong>
+        <strong>RTBA secure</strong>
+      </section>
+
+      <section className="landing-flow-section" id="how-it-works">
+        <div className="section-heading-row">
+          <div>
+            <h2>The frictionless way to transfer</h2>
+            <p className="muted">
+              Move beyond unverified social media posts. Our structured workflow keeps
+              every transfer readable, accountable, and legally aware.
+            </p>
+          </div>
+        </div>
+        <div className="flow-card-grid">
+          {[
+            ["1. List with ease", "Create a professional listing with documents and photos. We format it for Victorian rental standards."],
+            ["2. Vetted matches", "Potential tenants are pre-vetted and communicate through structured property context."],
+            ["3. Legal transfer", "Generate RTBA-compatible transfer steps and keep consent, bond, and dates visible."],
+          ].map(([title, body], index) => (
+            <article className={`flow-card ${index === 1 ? "featured" : ""}`} key={title}>
+              <span><ClipboardCheck size={18} /></span>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -221,7 +254,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
         </div>
       </section>
 
-      <section className="transfer-band">
+      <section className="transfer-band" id="security">
         <div>
           <span className="eyebrow">Transfer with legal confidence</span>
           <h2>Every transfer has a managed handover workflow.</h2>

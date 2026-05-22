@@ -288,6 +288,44 @@ img {
   flex-wrap: wrap;
 }
 
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 800;
+  transition: color 160ms ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--green);
+  opacity: 0;
+  transform: scaleX(0.5);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible {
+  color: var(--ink);
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
 .icon-button,
 .primary-button,
 .secondary-button {
@@ -546,6 +584,266 @@ img {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
+}
+
+.trust-strip {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 1.3fr repeat(3, 1fr);
+  gap: 16px;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: #eef3ff;
+  color: var(--muted);
+}
+
+.trust-strip span {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.trust-strip strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  color: #6e7280;
+  font-size: 1rem;
+}
+
+.landing-flow-section {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 38px 22px 22px;
+}
+
+.landing-flow-section .section-heading-row p {
+  max-width: 680px;
+}
+
+.flow-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.flow-card {
+  min-height: 220px;
+  padding: 24px;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-strong);
+  box-shadow: 0 8px 24px rgba(32, 33, 31, 0.04);
+}
+
+.flow-card.featured {
+  background: var(--navy);
+  color: #fff;
+}
+
+.flow-card span {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: #dff4ee;
+  color: var(--green-dark);
+}
+
+.flow-card.featured span {
+  background: rgba(31, 201, 166, 0.18);
+  color: #55d6bf;
+}
+
+.flow-card h3,
+.flow-card p {
+  margin: 0;
+}
+
+.flow-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.flow-card.featured p {
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.authenticated-home {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 22px 76px;
+}
+
+.home-welcome {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  animation: fade-slide-up 320ms ease both;
+}
+
+.home-welcome h1 {
+  margin: 10px 0 4px;
+  font-size: clamp(2.1rem, 4vw, 3.65rem);
+  line-height: 1;
+}
+
+.home-welcome p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.home-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(260px, 1.1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.home-signal-card,
+.transfer-progress-card {
+  min-height: 176px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-strong);
+  box-shadow: var(--tight-shadow);
+  animation: soft-pop 360ms ease both;
+}
+
+.home-signal-card {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.home-signal-card:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.home-signal-card:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.home-signal-card:hover,
+.home-signal-card:focus-visible {
+  border-color: rgba(31, 122, 90, 0.34);
+  box-shadow: 0 14px 34px rgba(32, 33, 31, 0.1);
+  transform: translateY(-2px);
+}
+
+.home-signal-card span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--green-dark);
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.home-signal-card strong {
+  font-size: 1.28rem;
+  line-height: 1.2;
+}
+
+.transfer-progress-card {
+  display: grid;
+  gap: 12px;
+  background: var(--navy);
+  color: #fff;
+}
+
+.transfer-progress-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.transfer-progress-heading span {
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.transfer-progress-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.45;
+}
+
+.progress-step {
+  color: #55d6bf;
+  font-size: 0.88rem;
+  font-weight: 850;
+}
+
+.progress-track {
+  overflow: hidden;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.progress-track span {
+  display: block;
+  width: 68%;
+  height: 100%;
+  border-radius: inherit;
+  background: #1fc9a6;
+}
+
+.transfer-progress-card .secondary-button {
+  color: var(--ink);
+  background: #fff;
+}
+
+.home-recommendations {
+  margin-top: 32px;
+}
+
+.home-recommendations .section-heading-row {
+  margin-bottom: 18px;
+}
+
+.home-recommendations h2 {
+  margin: 0 0 5px;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--green-dark);
+  font-weight: 850;
+}
+
+.authenticated-listing-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.authenticated-listing-card .listing-card-body {
+  gap: 10px;
 }
 
 .toolbar {
@@ -1919,6 +2217,9 @@ img {
   .toolbar,
   .listing-grid,
   .marketplace-results,
+  .flow-card-grid,
+  .home-summary-grid,
+  .authenticated-listing-row,
   .dashboard-grid,
   .transfer-workflow,
   .workflow-stepper,
@@ -1941,10 +2242,15 @@ img {
   }
 
   .dashboard-hero,
+  .home-welcome,
   .transfer-band,
   .site-footer-inner {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .trust-strip {
+    grid-template-columns: 1fr 1fr;
   }
 
   .site-footer nav {
@@ -2004,6 +2310,25 @@ img {
     grid-column: 1 / -1;
     min-height: 38px;
     justify-content: center;
+  }
+
+  .nav-link {
+    justify-content: center;
+    min-height: 36px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .trust-strip {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .flow-card,
+  .home-signal-card,
+  .transfer-progress-card {
+    min-height: auto;
   }
 
   .hero {

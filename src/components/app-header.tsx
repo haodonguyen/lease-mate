@@ -1,4 +1,4 @@
-import { Building2, Home, LogIn, UserPlus } from "lucide-react";
+import { Bell, Building2, Home, LogIn, Search, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { DemoRoleSwitcher } from "@/components/auth/demo-role-switcher";
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -29,32 +29,46 @@ export async function AppHeader() {
             currentEmail={currentUser?.email}
             showDemoSwitcher={isDemoAuthEnabled()}
           />
-          <Link className="secondary-button" href={savedHref}>
-            Saved
+          <Link className="nav-link" href="/#listings">
+            Marketplace
           </Link>
-          <Link className="secondary-button" href={dashboardHref}>
-            Dashboard
+          <Link className="nav-link" href="/#how-it-works">
+            How it works
+          </Link>
+          <Link className="nav-link" href="/#security">
+            Security
           </Link>
           {currentUser?.role === "ADMIN" ? (
             <Link className="secondary-button" href={adminHref}>
               Admin
             </Link>
           ) : null}
-          <Link className="primary-button" href={listTransferHref}>
-            <Building2 size={18} />
-            List transfer
-          </Link>
           {authenticatedUser ? (
-            <LogoutButton />
+            <>
+              <Link className="icon-button" href="/#listings" aria-label="Search listings">
+                <Search size={18} />
+              </Link>
+              <Link className="icon-button" href={savedHref} aria-label="Saved listings">
+                <Bell size={18} />
+              </Link>
+              <Link className="secondary-button" href={dashboardHref}>
+                Dashboard
+              </Link>
+              <Link className="primary-button" href={listTransferHref}>
+                <Building2 size={18} />
+                List transfer
+              </Link>
+              <LogoutButton />
+            </>
           ) : (
             <>
-              <Link className="secondary-button" href="/signup">
-                <UserPlus size={18} />
-                Join
-              </Link>
               <Link className="secondary-button" href="/login">
                 <LogIn size={18} />
                 Sign in
+              </Link>
+              <Link className="primary-button" href="/signup">
+                <UserPlus size={18} />
+                Join
               </Link>
             </>
           )}
