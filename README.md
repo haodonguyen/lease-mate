@@ -2,49 +2,68 @@
 
 [![LeaseMate CI](https://github.com/haodonguyen/lease-mate/actions/workflows/ci.yml/badge.svg)](https://github.com/haodonguyen/lease-mate/actions/workflows/ci.yml)
 
-LeaseMate is a Victoria-first lease transfer and rental takeover marketplace for renters who currently rely on Facebook groups, screenshots, comments, and private messages to find someone to take over a lease.
+LeaseMate is a Victoria-first lease transfer and rental takeover marketplace. It turns informal Facebook-group lease transfers into structured listings, safer readiness checks, saved shortlists, enquiries, owner workflows, and admin moderation.
 
-The product focuses on a real Australian rental pain point: lease transfers and room replacements are often urgent, informal, and trust-sensitive. LeaseMate turns that messy workflow into structured listings, readiness checks, enquiries, saved listings, moderation, and startup validation analytics.
-
-## Live Demo
-
-https://lease-mate-three.vercel.app/
+Live production app: [https://lease-mate-three.vercel.app](https://lease-mate-three.vercel.app)
 
 ![LeaseMate marketplace screenshot](./public/leasemate-screenshot.png)
 
-## What This Project Is About
+## Product Problem
 
-Renters may need to leave a property before the lease ends because of relocation, financial pressure, study changes, or housemate changes. In practice, many people post lease-transfer requests in Facebook groups and then manage missing details, consent questions, inspections, and trust checks through comments and DMs.
+Renters often need someone to take over a lease quickly because of relocation, study changes, financial pressure, or housemate turnover. The current workflow usually happens across Facebook posts, screenshots, comments, and private messages, which makes important details easy to miss:
 
-LeaseMate improves that workflow with:
+- Has the rental provider or agent approved the transfer?
+- Is the bond transfer discussed?
+- Are lease dates and availability clear?
+- Is the listing a lease transfer, room replacement, or temporary sublet?
+- Can renters compare options after saving them?
 
-- Structured lease-transfer listings instead of scattered posts.
-- Safety/readiness labels such as `Ready to transfer`, `Consent pending`, and `Needs caution`.
-- Shareable listing pages that can still be posted back into Facebook groups or student communities.
-- In-app enquiry workflow.
-- Owner dashboard for managing listings and enquiries.
-- Admin moderation queue for reported listings.
-- Saved listings, waitlist capture, analytics events, and notification boundaries.
+LeaseMate models this as a professional marketplace and account workflow instead of a scattered social-media thread.
 
-This is built as a realistic graduate/junior software engineering portfolio project, but the product concept is intentionally startup-ready.
+## Current Features
 
-## Features
+- State-aware homepage:
+  - guests see a polished landing page and marketplace preview
+  - authenticated users see a personalized home with saved/owner signals
+- Dedicated `/marketplace` route for full listing search and filtering
+- Real email/password sign up and sign in with server-side sessions
+- Role-aware navigation for renters, owners, and admins
+- Public listing detail pages with readiness labels
+- Listing creation and edit flow for owners/admins
+- Owner dashboard with listing status controls and enquiries
+- Saved listings with shortlist status and private notes
+- Enquiry workflow for renters
+- Report listing workflow
+- Admin moderation queue for reported listings
+- Waitlist capture for startup validation
+- Analytics events and notification-service boundaries
+- Vitest unit tests and Playwright E2E tests
+- GitHub Actions CI and Vercel production deployment
 
-- Public marketplace for Victorian rental listings.
-- Search and filters by suburb, listing type, and readiness status.
-- Shareable listing detail pages.
-- Lease readiness and safety rules with unit tests.
-- Prisma-backed PostgreSQL database.
-- Demo role switching for renter, owner, and admin flows.
-- Listing creation flow.
-- Owner dashboard with listing status controls and enquiries.
-- Saved listings for renters.
-- Report listing flow.
-- Admin moderation queue for reported listings.
-- Waitlist form for startup validation.
-- Analytics events for listing views, enquiries, saves, reports, shares, and waitlist signups.
-- Console notification adapter that can be swapped for Resend later.
-- Vitest unit tests and Playwright E2E tests.
+## Main Workflows
+
+### Guest
+
+1. Lands on `/`
+2. Reads the product positioning
+3. Searches or filters listings through `/marketplace`
+4. Opens listing detail pages
+5. Signs up or joins the waitlist when ready
+
+### Renter
+
+1. Signs up or signs in
+2. Lands on authenticated home
+3. Browses `/marketplace`
+4. Saves listings and tracks shortlist status in `/saved`
+5. Sends enquiries from listing detail pages
+
+### Owner/Admin
+
+1. Signs in with an owner/admin account
+2. Creates a lease transfer listing
+3. Manages listings and enquiries from `/dashboard`
+4. Admins can also review reports in `/admin`
 
 ## Tech Stack
 
@@ -59,23 +78,32 @@ This is built as a realistic graduate/junior software engineering portfolio proj
 - ESLint
 - Lucide React icons
 - CSS with custom design tokens
+- Vercel + Neon Postgres in production
 
 ## Architecture
 
 ```text
 src/
-  app/                  Next.js routes, pages, and API endpoints
-  components/           Reusable UI and client-side workflow components
-  lib/                  Domain rules, mappers, and shared helpers
-  lib/server/           Prisma services, auth helpers, analytics, notifications
+  app/                         Next.js pages and API route handlers
+    marketplace/               Full public marketplace route
+    api/                       Auth, listings, enquiries, reports, saved listings
+  components/                  Reusable UI and workflow components
+    auth/                      Login, signup, logout, demo role switcher
+    home/                      Guest landing and authenticated home
+  lib/                         Domain rules, mappers, validation, shared helpers
+  lib/server/                  Prisma services, auth, analytics, notifications
+
 prisma/
-  schema.prisma         Data model
-  seed.mjs              Demo data for local development
+  schema.prisma                PostgreSQL data model
+  migrations/                  Production migration history
+  seed.mjs                     Demo data for local development and E2E tests
+
 tests/
-  *.test.ts             Vitest unit tests
-  e2e/                  Playwright end-to-end tests
+  *.test.ts                    Vitest unit tests
+  e2e/                         Playwright end-to-end tests
+
 public/
-  leasemate-screenshot.png
+  leasemate-screenshot.png     README/project preview image
 ```
 
 ## Data Model
@@ -83,6 +111,7 @@ public/
 The Prisma schema includes:
 
 - `User`
+- `Session`
 - `Listing`
 - `ListingPhoto`
 - `Enquiry`
@@ -92,19 +121,28 @@ The Prisma schema includes:
 - `AnalyticsEvent`
 - `WaitlistSignup`
 
-The app uses PostgreSQL through Prisma so the same database model can run locally, in CI, and in production on Vercel with Neon, Supabase, or Vercel Postgres.
+The app uses PostgreSQL through Prisma so the same model works locally, in CI, and in production.
 
-## Getting Started
+## Environment Variables
+
+Create a local `.env` file in the project root:
+
+```bash
+DATABASE_URL="postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require"
+```
+
+Use a development database, not the production database, for local work. Neon, Supabase, Vercel Postgres, or a local PostgreSQL instance all work.
+
+`.env` and `.env.local` files are intentionally ignored and should not be committed.
+
+## Local Setup
 
 ```bash
 npm install
-cp .env.example .env
 npm run db:push
 npm run db:seed
 npm run dev
 ```
-
-Update `.env` with a local Postgres connection string or a development database URL before running the database commands.
 
 Open:
 
@@ -112,55 +150,87 @@ Open:
 http://localhost:3000
 ```
 
-If port `3000` is already in use, Next.js will show the available port in the terminal.
+If port `3000` is busy, Next.js will print the available local URL.
 
 ## Demo Accounts
 
-Use the role switcher in the top navigation:
+Seeded accounts use this password:
+
+```text
+LeaseMate123!
+```
+
+Accounts:
 
 - `renter@leasemate.dev`
 - `owner@leasemate.dev`
 - `admin@leasemate.dev`
 
-These are demo roles, not production authentication. They are included to make the portfolio workflows easy to inspect without OAuth setup.
+The app also includes a development role switcher when demo auth is enabled, but production workflows use the real session-based login/signup routes.
 
 ## Quality Checks
 
 ```bash
-npm test
 npm run lint
-npm run build
+npm test
 npm run e2e
+npm run build
+npm run vercel-build
 ```
 
 Current coverage includes:
 
-- Lease readiness and safety rules.
-- Enquiry validation.
-- Listing creation normalization.
-- API input validation.
-- Marketplace search E2E flow.
-- Listing enquiry E2E flow.
+- Auth validation and signup/login API behavior
+- Session helpers
+- Lease readiness and safety rules
+- Listing creation/update normalization
+- Saved listing shortlist updates
+- Enquiry validation
+- API input validation
+- Marketplace search
+- Authenticated marketplace access
+- Renter-specific navigation
+- Signup and saved-listing workflows
+- Listing enquiry workflow
 
 ## Deployment
 
-LeaseMate is prepared for Vercel deployment with an explicit `vercel.json` build configuration and a `vercel-build` script that generates the Prisma Client before building Next.js.
+LeaseMate is deployed to Vercel and backed by hosted PostgreSQL.
 
-Use a hosted PostgreSQL database such as Neon, Supabase, or Vercel Postgres and configure `DATABASE_URL` in Vercel environment variables.
+Production URL:
 
-See [docs/vercel-deployment.md](./docs/vercel-deployment.md) for the deployment checklist.
+```text
+https://lease-mate-three.vercel.app
+```
 
-If the live deployment returns `HTTP 500`, check that `DATABASE_URL` exists in Vercel under `Project -> Settings -> Environment Variables` and that the database has been initialized with `npx prisma db push`.
+The production build path runs:
+
+```bash
+prisma migrate deploy
+prisma generate
+next build
+```
+
+Required Vercel environment variable:
+
+```text
+DATABASE_URL
+```
+
+See [docs/vercel-deployment.md](./docs/vercel-deployment.md) for the detailed deployment checklist.
 
 ## GitHub-Safe Files
 
-Files intended to be committed:
+Commit these:
 
 - `src/**`
 - `prisma/schema.prisma`
+- `prisma/migrations/**`
 - `prisma/seed.mjs`
 - `tests/**`
-- `public/leasemate-screenshot.png`
+- `public/**`
+- `docs/**`
+- `.github/workflows/**`
 - `README.md`
 - `package.json`
 - `package-lock.json`
@@ -169,38 +239,45 @@ Files intended to be committed:
 - `eslint.config.mjs`
 - `playwright.config.ts`
 - `vitest.config.ts`
-- `.env.example`
 - `.gitignore`
+- `vercel.json`
 
-Files intentionally ignored:
+Do not commit these:
 
 - `.env`
+- `.env.local`
 - `node_modules/`
 - `.next/`
-- local database files
+- `.vercel/`
 - `test-results/`
 - `playwright-report/`
+- local database files
 - log files
+- `code-review.md`
 
 ## Portfolio Talking Points
 
 This project demonstrates:
 
-- Product thinking around a real Australian rental market pain point.
-- Full-stack TypeScript architecture.
-- Prisma data modelling.
-- Domain-driven safety/readiness rules.
-- API validation and error handling.
-- Role-based product workflows.
-- Moderation and trust/safety considerations.
-- Unit and E2E testing.
-- Startup validation mechanics through waitlist and analytics events.
+- Product thinking around a real Australian rental-market pain point
+- Full-stack TypeScript and Next.js App Router development
+- PostgreSQL and Prisma data modelling
+- Session-based authentication
+- Role-aware user journeys
+- Trust, safety, and moderation workflows
+- Domain-driven readiness rules
+- API validation and error handling
+- Unit, integration-style, and E2E testing
+- CI/CD with GitHub Actions and Vercel
+- Production deployment with hosted Postgres
 
 ## Future Improvements
 
-- Replace demo role switcher with Auth.js.
-- Add real image uploads with Supabase Storage or UploadThing.
-- Send production emails with Resend.
-- Add suburb-level rental insights.
-- Add richer moderation actions and audit logs.
-- Add automated production migrations after the MVP data model settles.
+- Real image uploads with Vercel Blob, Cloudinary, UploadThing, or Supabase Storage
+- Email verification and password reset
+- Real renter-owner messaging inbox
+- Search history persisted per user
+- Suburb-level rental insights
+- Richer admin audit trails
+- Notification delivery through Resend or another email provider
+- Accessibility pass with automated checks
