@@ -1,4 +1,5 @@
-import { Bell, Building2, Home, LogIn, Search, UserPlus } from "lucide-react";
+import { Bell, Building2, LogIn, Search, UserPlus } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { DemoRoleSwitcher } from "@/components/auth/demo-role-switcher";
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -21,7 +22,7 @@ export async function AppHeader() {
       <div className="topbar-inner">
         <Link href="/" className="brand" aria-label="LeaseMate home">
           <span className="brand-mark">
-            <Home size={21} />
+            <Image src="/leasemate-mark.svg" alt="" width={38} height={38} priority />
           </span>
           <span>LeaseMate</span>
         </Link>

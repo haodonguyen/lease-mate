@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   title: "LeaseMate | Safer lease transfers across Australia",
   description:
     "An Australia-wide lease transfer marketplace concept for renters moving beyond Facebook groups.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/leasemate-mark.svg",
+  },
 };
 
 export default function RootLayout({

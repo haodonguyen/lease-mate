@@ -48,7 +48,7 @@ export default async function ListingPage({
           </Link>
           <Link className="brand" href="/">
             <span className="brand-mark">
-              <ShieldCheck size={20} />
+              <Image src="/leasemate-mark.svg" alt="" width={38} height={38} priority />
             </span>
             <span>LeaseMate</span>
           </Link>

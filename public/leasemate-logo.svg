@@ -1,0 +1,17 @@
+<svg width="980" height="760" viewBox="0 0 980 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="980" height="760" fill="white"/>
+  <g transform="translate(260 70)">
+    <rect x="0" y="0" width="460" height="460" rx="92" fill="white" stroke="#101c2a" stroke-width="22"/>
+    <path d="M56 205L210 84C224 73 242 73 256 84L405 200" stroke="#101c2a" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M103 151V306C103 333 125 355 152 355H238" stroke="#101c2a" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M280 355L232 316V394L280 355Z" fill="#101c2a"/>
+    <path d="M315 355V249C315 231 330 216 348 216C366 216 381 231 381 249V323" stroke="#101c2a" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M180 323V252C180 222 204 198 234 198C264 198 288 222 288 252" stroke="#101c2a" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M218 246C235 266 265 267 284 250" stroke="#101c2a" stroke-width="24" stroke-linecap="round"/>
+    <path d="M222 285L264 324C272 332 285 332 293 324L336 285" stroke="#101c2a" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M267 296L299 326" stroke="#101c2a" stroke-width="11" stroke-linecap="round"/>
+    <path d="M250 313L275 337" stroke="#101c2a" stroke-width="11" stroke-linecap="round"/>
+    <path d="M234 329L252 346" stroke="#101c2a" stroke-width="11" stroke-linecap="round"/>
+  </g>
+  <text x="490" y="680" text-anchor="middle" fill="#101c2a" font-family="Inter, Arial, sans-serif" font-size="124" font-weight="800" letter-spacing="0">LeaseMate</text>
+</svg>
