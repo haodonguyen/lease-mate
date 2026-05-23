@@ -94,7 +94,7 @@ export function SignupForm() {
         <input type="checkbox" name="terms" disabled={isPending} required />
         <span>
           I agree to the <Link href="/signup">Terms of Service</Link> and{" "}
-          <Link href="/signup">Privacy Policy</Link>, including Victorian lease transfer guidance.
+          <Link href="/signup">Privacy Policy</Link>, including Australian lease transfer guidance.
         </span>
       </label>
 

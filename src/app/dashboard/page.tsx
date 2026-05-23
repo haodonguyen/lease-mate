@@ -35,7 +35,7 @@ export default async function DashboardPage() {
         <div>
           <span className="eyebrow">Owner dashboard</span>
           <h1>Welcome back, {user.name}</h1>
-          <p className="muted">Manage your Victorian lease transfers and renter enquiries.</p>
+          <p className="muted">Manage your Australian lease transfers and renter enquiries.</p>
         </div>
         <Link className="primary-button compact-button" href="/listings/new">Create new listing</Link>
       </div>

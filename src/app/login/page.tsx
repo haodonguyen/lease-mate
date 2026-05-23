@@ -38,7 +38,7 @@ export default async function LoginPage({
           <section className="auth-visual-panel">
             <Image
               src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1100&q=80"
-              alt="Bright Victorian apartment interior"
+              alt="Bright Australian apartment interior"
               width={900}
               height={1100}
               priority
@@ -48,9 +48,9 @@ export default async function LoginPage({
                 <ShieldCheck size={17} />
                 Verified listings
               </span>
-              <h1>Victoria Lease Collective</h1>
+              <h1>Australia Lease Collective</h1>
               <p>
-                Join Victoria&apos;s trusted marketplace for professional lease transfers.
+                Join Australia&apos;s trusted marketplace for professional lease transfers.
                 Secure, verified, and structured from first message.
               </p>
               <div className="auth-visual-points">

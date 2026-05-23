@@ -18,7 +18,7 @@ export default async function SignupPage() {
         <section className="auth-visual-panel signup-visual-panel">
           <Image
             src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80"
-            alt="Melbourne apartment lounge at night"
+            alt="Australian apartment lounge at night"
             width={980}
             height={1100}
             priority
@@ -28,7 +28,7 @@ export default async function SignupPage() {
               <ShieldCheck size={17} />
               Transfer verified
             </span>
-            <h1>Victoria&apos;s premier lease collective.</h1>
+            <h1>Australia&apos;s premier lease collective.</h1>
             <p>
               Start your rental handover with verified documentation, renter-ready
               communication, and a cleaner workflow than social groups.

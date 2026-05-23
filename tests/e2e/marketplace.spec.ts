@@ -4,10 +4,10 @@ test("search filters lease listings by suburb", async ({ page }) => {
   await page.goto("/");
 
   await expect(
-    page.getByRole("heading", { name: "Simplifying Victorian Lease Transfers." }),
+    page.getByRole("heading", { name: "Simplifying Australian Lease Transfers." }),
   ).toBeVisible();
-  await expect(page.getByText("Built around Victorian rental guidance")).toBeVisible();
-  await expect(page.getByText("Verified by Consumer Affairs Victoria")).toHaveCount(0);
+  await expect(page.getByText("Built around Australian rental guidance")).toBeVisible();
+  await expect(page.getByText("Verified by Consumer Affairs")).toHaveCount(0);
   await expect(page.locator(".listing-card")).toHaveCount(3);
 
   await page.getByRole("textbox", { name: "Search listings" }).fill("Box Hill");
@@ -30,9 +30,9 @@ test("authenticated renter lands on personalized home", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /Welcome back,/ })).toBeVisible();
   await expect(page.getByText("Recommended for you")).toBeVisible();
   await expect(page.getByText("Your saved shortlist")).toBeVisible();
-  await expect(page.getByText("Based on currently available Victorian lease transfers.")).toBeVisible();
+  await expect(page.getByText("Based on currently available Australian lease transfers.")).toBeVisible();
   await expect(page.getByText("Richmond and Cremorne")).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Simplifying Victorian Lease Transfers." })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Simplifying Australian Lease Transfers." })).toHaveCount(0);
 });
 
 test("authenticated renter can open and search the full marketplace", async ({ page }) => {

@@ -17,7 +17,7 @@
 
 - [ ] **Step 1: Add failing e2e assertions**
 
-Add assertions that signed-out users see `Simplifying Victorian Lease Transfers.` and signed-in users see `Welcome back,`.
+Add assertions that signed-out users see `Simplifying Australian Lease Transfers.` and signed-in users see `Welcome back,`.
 
 - [ ] **Step 2: Run e2e test to verify red**
 

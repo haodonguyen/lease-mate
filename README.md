@@ -2,7 +2,7 @@
 
 [![LeaseMate CI](https://github.com/haodonguyen/lease-mate/actions/workflows/ci.yml/badge.svg)](https://github.com/haodonguyen/lease-mate/actions/workflows/ci.yml)
 
-LeaseMate is a Victoria-first lease transfer and rental takeover marketplace. It turns informal Facebook-group lease transfers into structured listings, safer readiness checks, saved shortlists, enquiries, owner workflows, and admin moderation.
+LeaseMate is an Australia-wide lease transfer and rental takeover marketplace. It turns informal Facebook-group lease transfers into structured listings, safer readiness checks, saved shortlists, enquiries, owner workflows, and admin moderation.
 
 Live production app: [https://lease-mate-three.vercel.app](https://lease-mate-three.vercel.app)
 

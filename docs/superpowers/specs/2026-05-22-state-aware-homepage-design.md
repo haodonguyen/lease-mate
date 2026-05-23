@@ -6,7 +6,7 @@ Make `/` feel like a polished startup landing page for guests and a useful perso
 
 ## Guest Experience
 
-Signed-out visitors see a Victoria-focused landing page inspired by the supplied mockup. The page leads with a full-width Melbourne/Victorian lease transfer hero, a suburb/postcode search box, trust proof, a three-step transfer section, a featured listing preview, a conversion CTA, and the existing footer language.
+Signed-out visitors see an Australia-focused landing page inspired by the supplied mockup. The page leads with an Australia-wide lease transfer hero, a suburb/postcode search box, trust proof, a three-step transfer section, a featured listing preview, a conversion CTA, and the existing footer language.
 
 The guest page must still expose the marketplace search workflow and listing cards so existing search behavior remains discoverable.
 
@@ -26,7 +26,7 @@ The authenticated page links users into deeper workflows:
 - `AuthenticatedHome` for signed-in home
 - shared listing preview card helpers where useful
 
-No schema migration is required for this pass. Search history, message count, and transfer progress can be derived from existing listings, saved listings, owner listings, and analytics.
+Listing state/territory is displayed dynamically so the product is not tied to one state. Search history, message count, and transfer progress can be derived from existing listings, saved listings, owner listings, and analytics.
 
 ## Testing
 

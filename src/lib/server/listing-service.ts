@@ -24,6 +24,7 @@ const checkboxBoolean = z.preprocess((value) => {
 const listingFormSchema = z.object({
   title: z.string().trim().min(8, "Title must be at least 8 characters"),
   suburb: z.string().trim().min(2, "Suburb is required"),
+  state: z.enum(["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"]),
   postcode: z.string().trim().regex(/^\d{4}$/, "Postcode must be 4 digits"),
   listingType: z.enum(["lease_transfer", "temporary_sublet", "room_replacement"]),
   consentStatus: z.enum(["approved", "pending", "not_started"]),
@@ -123,6 +124,7 @@ export function buildListingUpdateData(data: ListingFormData) {
   return {
     title: data.title,
     suburb: data.suburb,
+    state: data.state,
     postcode: data.postcode,
     listingType: toPrismaListingType(data.listingType),
     consentStatus: toPrismaConsentStatus(data.consentStatus),

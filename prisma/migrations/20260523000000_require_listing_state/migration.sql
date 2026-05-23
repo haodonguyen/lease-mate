@@ -1,0 +1,1 @@
+ALTER TABLE "Listing" ALTER COLUMN "state" DROP DEFAULT;

@@ -97,7 +97,7 @@ model Listing {
   slug                  String          @unique
   title                 String
   suburb                String
-  state                 String          @default("VIC")
+  state                 String
   postcode              String
   listingType           ListingType
   consentStatus         ConsentStatus

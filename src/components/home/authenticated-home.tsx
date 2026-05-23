@@ -52,7 +52,7 @@ export function AuthenticatedHome({
         <div>
           <span className="eyebrow">
             <ShieldCheck size={16} />
-            Secure Victorian property marketplace
+            Secure Australian property marketplace
           </span>
           <h1>Welcome back, {firstName}</h1>
           <p>Here&apos;s what&apos;s happening with your lease search today.</p>
@@ -116,7 +116,7 @@ export function AuthenticatedHome({
         <div className="section-heading-row">
           <div>
             <h2>Recommended for you</h2>
-            <p className="muted">Based on currently available Victorian lease transfers.</p>
+            <p className="muted">Based on currently available Australian lease transfers.</p>
           </div>
           <Link className="text-link" href="/marketplace#listings">
             View all recommendations <ChevronRight size={16} />
@@ -165,7 +165,7 @@ function AuthenticatedListingCard({ listing }: { listing: LeaseListing }) {
       </Link>
       <div className="listing-card-body">
         <h2>${listing.rentPerWeek} pw</h2>
-        <h3>{listing.suburb}, VIC {listing.postcode}</h3>
+        <h3>{listing.suburb}, {listing.state} {listing.postcode}</h3>
         <div className="listing-card-summary">
           <span><Building2 size={15} /> {listing.bedrooms}</span>
           <span><Home size={15} /> {listing.bathrooms}</span>

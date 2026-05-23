@@ -65,13 +65,13 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
         <div className="marketplace-hero-copy">
           <span className="eyebrow">
             <ShieldCheck size={18} />
-            Victoria-first lease transfer marketplace
+            Australia-wide lease transfer marketplace
           </span>
           <h1>
-            Simplifying Victorian <span>Lease Transfers.</span>
+            Simplifying Australian <span>Lease Transfers.</span>
           </h1>
           <p>
-            The secure digital storefront for the Victorian property community. Move in
+            The secure digital storefront for the Australian rental community. Move in
             or move on with absolute legal confidence.
           </p>
           <div className="hero-search" aria-label="Quick listing search">
@@ -108,7 +108,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
           </div>
           <div className="marketplace-proof-row" aria-label="LeaseMate traction">
             <span>{listings.length} active listings</span>
-            <span>Built around Victorian rental guidance</span>
+            <span>Built around Australian rental guidance</span>
             <span>{analytics?.saves ?? 0} saved homes</span>
           </div>
         </div>
@@ -130,7 +130,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
           />
           <Image
             src="https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?auto=format&fit=crop&w=600&q=80"
-            alt="Melbourne terrace home"
+            alt="Australian terrace home"
             width={420}
             height={420}
           />
@@ -144,7 +144,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
 
       <section className="trust-strip" aria-label="Trusted and regulated ecosystem">
         <span>Trusted and regulated ecosystem</span>
-        <strong>Victorian rental guidance</strong>
+        <strong>Australian rental guidance</strong>
         <strong>VCAT-aware workflow</strong>
         <strong>RTBA-ready checklist</strong>
       </section>
@@ -161,7 +161,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
         </div>
         <div className="flow-card-grid">
           {[
-            ["1. List with ease", "Create a professional listing with documents and photos. We format it for Victorian rental standards."],
+            ["1. List with ease", "Create a professional listing with documents and photos. We format it for Australian rental standards."],
             ["2. Vetted matches", "Potential tenants are pre-vetted and communicate through structured property context."],
             ["3. Legal transfer", "Generate RTBA-compatible transfer steps and keep consent, bond, and dates visible."],
           ].map(([title, body], index) => (
@@ -181,7 +181,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
               <SlidersHorizontal size={16} />
               Marketplace
             </span>
-            <h2>{filteredListings.length} properties found in Victoria</h2>
+            <h2>{filteredListings.length} properties found across Australia</h2>
             <p className="muted">
               Sort, compare, and shortlist rentals by readiness before you message the renter.
             </p>

@@ -13,7 +13,7 @@ export function WaitlistForm() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    setMessage(response.ok ? "Joined the Melbourne validation waitlist." : "Could not join waitlist.");
+    setMessage(response.ok ? "Joined the Australian validation waitlist." : "Could not join waitlist.");
   }
 
   return (

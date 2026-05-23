@@ -48,7 +48,7 @@ export default async function SavedPage() {
                 <div>
                   <h2>{listing.title}</h2>
                   <p>
-                    <MapPin size={15} /> {listing.suburb}, VIC {listing.postcode}
+                    <MapPin size={15} /> {listing.suburb}, {listing.state} {listing.postcode}
                   </p>
                 </div>
                 <div className="meta-grid saved-meta-grid">

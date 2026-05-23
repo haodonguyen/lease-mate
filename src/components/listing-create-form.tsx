@@ -10,6 +10,7 @@ const defaultImageUrl = "https://images.unsplash.com/photo-1560448204-e02f11c3d0
 export interface ListingFormValues {
   title: string;
   suburb: string;
+  state: "ACT" | "NSW" | "NT" | "QLD" | "SA" | "TAS" | "VIC" | "WA";
   postcode: string;
   listingType: "lease_transfer" | "temporary_sublet" | "room_replacement";
   consentStatus: "approved" | "pending" | "not_started";
@@ -33,6 +34,7 @@ export interface ListingFormValues {
 const defaultValues: ListingFormValues = {
   title: "Carlton lease transfer near tram",
   suburb: "Carlton",
+  state: "VIC",
   postcode: "3053",
   listingType: "lease_transfer",
   consentStatus: "approved",
@@ -124,6 +126,19 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
           <div className="form-field">
             <label htmlFor="suburb">Suburb</label>
             <input id="suburb" name="suburb" defaultValue={initialValues.suburb} required />
+          </div>
+          <div className="form-field">
+            <label htmlFor="state">State or territory</label>
+            <select id="state" name="state" defaultValue={initialValues.state}>
+              <option value="ACT">ACT</option>
+              <option value="NSW">NSW</option>
+              <option value="NT">NT</option>
+              <option value="QLD">QLD</option>
+              <option value="SA">SA</option>
+              <option value="TAS">TAS</option>
+              <option value="VIC">VIC</option>
+              <option value="WA">WA</option>
+            </select>
           </div>
           <div className="form-field">
             <label htmlFor="postcode">Postcode</label>

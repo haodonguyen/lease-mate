@@ -11,7 +11,7 @@ export interface LeaseListing {
   slug: string;
   title: string;
   suburb: string;
-  state: "VIC";
+  state: AustralianState;
   postcode: string;
   listingType: ListingType;
   consentStatus: ConsentStatus;
@@ -33,6 +33,8 @@ export interface LeaseListing {
     responseTime: string;
   };
 }
+
+export type AustralianState = "ACT" | "NSW" | "NT" | "QLD" | "SA" | "TAS" | "VIC" | "WA";
 
 export const leaseListings: LeaseListing[] = [
   {

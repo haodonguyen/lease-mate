@@ -46,6 +46,7 @@ function listingToFormValues(listing: Listing): ListingFormValues {
   return {
     title: listing.title,
     suburb: listing.suburb,
+    state: listing.state as ListingFormValues["state"],
     postcode: listing.postcode,
     listingType: toDomainListingType(listing.listingType),
     consentStatus: toDomainConsentStatus(listing.consentStatus),

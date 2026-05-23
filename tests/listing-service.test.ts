@@ -13,6 +13,7 @@ describe("listing service", () => {
     const input = normaliseListingFormInput({
       title: "  Carlton lease transfer ",
       suburb: "Carlton",
+      state: "VIC",
       postcode: "3053",
       listingType: "lease_transfer",
       consentStatus: "approved",
@@ -49,6 +50,7 @@ describe("listing service", () => {
     const input = normaliseListingFormInput({
       title: "Carlton lease transfer",
       suburb: "Carlton",
+      state: "VIC",
       postcode: "3053",
       listingType: "lease_transfer",
       consentStatus: "pending",
@@ -80,6 +82,7 @@ describe("listing service", () => {
     const input = normaliseListingFormInput({
       title: "Carlton lease transfer",
       suburb: "Carlton",
+      state: "VIC",
       postcode: "3053",
       listingType: "lease_transfer",
       consentStatus: "approved",
@@ -107,6 +110,7 @@ describe("listing service", () => {
     const input = normaliseListingFormInput({
       title: "Carlton lease transfer",
       suburb: "Carlton",
+      state: "VIC",
       postcode: "3053",
       listingType: "lease_transfer",
       consentStatus: "approved",
@@ -134,6 +138,7 @@ describe("listing service", () => {
     const input = normaliseListingFormInput({
       title: "Carlton lease transfer",
       suburb: "Carlton",
+      state: "VIC",
       postcode: "3053",
       listingType: "temporary_sublet",
       consentStatus: "approved",
@@ -163,6 +168,7 @@ describe("listing service", () => {
       {
         title: "Carlton lease transfer",
         suburb: "Carlton",
+        state: "VIC",
         postcode: "3053",
         listingType: "lease_transfer",
         consentStatus: "approved",
@@ -195,6 +201,7 @@ describe("listing service", () => {
     const data = buildListingUpdateData({
       title: "Updated Carlton lease transfer",
       suburb: "Carlton North",
+      state: "VIC",
       postcode: "3054",
       listingType: "room_replacement",
       consentStatus: "pending",

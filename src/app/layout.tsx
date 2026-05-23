@@ -4,9 +4,9 @@ import { AppHeader } from "@/components/app-header";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "LeaseMate | Safer lease transfers in Victoria",
+  title: "LeaseMate | Safer lease transfers across Australia",
   description:
-    "A Victoria-first lease transfer marketplace concept for renters moving beyond Facebook groups.",
+    "An Australia-wide lease transfer marketplace concept for renters moving beyond Facebook groups.",
 };
 
 export default function RootLayout({
@@ -24,11 +24,11 @@ export default function RootLayout({
             <div className="site-footer-inner">
               <div>
                 <strong>LeaseMate</strong>
-                <p>Helping Victorian renters move lease transfers out of risky posts and into structured, accountable workflows.</p>
+                <p>Helping Australian renters move lease transfers out of risky posts and into structured, accountable workflows.</p>
               </div>
               <nav aria-label="Footer links">
-                <a href="https://www.consumer.vic.gov.au/housing/renting" target="_blank" rel="noreferrer">
-                  Victorian tenancy
+                <a href="https://www.australia.gov.au" target="_blank" rel="noreferrer">
+                  Australian tenancy resources
                 </a>
                 <Link href="/listings/new">Transfer checklist</Link>
                 <Link href="/saved">Saved listings</Link>
