@@ -59,7 +59,7 @@ export default async function ListingPage({
       <section className="detail-hero elevated-detail">
         <div className="detail-main">
           <div className="detail-gallery">
-            {galleryPhotos.slice(0, 3).map((photo, index) => (
+            {galleryPhotos.map((photo, index) => (
               <Image
                 key={`${photo.url}-${photo.sortOrder}`}
                 className={index === 0 ? "detail-image" : undefined}

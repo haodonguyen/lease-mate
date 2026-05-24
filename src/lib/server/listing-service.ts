@@ -1,4 +1,5 @@
 import type { Listing, UserRole } from "@prisma/client";
+import { UTApi } from "uploadthing/server";
 import { z } from "zod";
 import {
   listingToChecklist,
@@ -13,6 +14,8 @@ import { assessListingReadiness, validateListingBasics } from "../lease-rules";
 import { slugify } from "../slug";
 import { prisma } from "./db";
 
+const allowedListingImageHosts = new Set(["images.unsplash.com", "utfs.io"]);
+
 const checkboxBoolean = z.preprocess((value) => {
   if (value === true || value === "on" || value === "true" || value === "1") {
     return true;
@@ -22,17 +25,27 @@ const checkboxBoolean = z.preprocess((value) => {
 }, z.boolean());
 
 const uploadedPhotoSchema = z.object({
-  url: z
-    .string()
-    .trim()
-    .url("Uploaded photo URL must be valid")
-    .refine((value) => value.startsWith("http://") || value.startsWith("https://"), {
-      message: "Uploaded photo URL must use http or https",
-    }),
+  url: z.string().trim(),
   key: z.string().trim().min(1, "Uploaded photo storage key is required").optional(),
   storageKey: z.string().trim().min(1, "Uploaded photo storage key is required").optional(),
   name: z.string().trim().optional(),
   size: z.coerce.number().int().positive().optional(),
+}).superRefine((photo, context) => {
+  if (!isAllowedListingImageUrl(photo.url)) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["url"],
+      message: "Uploaded photo URL must use an approved image host",
+    });
+  }
+
+  if (!photo.key && !photo.storageKey) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["storageKey"],
+      message: "Uploaded photos must include a storage key",
+    });
+  }
 });
 
 const uploadedPhotosField = z.preprocess((value) => {
@@ -105,19 +118,11 @@ const listingFormSchema = listingFormBaseSchema.superRefine((data, context) => {
   }
 
   if (imageUrl.length > 0) {
-    const parsedUrl = z
-      .string()
-      .url("Image URL must be valid")
-      .refine((value) => value.startsWith("http://") || value.startsWith("https://"), {
-        message: "Image URL must use http or https",
-      })
-      .safeParse(imageUrl);
-
-    if (!parsedUrl.success) {
+    if (!isAllowedListingImageUrl(imageUrl)) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["imageUrl"],
-        message: parsedUrl.error.issues[0]?.message ?? "Image URL must be valid",
+        message: "Image URL must use an approved image host",
       });
     }
   }
@@ -138,6 +143,15 @@ const listingFormSchema = listingFormBaseSchema.superRefine((data, context) => {
 }));
 
 export type ListingFormData = z.output<typeof listingFormSchema>;
+
+export function isAllowedListingImageUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && allowedListingImageHosts.has(url.hostname);
+  } catch {
+    return false;
+  }
+}
 
 export function normaliseListingFormInput(input: unknown) {
   const parsed = listingFormSchema.safeParse(input);
@@ -252,6 +266,17 @@ export function buildListingPhotoCreateData(data: Pick<ListingFormData, "title" 
   }));
 }
 
+export function getRemovedListingPhotoStorageKeys(
+  existingPhotos: Array<{ storageKey: string | null }>,
+  nextPhotos: Array<{ storageKey?: string | null }>,
+) {
+  const nextKeys = new Set(nextPhotos.map((photo) => photo.storageKey).filter(Boolean));
+
+  return existingPhotos
+    .map((photo) => photo.storageKey)
+    .filter((storageKey): storageKey is string => Boolean(storageKey) && !nextKeys.has(storageKey));
+}
+
 export function getListingReadinessFromRecord(
   listing: Pick<
     Listing,
@@ -300,13 +325,24 @@ export async function createListing(ownerId: string, input: unknown) {
     return normalised;
   }
 
-  const listing = await prisma.listing.create({
-    data: {
-      ...buildListingCreateData(normalised.data, ownerId),
-      photos: {
-        create: buildListingPhotoCreateData(normalised.data),
+  const ownership = await validateUploadedPhotoOwnership(ownerId, normalised.data);
+  if (!ownership.ok) {
+    return ownership;
+  }
+
+  const listing = await prisma.$transaction(async (tx) => {
+    const createdListing = await tx.listing.create({
+      data: {
+        ...buildListingCreateData(normalised.data, ownerId),
+        photos: {
+          create: buildListingPhotoCreateData(normalised.data),
+        },
       },
-    },
+    });
+
+    await attachUploadedPhotos(tx, ownerId, createdListing.id, normalised.data);
+
+    return createdListing;
   });
 
   return { ok: true as const, listing };
@@ -352,16 +388,35 @@ export async function updateListingDetails(listingId: string, actor: { id: strin
     throw new Error("Listing access denied");
   }
 
-  const updatedListing = await prisma.listing.update({
-    where: { id: listingId },
-    data: {
-      ...buildListingUpdateData(normalised.data),
-      photos: {
-        deleteMany: {},
-        create: buildListingPhotoCreateData(normalised.data),
-      },
-    },
+  const ownership = await validateUploadedPhotoOwnership(actor.id, normalised.data);
+  if (!ownership.ok) {
+    return ownership;
+  }
+
+  const existingPhotos = await prisma.listingPhoto.findMany({
+    where: { listingId },
+    select: { storageKey: true },
   });
+  const removedStorageKeys = getRemovedListingPhotoStorageKeys(existingPhotos, normalised.data.uploadedPhotos);
+
+  const updatedListing = await prisma.$transaction(async (tx) => {
+    const savedListing = await tx.listing.update({
+      where: { id: listingId },
+      data: {
+        ...buildListingUpdateData(normalised.data),
+        photos: {
+          deleteMany: {},
+          create: buildListingPhotoCreateData(normalised.data),
+        },
+      },
+    });
+
+    await attachUploadedPhotos(tx, actor.id, listingId, normalised.data);
+
+    return savedListing;
+  });
+
+  await deleteUploadThingFiles(removedStorageKeys);
 
   return { ok: true as const, listing: updatedListing };
 }
@@ -408,4 +463,73 @@ function leaseEndCoversAvailability(data: Pick<ListingFormData, "availableFrom" 
   const availableUntil = data.availableUntil ? new Date(`${data.availableUntil}T00:00:00.000Z`) : undefined;
 
   return availableFrom <= leaseEnds && (!availableUntil || availableUntil <= leaseEnds);
+}
+
+function getUploadedPhotoStorageKeys(data: ListingFormData) {
+  return data.uploadedPhotos.map((photo) => photo.storageKey).filter((key): key is string => Boolean(key));
+}
+
+async function validateUploadedPhotoOwnership(ownerId: string, data: ListingFormData) {
+  const storageKeys = getUploadedPhotoStorageKeys(data);
+
+  if (storageKeys.length === 0) {
+    return { ok: true as const };
+  }
+
+  const ownedUploads = await prisma.listingPhotoUpload.findMany({
+    where: {
+      ownerId,
+      storageKey: { in: storageKeys },
+    },
+    select: { storageKey: true },
+  });
+  const ownedKeys = new Set(ownedUploads.map((upload) => upload.storageKey));
+  const hasUnownedKey = storageKeys.some((storageKey) => !ownedKeys.has(storageKey));
+
+  if (hasUnownedKey) {
+    return {
+      ok: false as const,
+      errors: {
+        uploadedPhotos: "Upload photos through LeaseMate before saving",
+      },
+    };
+  }
+
+  return { ok: true as const };
+}
+
+async function attachUploadedPhotos(
+  tx: Pick<typeof prisma, "listingPhotoUpload">,
+  ownerId: string,
+  listingId: string,
+  data: ListingFormData,
+) {
+  const storageKeys = getUploadedPhotoStorageKeys(data);
+
+  if (storageKeys.length === 0) {
+    return;
+  }
+
+  await tx.listingPhotoUpload.updateMany({
+    where: {
+      ownerId,
+      storageKey: { in: storageKeys },
+    },
+    data: {
+      listingId,
+      attachedAt: new Date(),
+    },
+  });
+}
+
+async function deleteUploadThingFiles(storageKeys: string[]) {
+  if (storageKeys.length === 0 || !process.env.UPLOADTHING_TOKEN) {
+    return;
+  }
+
+  try {
+    await new UTApi().deleteFiles(storageKeys);
+  } catch (error) {
+    console.error("Failed to delete removed listing photos from UploadThing", error);
+  }
 }
