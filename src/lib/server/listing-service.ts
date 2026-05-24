@@ -21,7 +21,37 @@ const checkboxBoolean = z.preprocess((value) => {
   return false;
 }, z.boolean());
 
-const listingFormSchema = z.object({
+const uploadedPhotoSchema = z.object({
+  url: z
+    .string()
+    .trim()
+    .url("Uploaded photo URL must be valid")
+    .refine((value) => value.startsWith("http://") || value.startsWith("https://"), {
+      message: "Uploaded photo URL must use http or https",
+    }),
+  key: z.string().trim().min(1, "Uploaded photo storage key is required").optional(),
+  storageKey: z.string().trim().min(1, "Uploaded photo storage key is required").optional(),
+  name: z.string().trim().optional(),
+  size: z.coerce.number().int().positive().optional(),
+});
+
+const uploadedPhotosField = z.preprocess((value) => {
+  if (value === undefined || value === null || value === "") {
+    return [];
+  }
+
+  if (typeof value === "string") {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return value;
+    }
+  }
+
+  return value;
+}, z.array(uploadedPhotoSchema).max(8, "Upload up to 8 listing photos"));
+
+const listingFormBaseSchema = z.object({
   title: z.string().trim().min(8, "Title must be at least 8 characters"),
   suburb: z.string().trim().min(2, "Suburb is required"),
   state: z.enum(["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"]),
@@ -40,10 +70,16 @@ const listingFormSchema = z.object({
   imageUrl: z
     .string()
     .trim()
-    .url("Image URL must be valid")
-    .refine((value) => value.startsWith("http://") || value.startsWith("https://"), {
-      message: "Image URL must use http or https",
-    }),
+    .optional()
+    .default(""),
+  uploadedPhotos: uploadedPhotosField.transform((photos) =>
+    photos.map((photo) => ({
+      url: photo.url,
+      storageKey: photo.storageKey ?? photo.key ?? "",
+      name: photo.name,
+      size: photo.size,
+    })),
+  ),
   highlights: z.union([z.string(), z.array(z.string())]).transform((value) => {
     const items = Array.isArray(value) ? value : value.split(/\r?\n/);
     return items.map((item) => item.trim()).filter(Boolean).slice(0, 6);
@@ -54,6 +90,52 @@ const listingFormSchema = z.object({
   newRenterAddedToLease: checkboxBoolean,
   understandsSubletRisk: checkboxBoolean,
 });
+
+const listingFormSchema = listingFormBaseSchema.superRefine((data, context) => {
+  const uploadedCoverUrl = data.uploadedPhotos[0]?.url;
+  const imageUrl = data.imageUrl.trim();
+
+  if (!uploadedCoverUrl && imageUrl.length === 0) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["imageUrl"],
+      message: "Add at least one listing photo",
+    });
+    return;
+  }
+
+  if (imageUrl.length > 0) {
+    const parsedUrl = z
+      .string()
+      .url("Image URL must be valid")
+      .refine((value) => value.startsWith("http://") || value.startsWith("https://"), {
+        message: "Image URL must use http or https",
+      })
+      .safeParse(imageUrl);
+
+    if (!parsedUrl.success) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["imageUrl"],
+        message: parsedUrl.error.issues[0]?.message ?? "Image URL must be valid",
+      });
+    }
+  }
+}).transform((data) => ({
+  ...data,
+  imageUrl: data.uploadedPhotos[0]?.url ?? data.imageUrl.trim(),
+  uploadedPhotos:
+    data.uploadedPhotos.length > 0
+      ? data.uploadedPhotos
+      : [
+          {
+            url: data.imageUrl.trim(),
+            storageKey: undefined,
+            name: undefined,
+            size: undefined,
+          },
+        ],
+}));
 
 export type ListingFormData = z.output<typeof listingFormSchema>;
 
@@ -147,6 +229,29 @@ export function buildListingUpdateData(data: ListingFormData) {
   };
 }
 
+export function buildListingPhotoCreateData(data: Pick<ListingFormData, "title" | "imageUrl" | "uploadedPhotos">) {
+  const photos =
+    data.uploadedPhotos.length > 0
+      ? data.uploadedPhotos
+      : [
+          {
+            url: data.imageUrl,
+            storageKey: undefined,
+            name: undefined,
+            size: undefined,
+          },
+        ];
+
+  return photos.map((photo, index) => ({
+    url: photo.url,
+    storageKey: photo.storageKey || undefined,
+    fileName: photo.name || undefined,
+    fileSize: photo.size || undefined,
+    alt: `${data.title} photo ${index + 1}`,
+    sortOrder: index,
+  }));
+}
+
 export function getListingReadinessFromRecord(
   listing: Pick<
     Listing,
@@ -170,7 +275,7 @@ export function getListingReadinessFromRecord(
 export async function listPublishedListings() {
   return prisma.listing.findMany({
     where: { status: "PUBLISHED" },
-    include: { owner: true, reports: true, savedBy: true },
+    include: { owner: true, reports: true, savedBy: true, photos: { orderBy: { sortOrder: "asc" } } },
     orderBy: { createdAt: "desc" },
   });
 }
@@ -183,6 +288,7 @@ export async function getListingBySlugFromDb(slug: string) {
       reports: true,
       enquiries: { orderBy: { createdAt: "desc" } },
       savedBy: true,
+      photos: { orderBy: { sortOrder: "asc" } },
     },
   });
 }
@@ -198,12 +304,7 @@ export async function createListing(ownerId: string, input: unknown) {
     data: {
       ...buildListingCreateData(normalised.data, ownerId),
       photos: {
-        create: [
-          {
-            url: normalised.data.imageUrl,
-            alt: normalised.data.title,
-          },
-        ],
+        create: buildListingPhotoCreateData(normalised.data),
       },
     },
   });
@@ -218,6 +319,7 @@ export async function listOwnerListings(ownerId: string) {
       enquiries: { orderBy: { createdAt: "desc" } },
       reports: true,
       savedBy: true,
+      photos: { orderBy: { sortOrder: "asc" } },
     },
     orderBy: { updatedAt: "desc" },
   });
@@ -256,12 +358,7 @@ export async function updateListingDetails(listingId: string, actor: { id: strin
       ...buildListingUpdateData(normalised.data),
       photos: {
         deleteMany: {},
-        create: [
-          {
-            url: normalised.data.imageUrl,
-            alt: normalised.data.title,
-          },
-        ],
+        create: buildListingPhotoCreateData(normalised.data),
       },
     },
   });

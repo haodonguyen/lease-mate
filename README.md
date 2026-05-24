@@ -22,7 +22,7 @@ LeaseMate presents lease transfers as a professional rental marketplace. Listing
 - Email and password authentication with server-side sessions
 - Renter accounts with saved listings and enquiry workflows
 - Owner dashboard for listing management, status updates, and enquiries
-- Listing creation and editing flow with Australian state and territory support
+- Listing creation and editing flow with photo uploads and Australian state and territory support
 - Admin moderation queue for reported listings
 - Waitlist capture for early product validation
 - Analytics and notification service boundaries
@@ -70,6 +70,7 @@ LeaseMate presents lease transfers as a professional rental marketplace. Listing
 - Playwright
 - ESLint
 - Lucide React
+- UploadThing
 - Vercel
 - Neon Postgres
 
@@ -126,6 +127,7 @@ Create a `.env` file in the project root:
 
 ```bash
 DATABASE_URL="postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require"
+UPLOADTHING_TOKEN="your-uploadthing-token"
 ```
 
 Prepare the database:
@@ -192,4 +194,5 @@ Required production environment variable:
 
 ```text
 DATABASE_URL
+UPLOADTHING_TOKEN
 ```

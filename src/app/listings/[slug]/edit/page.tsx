@@ -1,4 +1,4 @@
-import type { Listing } from "@prisma/client";
+import type { Listing, ListingPhoto } from "@prisma/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ListingCreateForm, type ListingFormValues } from "@/components/listing-create-form";
@@ -42,7 +42,7 @@ export default async function EditListingPage({
   );
 }
 
-function listingToFormValues(listing: Listing): ListingFormValues {
+function listingToFormValues(listing: Listing & { photos?: ListingPhoto[] }): ListingFormValues {
   return {
     title: listing.title,
     suburb: listing.suburb,
@@ -58,6 +58,12 @@ function listingToFormValues(listing: Listing): ListingFormValues {
     availableFrom: formatIsoDate(listing.availableFrom),
     leaseEnds: formatIsoDate(listing.leaseEnds),
     imageUrl: listing.imageUrl,
+    uploadedPhotos: listing.photos?.map((photo) => ({
+      url: photo.url,
+      storageKey: photo.storageKey ?? undefined,
+      name: photo.fileName ?? undefined,
+      size: photo.fileSize ?? undefined,
+    })),
     description: listing.description,
     highlights: parseHighlights(listing.highlights).join("\n"),
     hasWrittenConsent: listing.hasWrittenConsent,

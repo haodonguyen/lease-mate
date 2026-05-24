@@ -6,6 +6,7 @@ LeaseMate is a Next.js App Router application and is a good fit for Vercel. The 
 
 - Hosting: Vercel
 - Database: Neon Postgres, Supabase Postgres, or Vercel Postgres
+- Image storage: UploadThing
 - CI: GitHub Actions
 - Production branch: `main`
 
@@ -20,10 +21,11 @@ Vercel deployments run in serverless environments, so a local SQLite file is not
 3. Copy the database connection string.
 4. In Vercel, import the GitHub repository `haodonguyen/lease-mate`.
 5. Set the project framework preset to `Next.js`.
-6. Add the environment variable:
+6. Add the environment variables:
 
 ```text
 DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
+UPLOADTHING_TOKEN=your-uploadthing-token
 ```
 
 7. Set the production branch to `main`.

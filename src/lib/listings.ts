@@ -24,6 +24,11 @@ export interface LeaseListing {
   availableUntil?: string;
   leaseEnds: string;
   imageUrl: string;
+  photos?: Array<{
+    url: string;
+    alt: string;
+    sortOrder: number;
+  }>;
   highlights: string[];
   description: string;
   checklist: TransferChecklist;

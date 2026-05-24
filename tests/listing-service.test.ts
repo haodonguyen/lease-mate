@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildListingUpdateData,
+  buildListingPhotoCreateData,
   canEditListing,
   buildListingCreateData,
   canUpdateListingStatus,
@@ -44,6 +45,99 @@ describe("listing service", () => {
         }),
       );
     }
+  });
+
+  it("normalises uploaded photo metadata and uses the first photo as the cover image", () => {
+    const input = normaliseListingFormInput({
+      title: "Sydney lease transfer near station",
+      suburb: "Parramatta",
+      state: "NSW",
+      postcode: "2150",
+      listingType: "lease_transfer",
+      consentStatus: "approved",
+      housingType: "private_rental",
+      rentPerWeek: "650",
+      bondAmount: "2600",
+      bedrooms: "2",
+      bathrooms: "1",
+      availableFrom: "2026-08-01",
+      leaseEnds: "2027-02-01",
+      description: "A detailed listing description for a renter with uploaded photos.",
+      imageUrl: "",
+      uploadedPhotos: JSON.stringify([
+        {
+          url: "https://utfs.io/f/photo-cover.jpg",
+          key: "lease_photos/photo-cover.jpg",
+          name: "living-room.jpg",
+          size: 820000,
+        },
+        {
+          url: "https://utfs.io/f/photo-bedroom.jpg",
+          key: "lease_photos/photo-bedroom.jpg",
+          name: "bedroom.jpg",
+          size: 640000,
+        },
+      ]),
+      highlights: "Near train\nBalcony",
+      hasWrittenConsent: "on",
+      bondTransferDiscussed: "on",
+      agentOrLandlordAware: "on",
+      newRenterAddedToLease: "on",
+      understandsSubletRisk: "on",
+    });
+
+    expect(input.ok).toBe(true);
+    if (input.ok) {
+      expect(input.data.imageUrl).toBe("https://utfs.io/f/photo-cover.jpg");
+      expect(input.data.uploadedPhotos).toEqual([
+        {
+          url: "https://utfs.io/f/photo-cover.jpg",
+          storageKey: "lease_photos/photo-cover.jpg",
+          name: "living-room.jpg",
+          size: 820000,
+        },
+        {
+          url: "https://utfs.io/f/photo-bedroom.jpg",
+          storageKey: "lease_photos/photo-bedroom.jpg",
+          name: "bedroom.jpg",
+          size: 640000,
+        },
+      ]);
+    }
+  });
+
+  it("rejects listing forms with more than eight uploaded photos", () => {
+    const input = normaliseListingFormInput({
+      title: "Sydney lease transfer near station",
+      suburb: "Parramatta",
+      state: "NSW",
+      postcode: "2150",
+      listingType: "lease_transfer",
+      consentStatus: "approved",
+      housingType: "private_rental",
+      rentPerWeek: "650",
+      bondAmount: "2600",
+      bedrooms: "2",
+      bathrooms: "1",
+      availableFrom: "2026-08-01",
+      leaseEnds: "2027-02-01",
+      description: "A detailed listing description for a renter with uploaded photos.",
+      imageUrl: "",
+      uploadedPhotos: JSON.stringify(
+        Array.from({ length: 9 }, (_, index) => ({
+          url: `https://utfs.io/f/photo-${index}.jpg`,
+          key: `lease_photos/photo-${index}.jpg`,
+        })),
+      ),
+      highlights: "Near train",
+    });
+
+    expect(input).toEqual({
+      ok: false,
+      errors: {
+        uploadedPhotos: "Upload up to 8 listing photos",
+      },
+    });
   });
 
   it("does not treat the string false as checked consent", () => {
@@ -235,6 +329,68 @@ describe("listing service", () => {
     );
     expect(data).not.toHaveProperty("ownerId");
     expect(data).not.toHaveProperty("slug");
+  });
+
+  it("builds ordered listing photo records with storage keys", () => {
+    const photos = buildListingPhotoCreateData(
+      {
+        title: "Sydney lease transfer near station",
+        suburb: "Parramatta",
+        state: "NSW",
+        postcode: "2150",
+        listingType: "lease_transfer",
+        consentStatus: "approved",
+        housingType: "private_rental",
+        rentPerWeek: 650,
+        bondAmount: 2600,
+        bedrooms: 2,
+        bathrooms: 1,
+        availableFrom: "2026-08-01",
+        availableUntil: undefined,
+        leaseEnds: "2027-02-01",
+        description: "A detailed listing description for a renter with uploaded photos.",
+        imageUrl: "https://utfs.io/f/photo-cover.jpg",
+        uploadedPhotos: [
+          {
+            url: "https://utfs.io/f/photo-cover.jpg",
+            storageKey: "lease_photos/photo-cover.jpg",
+            name: "living-room.jpg",
+            size: 820000,
+          },
+          {
+            url: "https://utfs.io/f/photo-bedroom.jpg",
+            storageKey: "lease_photos/photo-bedroom.jpg",
+            name: "bedroom.jpg",
+            size: 640000,
+          },
+        ],
+        highlights: ["Near train"],
+        hasWrittenConsent: true,
+        bondTransferDiscussed: true,
+        agentOrLandlordAware: true,
+        newRenterAddedToLease: true,
+        understandsSubletRisk: true,
+      },
+    );
+
+    expect(photos).toEqual([
+      {
+        url: "https://utfs.io/f/photo-cover.jpg",
+        storageKey: "lease_photos/photo-cover.jpg",
+        fileName: "living-room.jpg",
+        fileSize: 820000,
+        alt: "Sydney lease transfer near station photo 1",
+        sortOrder: 0,
+      },
+      {
+        url: "https://utfs.io/f/photo-bedroom.jpg",
+        storageKey: "lease_photos/photo-bedroom.jpg",
+        fileName: "bedroom.jpg",
+        fileSize: 640000,
+        alt: "Sydney lease transfer near station photo 2",
+        sortOrder: 1,
+      },
+    ]);
   });
 
   it("assesses readiness from a database listing record", () => {

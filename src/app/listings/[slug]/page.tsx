@@ -30,6 +30,7 @@ export default async function ListingPage({
     ? record.savedBy.find((saved) => saved.userId === authenticatedUser.id)
     : null;
   const listing = listingRecordToLeaseListing(record);
+  const galleryPhotos = listing.photos?.length ? listing.photos : [{ url: listing.imageUrl, alt: listing.title, sortOrder: 0 }];
   const readiness = getListingReadiness(listing);
   const badgeClass =
     readiness.visibilityLabel === "Ready to transfer"
@@ -58,26 +59,17 @@ export default async function ListingPage({
       <section className="detail-hero elevated-detail">
         <div className="detail-main">
           <div className="detail-gallery">
-            <Image
-              className="detail-image"
-              src={listing.imageUrl}
-              alt={listing.title}
-              width={1200}
-              height={675}
-              priority
-            />
-            <Image
-              src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=700&q=80"
-              alt="Kitchen preview"
-              width={560}
-              height={360}
-            />
-            <Image
-              src="https://images.unsplash.com/photo-1560184897-ae75f418493e?auto=format&fit=crop&w=700&q=80"
-              alt="Bedroom preview"
-              width={560}
-              height={360}
-            />
+            {galleryPhotos.slice(0, 3).map((photo, index) => (
+              <Image
+                key={`${photo.url}-${photo.sortOrder}`}
+                className={index === 0 ? "detail-image" : undefined}
+                src={photo.url}
+                alt={photo.alt || listing.title}
+                width={index === 0 ? 1200 : 560}
+                height={index === 0 ? 675 : 360}
+                priority={index === 0}
+              />
+            ))}
           </div>
 
           <div className="detail-content">

@@ -1,4 +1,4 @@
-import type { Listing, Report, SavedListing, User } from "@prisma/client";
+import type { Listing, ListingPhoto, Report, SavedListing, User } from "@prisma/client";
 import type { AustralianState, LeaseListing } from "./listings";
 import { parseHighlights, toDomainConsentStatus, toDomainHousingType, toDomainListingType } from "./mappers";
 
@@ -6,6 +6,7 @@ export type ListingWithOwner = Listing & {
   owner: Pick<User, "name" | "role">;
   reports?: Report[];
   savedBy?: SavedListing[];
+  photos?: ListingPhoto[];
 };
 
 export function listingRecordToLeaseListing(listing: ListingWithOwner): LeaseListing {
@@ -27,6 +28,7 @@ export function listingRecordToLeaseListing(listing: ListingWithOwner): LeaseLis
     availableUntil: listing.availableUntil ? formatIsoDate(listing.availableUntil) : undefined,
     leaseEnds: formatIsoDate(listing.leaseEnds),
     imageUrl: listing.imageUrl,
+    photos: normaliseListingPhotos(listing),
     highlights: parseHighlights(listing.highlights),
     description: listing.description,
     checklist: {
@@ -43,6 +45,27 @@ export function listingRecordToLeaseListing(listing: ListingWithOwner): LeaseLis
       responseTime: "Usually replies same day",
     },
   };
+}
+
+function normaliseListingPhotos(listing: Pick<ListingWithOwner, "imageUrl" | "title" | "photos">) {
+  if (listing.photos && listing.photos.length > 0) {
+    return listing.photos
+      .slice()
+      .sort((first, second) => first.sortOrder - second.sortOrder)
+      .map((photo) => ({
+        url: photo.url,
+        alt: photo.alt,
+        sortOrder: photo.sortOrder,
+      }));
+  }
+
+  return [
+    {
+      url: listing.imageUrl,
+      alt: listing.title,
+      sortOrder: 0,
+    },
+  ];
 }
 
 function normaliseAustralianState(state: string): AustralianState {

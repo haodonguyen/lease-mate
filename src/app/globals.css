@@ -1441,6 +1441,56 @@ img {
   line-height: 1.4;
 }
 
+.upload-panel {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px dashed rgba(31, 122, 90, 0.32);
+  border-radius: 8px;
+  background: rgba(246, 250, 247, 0.88);
+}
+
+.uploadthing-container {
+  display: grid;
+  gap: 8px;
+  align-items: start;
+}
+
+.uploadthing-button {
+  width: fit-content;
+}
+
+.uploaded-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.uploaded-photo-card {
+  display: grid;
+  gap: 7px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+}
+
+.uploaded-photo-card img {
+  width: 100%;
+  aspect-ratio: 1.35 / 1;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.uploaded-photo-card .text-link {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
 .image-preview {
   display: grid;
   place-items: center;

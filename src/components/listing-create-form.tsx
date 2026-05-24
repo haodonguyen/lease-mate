@@ -4,8 +4,16 @@ import { ImageIcon, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { getListingImagePreviewState } from "@/lib/image-preview";
+import { UploadButton } from "@/lib/uploadthing";
 
 const defaultImageUrl = "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80";
+
+interface UploadedListingPhoto {
+  url: string;
+  storageKey?: string;
+  name?: string;
+  size?: number;
+}
 
 export interface ListingFormValues {
   title: string;
@@ -22,6 +30,7 @@ export interface ListingFormValues {
   availableFrom: string;
   leaseEnds: string;
   imageUrl: string;
+  uploadedPhotos?: UploadedListingPhoto[];
   description: string;
   highlights: string;
   hasWrittenConsent: boolean;
@@ -64,10 +73,13 @@ interface ListingCreateFormProps {
 export function ListingCreateForm({ mode = "create", listingId, initialValues = defaultValues }: ListingCreateFormProps) {
   const router = useRouter();
   const [message, setMessage] = useState("");
+  const [uploadedPhotos, setUploadedPhotos] = useState<UploadedListingPhoto[]>(initialValues.uploadedPhotos ?? []);
   const [imageUrl, setImageUrl] = useState(initialValues.imageUrl);
   const [imageLoadError, setImageLoadError] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const imagePreview = getListingImagePreviewState(imageUrl, imageLoadError);
+  const coverImageUrl = uploadedPhotos[0]?.url ?? imageUrl;
+  const imagePreview = getListingImagePreviewState(coverImageUrl, imageLoadError);
   const isEditMode = mode === "edit";
 
   async function submitListing(event: React.FormEvent<HTMLFormElement>) {
@@ -202,22 +214,79 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
       <fieldset className="form-section">
         <legend>Photo and description</legend>
       <div className="form-field">
-        <label htmlFor="imageUrl">Image URL</label>
+        <label>Listing photos</label>
+        <div className="upload-panel">
+          <UploadButton
+            endpoint="listingPhotos"
+            onClientUploadComplete={(files) => {
+              const nextPhotos = files.map((file) => ({
+                url: file.serverData?.url ?? file.ufsUrl,
+                storageKey: file.serverData?.key ?? file.key,
+                name: file.serverData?.name ?? file.name,
+                size: file.serverData?.size ?? file.size,
+              }));
+              setUploadedPhotos((currentPhotos) => [...currentPhotos, ...nextPhotos].slice(0, 8));
+              setImageLoadError(false);
+              setUploadMessage(`${nextPhotos.length} ${nextPhotos.length === 1 ? "photo" : "photos"} uploaded.`);
+              setMessage("");
+            }}
+            onUploadError={(error) => {
+              setUploadMessage(error.message || "Could not upload photos. Please try again.");
+            }}
+            appearance={{
+              container: "uploadthing-container",
+              button: "secondary-button uploadthing-button",
+              allowedContent: "field-help",
+            }}
+            content={{
+              button: "Upload photos",
+              allowedContent: "Images only, up to 8 files, 4MB each",
+            }}
+          />
+          {uploadMessage ? <p className="field-help">{uploadMessage}</p> : null}
+        </div>
+        <input type="hidden" name="uploadedPhotos" value={JSON.stringify(uploadedPhotos)} />
+        <input type="hidden" name="imageUrl" value={coverImageUrl} />
+        {uploadedPhotos.length > 0 ? (
+          <div className="uploaded-photo-grid" aria-label="Uploaded listing photos">
+            {uploadedPhotos.map((photo, index) => (
+              <div className="uploaded-photo-card" key={`${photo.storageKey ?? photo.url}-${index}`}>
+                {/* eslint-disable-next-line @next/next/no-img-element -- UploadThing returns immediately previewable URLs for newly selected files. */}
+                <img src={photo.url} alt={`${initialValues.title || "Listing"} upload ${index + 1}`} />
+                <button
+                  className="text-link"
+                  type="button"
+                  onClick={() => {
+                    setUploadedPhotos((currentPhotos) => currentPhotos.filter((_, photoIndex) => photoIndex !== index));
+                    setImageLoadError(false);
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      <div className="form-field">
+        <label htmlFor="imageUrlFallback">Fallback image URL</label>
         <input
-          id="imageUrl"
-          name="imageUrl"
+          id="imageUrlFallback"
           type="url"
           value={imageUrl}
           onChange={(event) => {
             setImageUrl(event.target.value);
+            if (uploadedPhotos.length > 0) {
+              setUploadedPhotos([]);
+            }
             setImageLoadError(false);
             setMessage("");
           }}
           aria-describedby="imageUrl-help imageUrl-preview-status"
-          required
+          placeholder="https://example.com/photo.jpg"
         />
         <p id="imageUrl-help" className="field-help">
-          Use a public photo URL from the listing, inspection gallery, or a trusted image host.
+          Upload photos for production listings. A public URL can still be used as a fallback for demos or migrated listings.
         </p>
         <div className={`image-preview ${imagePreview.status}`} aria-live="polite">
           {imagePreview.status === "ready" ? (

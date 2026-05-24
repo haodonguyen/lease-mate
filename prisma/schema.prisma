@@ -136,10 +136,16 @@ model Listing {
 model ListingPhoto {
   id        String   @id @default(cuid())
   url       String
+  storageKey String?
+  fileName  String?
+  fileSize  Int?
   alt       String
   sortOrder Int      @default(0)
   listingId String
   listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([listingId, sortOrder])
 }
 
 model Enquiry {
