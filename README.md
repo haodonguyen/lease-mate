@@ -128,6 +128,9 @@ Create a `.env` file in the project root:
 ```bash
 DATABASE_URL="postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require"
 UPLOADTHING_TOKEN="your-uploadthing-token"
+RESEND_API_KEY="your-resend-api-key"
+RESEND_FROM_EMAIL="LeaseMate <hello@your-domain.com>"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
 Prepare the database:
@@ -195,4 +198,7 @@ Required production environment variable:
 ```text
 DATABASE_URL
 UPLOADTHING_TOKEN
+RESEND_API_KEY
+RESEND_FROM_EMAIL
+NEXT_PUBLIC_APP_URL
 ```

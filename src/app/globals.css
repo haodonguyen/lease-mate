@@ -1549,6 +1549,16 @@ img {
   animation: fade-slide-up 220ms ease both;
 }
 
+.notice.success {
+  background: #e9f8f4;
+  color: #096b5d;
+}
+
+.notice.danger {
+  background: #fff0ed;
+  color: #8a2b18;
+}
+
 .auth-shell {
   min-height: calc(100vh - 72px);
   padding: 36px 22px 70px;
@@ -1801,6 +1811,11 @@ img {
   width: min(100%, 620px);
   background: var(--surface-strong);
   box-shadow: var(--tight-shadow);
+}
+
+.verification-panel {
+  display: grid;
+  gap: 16px;
 }
 
 .role-switcher {

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import { createSignupUser, createUserSession, isValidSignupInput } from "@/lib/server/auth";
+import { createEmailVerificationToken } from "@/lib/server/auth-tokens";
+import { createSignupUser, isValidSignupInput } from "@/lib/server/auth";
 import { parseJsonRequest } from "@/lib/server/api-validation";
+import { sendVerificationEmail } from "@/lib/server/email-service";
 import { checkRateLimit, getRateLimitKey } from "@/lib/server/rate-limit";
 
 export async function POST(request: Request) {
@@ -24,10 +26,12 @@ export async function POST(request: Request) {
     return NextResponse.json(result, { status: 409 });
   }
 
-  await createUserSession(result.user.id);
+  const verification = await createEmailVerificationToken(result.user.id);
+  await sendVerificationEmail(result.user, verification.token);
 
   return NextResponse.json({
     ok: true,
+    verificationRequired: true,
     user: {
       id: result.user.id,
       name: result.user.name,

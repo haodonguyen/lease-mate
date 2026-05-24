@@ -38,7 +38,8 @@ export function SignupForm() {
       return;
     }
 
-    router.push(result.user.role === "OWNER" ? "/listings/new" : "/saved");
+    const email = encodeURIComponent(String(formData.get("email") ?? ""));
+    router.push(`/verify-email?sent=1&email=${email}`);
     router.refresh();
   }
 

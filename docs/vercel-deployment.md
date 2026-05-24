@@ -26,6 +26,9 @@ Vercel deployments run in serverless environments, so a local SQLite file is not
 ```text
 DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
 UPLOADTHING_TOKEN=your-uploadthing-token
+RESEND_API_KEY=your-resend-api-key
+RESEND_FROM_EMAIL=LeaseMate <hello@your-domain.com>
+NEXT_PUBLIC_APP_URL=https://lease-mate-three.vercel.app
 ```
 
 7. Set the production branch to `main`.

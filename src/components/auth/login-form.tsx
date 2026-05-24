@@ -32,7 +32,7 @@ export function LoginForm({ defaultEmail = "", defaultPassword = "", redirectTo 
     setIsPending(false);
 
     if (!response.ok || !result.ok) {
-      setMessage("Invalid email or password.");
+      setMessage(result.error ?? "Invalid email or password.");
       return;
     }
 
@@ -57,7 +57,7 @@ export function LoginForm({ defaultEmail = "", defaultPassword = "", redirectTo 
       <div className="form-field">
         <div className="label-row">
           <label htmlFor="password">Password</label>
-          <Link href="/signup">Forgot password?</Link>
+          <Link href="/forgot-password">Forgot password?</Link>
         </div>
         <div className="password-field">
           <input

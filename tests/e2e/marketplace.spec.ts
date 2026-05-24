@@ -84,7 +84,7 @@ test("listing enquiry submits through the API workflow", async ({ page }) => {
   await expect(page.getByRole("status")).toContainText("Enquiry sent");
 });
 
-test("renter can create an account and land in saved listings", async ({ page }) => {
+test("renter can create an account and receive email verification instructions", async ({ page }) => {
   await page.goto("/signup");
 
   await page.getByLabel("Full name").fill("Jamie Wilson");
@@ -93,6 +93,7 @@ test("renter can create an account and land in saved listings", async ({ page })
   await page.getByRole("checkbox", { name: /I agree to the Terms of Service/ }).check();
   await page.getByRole("button", { name: "Create account" }).click();
 
-  await expect(page).toHaveURL(/\/saved$/);
-  await expect(page.getByRole("heading", { name: "Saved listings" })).toBeVisible();
+  await expect(page).toHaveURL(/\/verify-email\?sent=1/);
+  await expect(page.getByRole("heading", { name: "Check your inbox" })).toBeVisible();
+  await expect(page.getByText("jamie.signup@example.com")).toBeVisible();
 });
