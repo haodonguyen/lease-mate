@@ -171,8 +171,13 @@ Available accounts:
 ```bash
 npm run lint
 npm test
-npm run e2e
 npm run build
+```
+
+End-to-end tests reset and seed their database. Use a dedicated test database:
+
+```bash
+TEST_DATABASE_URL="postgresql://USER:PASSWORD@HOST/TEST_DATABASE?sslmode=require" npm run e2e
 ```
 
 ## Deployment

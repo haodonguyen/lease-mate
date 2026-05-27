@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterLeaseListings } from "../src/lib/listing-filters";
+import { filterLeaseListings, hasActiveListingFilters } from "../src/lib/listing-filters";
 import type { LeaseListing } from "../src/lib/listings";
 
 const baseListing: LeaseListing = {
@@ -101,5 +101,10 @@ describe("listing filters", () => {
     });
 
     expect(result).toHaveLength(3);
+  });
+
+  it("does not mark invalid numeric values as active filters", () => {
+    expect(hasActiveListingFilters({ maxRent: "not-a-number", minBedrooms: "" })).toBe(false);
+    expect(hasActiveListingFilters({ maxRent: "700" })).toBe(true);
   });
 });

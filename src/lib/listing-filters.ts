@@ -40,10 +40,10 @@ export function hasActiveListingFilters(filters: ListingFilterState) {
     filters.query?.trim() ||
       (filters.listingType && filters.listingType !== "all") ||
       (filters.readiness && filters.readiness !== "all") ||
-      filters.minRent?.trim() ||
-      filters.maxRent?.trim() ||
-      filters.minBedrooms?.trim() ||
-      filters.availableBy?.trim(),
+      toOptionalNumber(filters.minRent) !== undefined ||
+      toOptionalNumber(filters.maxRent) !== undefined ||
+      toOptionalNumber(filters.minBedrooms) !== undefined ||
+      parseIsoDate(filters.availableBy) !== undefined,
   );
 }
 

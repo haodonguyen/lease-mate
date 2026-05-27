@@ -91,7 +91,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
               onChange={(event) => setListingType(event.target.value as ListingFilterState["listingType"])}
               aria-label="Choose listing type"
             >
-              <option value="all">Whole place</option>
+              <option value="all">All listing types</option>
               <option value="lease_transfer">Lease transfer</option>
               <option value="room_replacement">Room replacement</option>
               <option value="temporary_sublet">Short stay</option>
