@@ -17,6 +17,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { filterLeaseListings, hasActiveListingFilters, type ListingFilterState } from "@/lib/listing-filters";
 import {
   formatListingType,
   getListingReadiness,
@@ -36,27 +37,28 @@ interface MarketplaceProps {
 
 export function Marketplace({ listings, analytics }: MarketplaceProps) {
   const [query, setQuery] = useState("");
-  const [listingType, setListingType] = useState("all");
-  const [readiness, setReadiness] = useState("all");
-  const hasActiveFilters = query.trim() !== "" || listingType !== "all" || readiness !== "all";
+  const [listingType, setListingType] = useState<ListingFilterState["listingType"]>("all");
+  const [readiness, setReadiness] = useState<ListingFilterState["readiness"]>("all");
+  const [minRent, setMinRent] = useState("");
+  const [maxRent, setMaxRent] = useState("");
+  const [minBedrooms, setMinBedrooms] = useState("");
+  const [availableBy, setAvailableBy] = useState("");
+  const filters = useMemo(
+    () => ({ query, listingType, readiness, minRent, maxRent, minBedrooms, availableBy }),
+    [availableBy, listingType, maxRent, minBedrooms, minRent, query, readiness],
+  );
+  const hasActiveFilters = hasActiveListingFilters(filters);
 
-  const filteredListings = useMemo(() => {
-    return listings.filter((listing) => {
-      const listingReadiness = getListingReadiness(listing);
-      const searchText = `${listing.title} ${listing.suburb} ${listing.postcode}`.toLowerCase();
-      const matchesQuery = searchText.includes(query.toLowerCase().trim());
-      const matchesType = listingType === "all" || listing.listingType === listingType;
-      const matchesReadiness =
-        readiness === "all" || listingReadiness.visibilityLabel === readiness;
-
-      return matchesQuery && matchesType && matchesReadiness;
-    });
-  }, [listings, query, listingType, readiness]);
+  const filteredListings = useMemo(() => filterLeaseListings(listings, filters), [listings, filters]);
 
   function clearFilters() {
     setQuery("");
     setListingType("all");
     setReadiness("all");
+    setMinRent("");
+    setMaxRent("");
+    setMinBedrooms("");
+    setAvailableBy("");
   }
 
   return (
@@ -86,7 +88,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
             </label>
             <select
               value={listingType}
-              onChange={(event) => setListingType(event.target.value)}
+              onChange={(event) => setListingType(event.target.value as ListingFilterState["listingType"])}
               aria-label="Choose listing type"
             >
               <option value="all">Whole place</option>
@@ -210,11 +212,72 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
               />
             </label>
 
+            <div className="filter-group">
+              <span>Price range</span>
+              <div className="filter-inline-grid">
+                <label>
+                  <span>Min</span>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    step="10"
+                    value={minRent}
+                    onChange={(event) => setMinRent(event.target.value)}
+                    placeholder="$0"
+                    aria-label="Minimum weekly rent"
+                  />
+                </label>
+                <label>
+                  <span>Max</span>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    step="10"
+                    value={maxRent}
+                    onChange={(event) => setMaxRent(event.target.value)}
+                    placeholder="$900"
+                    aria-label="Maximum weekly rent"
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className="filter-group">
+              <span>Bedrooms and timing</span>
+              <div className="filter-inline-grid">
+                <label>
+                  <span>Beds</span>
+                  <select
+                    value={minBedrooms}
+                    onChange={(event) => setMinBedrooms(event.target.value)}
+                    aria-label="Minimum bedrooms"
+                  >
+                    <option value="">Any</option>
+                    <option value="1">1+</option>
+                    <option value="2">2+</option>
+                    <option value="3">3+</option>
+                    <option value="4">4+</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Available by</span>
+                  <input
+                    type="date"
+                    value={availableBy}
+                    onChange={(event) => setAvailableBy(event.target.value)}
+                    aria-label="Available by date"
+                  />
+                </label>
+              </div>
+            </div>
+
             <label className="filter-group">
               <span>Listing type</span>
               <select
                 value={listingType}
-                onChange={(event) => setListingType(event.target.value)}
+                onChange={(event) => setListingType(event.target.value as ListingFilterState["listingType"])}
                 aria-label="Filter by listing type"
               >
                 <option value="all">All listing types</option>
@@ -228,7 +291,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
               <span>Readiness status</span>
               <select
                 value={readiness}
-                onChange={(event) => setReadiness(event.target.value)}
+                onChange={(event) => setReadiness(event.target.value as ListingFilterState["readiness"])}
                 aria-label="Filter by readiness"
               >
                 <option value="all">All readiness</option>

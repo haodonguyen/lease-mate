@@ -56,6 +56,19 @@ test("authenticated renter can open and search the full marketplace", async ({ p
   await expect(page.getByRole("heading", { name: "Private room close to Box Hill station" })).toBeVisible();
 });
 
+test("marketplace filters by price, bedrooms, timing, and readiness", async ({ page }) => {
+  await page.goto("/marketplace#listings");
+
+  await page.getByLabel("Maximum weekly rent").fill("300");
+  await page.getByLabel("Minimum bedrooms").selectOption("1");
+  await page.getByLabel("Available by date").fill("2026-06-15");
+  await page.getByLabel("Filter by readiness").selectOption("Consent pending");
+
+  await expect(page.locator(".listing-card")).toHaveCount(1);
+  await expect(page.getByRole("heading", { name: "Private room close to Box Hill station" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Light-filled 1 bed apartment near Lygon Street" })).toHaveCount(0);
+});
+
 test("renter navigation only shows renter account actions", async ({ page }) => {
   const response = await page.request.post("/api/auth/login", {
     data: {
