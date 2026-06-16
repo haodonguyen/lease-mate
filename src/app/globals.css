@@ -1448,10 +1448,38 @@ img {
   text-align: center;
 }
 
+.detail-back-row {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 20px 22px 0;
+}
+
+.detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--inner-highlight);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition:
+    transform 0.4s var(--ease-spring),
+    color 0.3s ease;
+}
+
+.detail-back:hover {
+  transform: translateX(-3px);
+  color: var(--ink);
+}
+
 .detail-hero {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 28px 22px 56px;
+  padding: 20px 22px 56px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 380px;
   gap: 26px;

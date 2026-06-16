@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { ArrowLeft, Calendar, CheckCircle2, FileText, MapPin, MessageSquare, ShieldAlert, ShieldCheck } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EnquiryForm } from "./enquiry-form";
@@ -128,25 +127,17 @@ export default async function ListingPage({
   };
 
   return (
-    <main className="page-shell">
+    <main>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <header className="topbar">
-        <div className="topbar-inner">
-          <Link className="secondary-button" href="/">
-            <ArrowLeft size={18} />
-            Back to listings
-          </Link>
-          <Link className="brand" href="/">
-            <span className="brand-mark">
-              <Image src="/leasemate-mark.svg" alt="" width={38} height={38} priority />
-            </span>
-            <span>LeaseMate</span>
-          </Link>
-        </div>
-      </header>
+      <div className="detail-back-row">
+        <Link className="detail-back" href="/marketplace#listings">
+          <ArrowLeft size={16} />
+          Back to listings
+        </Link>
+      </div>
 
       <section className="detail-hero elevated-detail">
         <div className="detail-main">
