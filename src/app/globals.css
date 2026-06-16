@@ -1132,15 +1132,15 @@ img {
 
 .listing-card {
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
   background: var(--surface-strong);
-  box-shadow: 0 8px 24px rgba(32, 33, 31, 0.06);
-  animation: fade-slide-up 360ms ease both;
+  box-shadow: var(--tight-shadow);
+  animation: fade-slide-up 460ms var(--ease-out-soft) both;
   transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+    transform 0.5s var(--ease-spring),
+    border-color 0.4s ease,
+    box-shadow 0.5s var(--ease-spring);
 }
 
 .elevated-listing-card {
@@ -1161,9 +1161,13 @@ img {
 
 .listing-card:hover,
 .listing-card:focus-within {
-  border-color: rgba(31, 122, 90, 0.35);
-  box-shadow: 0 14px 34px rgba(32, 33, 31, 0.1);
-  transform: translateY(-3px);
+  border-color: rgba(31, 111, 83, 0.28);
+  box-shadow: var(--shadow-ambient);
+  transform: translateY(-6px);
+}
+
+.listing-card img {
+  transition: transform 0.7s var(--ease-fluid);
 }
 
 .listing-card-image {
@@ -1180,7 +1184,7 @@ img {
 }
 
 .listing-card:hover img {
-  transform: scale(1.025);
+  transform: scale(1.06);
 }
 
 .listing-card-body {
@@ -1221,9 +1225,10 @@ img {
   gap: 6px;
   width: fit-content;
   border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 0.78rem;
-  font-weight: 800;
+  padding: 6px 11px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   border: 1px solid transparent;
 }
 
@@ -1247,14 +1252,19 @@ img {
 
 .floating-badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 12px;
+  right: 12px;
   border-radius: 999px;
-  padding: 6px 10px;
+  padding: 7px 13px;
   color: #fff;
-  background: var(--green);
-  font-size: 0.76rem;
-  font-weight: 850;
+  background: rgba(17, 70, 53, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.5);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .floating-badge.pending {
