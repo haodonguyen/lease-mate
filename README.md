@@ -17,16 +17,19 @@ LeaseMate presents lease transfers as a professional rental marketplace. Listing
 ## Core Features
 
 - Public marketplace for lease transfers, room replacements, and short-term sublets
-- Search and filtering by suburb, listing type, and readiness status
-- Listing detail pages with rent, bond, availability, lease dates, highlights, and readiness checks
-- Email and password authentication with server-side sessions
-- Renter accounts with saved listings and enquiry workflows
-- Owner dashboard for listing management, status updates, and enquiries
+- Shareable search with suburb, listing type, price, bedroom, date, and readiness filters persisted to the URL
+- Listing detail pages with an interactive photo gallery and lightbox, rent, bond, availability, lease dates, highlights, and explained readiness scoring
+- Email and password authentication with server-side sessions, email verification, and password reset
+- Renter accounts with inline saved listings, a sent-enquiry inbox, and enquiry workflows
+- Transactional email on enquiry: the lister is notified and the enquirer receives a confirmation (Resend)
+- Owner dashboard for listing management, status updates, and replying to enquiries by email
 - Listing creation and editing flow with photo uploads and Australian state and territory support
-- Admin moderation queue for reported listings
+- Admin moderation queue for reported listings with listing remove and restore actions
+- Account profile page with display-name updates and a verified change-password flow
 - Waitlist capture for early product validation
 - Analytics and notification service boundaries
-- Responsive UI designed for desktop and mobile rental search workflows
+- SEO: per-listing Open Graph and Twitter metadata, `RealEstateListing` JSON-LD, dynamic sitemap, and robots.txt
+- Responsive UI with a mobile navigation drawer and loading skeletons
 
 ## User Workflows
 

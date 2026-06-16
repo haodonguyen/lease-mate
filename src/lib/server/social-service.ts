@@ -52,6 +52,29 @@ export async function removeSavedListing(userId: string, savedListingId: string)
   return { ok: true as const };
 }
 
+export async function removeSavedListingBySlug(userId: string, listingSlug: string) {
+  const listing = await prisma.listing.findUnique({ where: { slug: listingSlug } });
+  if (!listing) return { ok: false as const, error: "Listing not found" };
+
+  const existing = await prisma.savedListing.findUnique({
+    where: { userId_listingId: { userId, listingId: listing.id } },
+  });
+  if (!existing) return { ok: true as const };
+
+  await prisma.savedListing.delete({ where: { id: existing.id } });
+  await trackEvent({ name: "listing_unsaved", userId, listingId: listing.id });
+
+  return { ok: true as const };
+}
+
+export async function listSavedListingSlugs(userId: string) {
+  const saved = await prisma.savedListing.findMany({
+    where: { userId },
+    select: { listing: { select: { slug: true } } },
+  });
+  return saved.map((entry) => entry.listing.slug);
+}
+
 export async function reportListing(userId: string | undefined, input: unknown) {
   const parsed = reportSchema.safeParse(input);
   if (!parsed.success) return { ok: false as const, error: "Report details are invalid" };

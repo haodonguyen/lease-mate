@@ -424,7 +424,7 @@ export async function updateListingDetails(listingId: string, actor: { id: strin
 export async function updateListingStatus(
   listingId: string,
   actor: { id: string; role: UserRole },
-  status: "PUBLISHED" | "PAUSED",
+  status: "PUBLISHED" | "PAUSED" | "REMOVED",
 ) {
   const listing = await prisma.listing.findUnique({
     where: { id: listingId },

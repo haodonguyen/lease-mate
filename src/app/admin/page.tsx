@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ReportModerationButton } from "@/components/admin-controls";
+import { ListingModerationButton, ReportModerationButton } from "@/components/admin-controls";
 import { canModerate, getCurrentAuthenticatedUser } from "@/lib/server/auth";
 import { getAnalyticsSummary } from "@/lib/server/analytics-service";
 import { prisma } from "@/lib/server/db";
@@ -56,12 +56,22 @@ export default async function AdminPage() {
               <div>
                 <span className={`status-dot ${report.status.toLowerCase()}`}>{report.status.toLowerCase()}</span>
                 <h2>{report.reason}</h2>
-                <p className="muted">{report.listing.title} · {report.status}</p>
+                <p className="muted">
+                  {report.listing.title} · {report.status}
+                  {report.listing.status === "REMOVED" ? (
+                    <span className="badge caution inbox-status-badge"> Removed</span>
+                  ) : null}
+                </p>
                 {report.details ? <p>{report.details}</p> : null}
               </div>
               <div className="action-stack horizontal">
+                <Link className="secondary-button" href={`/listings/${report.listing.slug}`}>View</Link>
                 <ReportModerationButton reportId={report.id} status="REVIEWED" />
                 <ReportModerationButton reportId={report.id} status="DISMISSED" />
+                <ListingModerationButton
+                  listingId={report.listing.id}
+                  isRemoved={report.listing.status === "REMOVED"}
+                />
               </div>
             </div>
           </article>

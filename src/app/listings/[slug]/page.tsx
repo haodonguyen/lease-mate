@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import { ArrowLeft, Calendar, CheckCircle2, FileText, MapPin, MessageSquare, ShieldAlert, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EnquiryForm } from "./enquiry-form";
 import { ListingActions } from "@/components/listing-actions";
+import { ListingGallery } from "@/components/listing-gallery";
+import { ReadinessScore } from "@/components/readiness-score";
 import { formatListingType, getListingReadiness } from "@/lib/listings";
 import { listingRecordToLeaseListing } from "@/lib/listing-view";
 import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
@@ -11,6 +14,55 @@ import { getListingBySlugFromDb } from "@/lib/server/listing-service";
 import { trackEvent } from "@/lib/server/analytics-service";
 
 export const dynamic = "force-dynamic";
+
+function getAppBaseUrl() {
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`.replace(/\/$/, "");
+  }
+  return "http://localhost:3000";
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const record = await getListingBySlugFromDb(slug);
+
+  if (!record) {
+    return { title: "Listing not found — LeaseMate" };
+  }
+
+  const listing = listingRecordToLeaseListing(record);
+  const imageUrl = listing.photos?.[0]?.url ?? listing.imageUrl;
+  const title = `${listing.title} — LeaseMate`;
+  const description = `${formatListingType(listing.listingType)} in ${listing.suburb}, ${listing.state} ${listing.postcode}. $${listing.rentPerWeek}/week, available from ${formatDate(listing.availableFrom)}.`;
+  const canonical = `${getAppBaseUrl()}/listings/${listing.slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: canonical,
+      siteName: "LeaseMate",
+      images: imageUrl ? [{ url: imageUrl, width: 1200, height: 675, alt: listing.title }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
+  };
+}
 
 export default async function ListingPage({
   params,
@@ -24,8 +76,18 @@ export default async function ListingPage({
     notFound();
   }
 
-  await trackEvent({ name: "listing_view", listingId: record.id, metadata: { suburb: record.suburb } });
   const authenticatedUser = await getCurrentAuthenticatedUser();
+
+  // Removed listings are hidden from the public, but the owner and admins can still view them.
+  if (record.status === "REMOVED") {
+    const canView =
+      authenticatedUser?.role === "ADMIN" || authenticatedUser?.id === record.ownerId;
+    if (!canView) {
+      notFound();
+    }
+  }
+
+  await trackEvent({ name: "listing_view", listingId: record.id, metadata: { suburb: record.suburb } });
   const savedListing = authenticatedUser
     ? record.savedBy.find((saved) => saved.userId === authenticatedUser.id)
     : null;
@@ -39,8 +101,38 @@ export default async function ListingPage({
         ? "pending"
         : "caution";
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    name: listing.title,
+    description: listing.description,
+    url: `${getAppBaseUrl()}/listings/${listing.slug}`,
+    image: galleryPhotos.map((photo) => photo.url),
+    datePosted: listing.availableFrom,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: listing.suburb,
+      addressRegion: listing.state,
+      postalCode: listing.postcode,
+      addressCountry: "AU",
+    },
+    offers: {
+      "@type": "Offer",
+      price: listing.rentPerWeek,
+      priceCurrency: "AUD",
+      availability: "https://schema.org/InStock",
+      availabilityStarts: listing.availableFrom,
+    },
+    numberOfBedrooms: listing.bedrooms,
+    numberOfBathroomsTotal: listing.bathrooms,
+  };
+
   return (
     <main className="page-shell">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className="topbar">
         <div className="topbar-inner">
           <Link className="secondary-button" href="/">
@@ -58,19 +150,10 @@ export default async function ListingPage({
 
       <section className="detail-hero elevated-detail">
         <div className="detail-main">
-          <div className="detail-gallery">
-            {galleryPhotos.map((photo, index) => (
-              <Image
-                key={`${photo.url}-${photo.sortOrder}`}
-                className={index === 0 ? "detail-image" : undefined}
-                src={photo.url}
-                alt={photo.alt || listing.title}
-                width={index === 0 ? 1200 : 560}
-                height={index === 0 ? 675 : 360}
-                priority={index === 0}
-              />
-            ))}
-          </div>
+          <ListingGallery
+            photos={galleryPhotos.map((photo) => ({ url: photo.url, alt: photo.alt }))}
+            title={listing.title}
+          />
 
           <div className="detail-content">
             <div className="detail-topline">
@@ -113,8 +196,7 @@ export default async function ListingPage({
                 <span>available</span>
               </div>
               <div className="meta-item">
-                <strong>{readiness.score}%</strong>
-                <span>readiness score</span>
+                <ReadinessScore score={readiness.score} variant="meta" />
               </div>
             </div>
 

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Marketplace } from "@/components/marketplace";
 import { WaitlistForm } from "@/components/waitlist-form";
 import type { LeaseListing } from "@/lib/listings";
@@ -11,12 +12,21 @@ interface GuestLandingProps {
     reports: number;
     waitlist: number;
   };
+  savedSlugs?: string[];
+  isAuthenticated?: boolean;
 }
 
-export function GuestLanding({ listings, analytics }: GuestLandingProps) {
+export function GuestLanding({ listings, analytics, savedSlugs, isAuthenticated }: GuestLandingProps) {
   return (
     <>
-      <Marketplace listings={listings} analytics={analytics} />
+      <Suspense fallback={null}>
+        <Marketplace
+          listings={listings}
+          analytics={analytics}
+          savedSlugs={savedSlugs}
+          isAuthenticated={isAuthenticated}
+        />
+      </Suspense>
       <section className="validation-band">
         <div>
           <span className="eyebrow">Startup validation</span>

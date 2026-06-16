@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ListingStatusButton } from "@/components/dashboard-controls";
+import { EnquiryReply } from "@/components/enquiry-reply";
 import { canManageListings, getCurrentAuthenticatedUser } from "@/lib/server/auth";
 import { getAnalyticsSummary } from "@/lib/server/analytics-service";
 import { listOwnerListings } from "@/lib/server/listing-service";
@@ -80,12 +81,16 @@ export default async function DashboardPage() {
                 <ListingStatusButton listingId={listing.id} nextStatus={listing.status === "PUBLISHED" ? "PAUSED" : "PUBLISHED"} />
               </div>
             </div>
-            {listing.enquiries.slice(0, 3).map((enquiry) => (
-              <div className="inbox-item" key={enquiry.id}>
-                <strong>{enquiry.name}</strong>
-                <span>{enquiry.email}</span>
-                <p>{enquiry.message}</p>
-              </div>
+            {listing.enquiries.slice(0, 5).map((enquiry) => (
+              <EnquiryReply
+                key={enquiry.id}
+                enquiryId={enquiry.id}
+                name={enquiry.name}
+                email={enquiry.email}
+                message={enquiry.message}
+                status={enquiry.status}
+                replyText={enquiry.replyText}
+              />
             ))}
             {listing.enquiries.length === 0 ? (
               <p className="muted listing-card-note">No enquiries yet. Improve the listing details and share the public page.</p>

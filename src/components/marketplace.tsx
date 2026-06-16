@@ -16,7 +16,9 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ReadinessScore } from "@/components/readiness-score";
 import { filterLeaseListings, hasActiveListingFilters, type ListingFilterState } from "@/lib/listing-filters";
 import {
   formatListingType,
@@ -33,16 +35,64 @@ interface MarketplaceProps {
     reports: number;
     waitlist: number;
   };
+  savedSlugs?: string[];
+  isAuthenticated?: boolean;
 }
 
-export function Marketplace({ listings, analytics }: MarketplaceProps) {
-  const [query, setQuery] = useState("");
-  const [listingType, setListingType] = useState<ListingFilterState["listingType"]>("all");
-  const [readiness, setReadiness] = useState<ListingFilterState["readiness"]>("all");
-  const [minRent, setMinRent] = useState("");
-  const [maxRent, setMaxRent] = useState("");
-  const [minBedrooms, setMinBedrooms] = useState("");
-  const [availableBy, setAvailableBy] = useState("");
+export function Marketplace({ listings, analytics, savedSlugs = [], isAuthenticated = false }: MarketplaceProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [saved, setSaved] = useState<Set<string>>(() => new Set(savedSlugs));
+
+  const toggleSave = useCallback(
+    async (slug: string) => {
+      if (!isAuthenticated) {
+        router.push(`/login?next=${encodeURIComponent(pathname)}`);
+        return;
+      }
+
+      const wasSaved = saved.has(slug);
+      // Optimistically update before the request resolves.
+      setSaved((current) => {
+        const next = new Set(current);
+        if (wasSaved) next.delete(slug);
+        else next.add(slug);
+        return next;
+      });
+
+      try {
+        const response = await fetch("/api/saved-listings", {
+          method: wasSaved ? "DELETE" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ listingSlug: slug }),
+        });
+        if (!response.ok) throw new Error("Save failed");
+      } catch {
+        // Revert on failure.
+        setSaved((current) => {
+          const next = new Set(current);
+          if (wasSaved) next.add(slug);
+          else next.delete(slug);
+          return next;
+        });
+      }
+    },
+    [isAuthenticated, pathname, router, saved],
+  );
+
+  const [query, setQuery] = useState(() => searchParams.get("suburb") ?? "");
+  const [listingType, setListingType] = useState<ListingFilterState["listingType"]>(
+    () => (searchParams.get("type") as ListingFilterState["listingType"]) ?? "all",
+  );
+  const [readiness, setReadiness] = useState<ListingFilterState["readiness"]>(
+    () => (searchParams.get("readiness") as ListingFilterState["readiness"]) ?? "all",
+  );
+  const [minRent, setMinRent] = useState(() => searchParams.get("minRent") ?? "");
+  const [maxRent, setMaxRent] = useState(() => searchParams.get("maxRent") ?? "");
+  const [minBedrooms, setMinBedrooms] = useState(() => searchParams.get("beds") ?? "");
+  const [availableBy, setAvailableBy] = useState(() => searchParams.get("availableBy") ?? "");
   const filters = useMemo(
     () => ({ query, listingType, readiness, minRent, maxRent, minBedrooms, availableBy }),
     [availableBy, listingType, maxRent, minBedrooms, minRent, query, readiness],
@@ -51,7 +101,26 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
 
   const filteredListings = useMemo(() => filterLeaseListings(listings, filters), [listings, filters]);
 
-  function clearFilters() {
+  // Persist active filters to the URL so searches are shareable and survive reloads.
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (query.trim()) params.set("suburb", query.trim());
+    if (listingType && listingType !== "all") params.set("type", listingType);
+    if (readiness && readiness !== "all") params.set("readiness", readiness);
+    if (minRent.trim()) params.set("minRent", minRent.trim());
+    if (maxRent.trim()) params.set("maxRent", maxRent.trim());
+    if (minBedrooms.trim()) params.set("beds", minBedrooms.trim());
+    if (availableBy.trim()) params.set("availableBy", availableBy.trim());
+
+    const queryString = params.toString();
+    const next = queryString ? `${pathname}?${queryString}` : pathname;
+    const current = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
+    if (next !== current) {
+      router.replace(next, { scroll: false });
+    }
+  }, [query, listingType, readiness, minRent, maxRent, minBedrooms, availableBy, pathname, router, searchParams]);
+
+  const clearFilters = useCallback(() => {
     setQuery("");
     setListingType("all");
     setReadiness("all");
@@ -59,7 +128,7 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
     setMaxRent("");
     setMinBedrooms("");
     setAvailableBy("");
-  }
+  }, []);
 
   return (
     <main>
@@ -305,7 +374,12 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
           {filteredListings.length > 0 ? (
             <div className="marketplace-results">
               {filteredListings.map((listing) => (
-                <ListingCard key={listing.id} listing={listing} />
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  isSaved={saved.has(listing.slug)}
+                  onToggleSave={() => toggleSave(listing.slug)}
+                />
               ))}
             </div>
           ) : (
@@ -339,7 +413,15 @@ export function Marketplace({ listings, analytics }: MarketplaceProps) {
   );
 }
 
-function ListingCard({ listing }: { listing: LeaseListing }) {
+function ListingCard({
+  listing,
+  isSaved,
+  onToggleSave,
+}: {
+  listing: LeaseListing;
+  isSaved: boolean;
+  onToggleSave: () => void;
+}) {
   const readiness = getListingReadiness(listing);
   const badgeClass =
     readiness.visibilityLabel === "Ready to transfer"
@@ -385,16 +467,22 @@ function ListingCard({ listing }: { listing: LeaseListing }) {
           </span>
           <span>
             <Home size={14} />
-            {readiness.score}% ready
+            <ReadinessScore score={readiness.score} />
           </span>
         </div>
         <div className="card-actions-row">
           <Link className="secondary-button compact-button" href={`/listings/${listing.slug}`}>
             View listing
           </Link>
-          <Link className="icon-save-link" href={`/listings/${listing.slug}`} aria-label={`Open ${listing.title} to save`}>
-            <Heart size={18} />
-          </Link>
+          <button
+            type="button"
+            className={`icon-save-link${isSaved ? " is-saved" : ""}`}
+            onClick={onToggleSave}
+            aria-pressed={isSaved}
+            aria-label={isSaved ? `Remove ${listing.title} from saved` : `Save ${listing.title}`}
+          >
+            <Heart size={18} fill={isSaved ? "currentColor" : "none"} />
+          </button>
         </div>
       </div>
     </article>

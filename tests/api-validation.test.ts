@@ -14,10 +14,17 @@ describe("api validation", () => {
     });
   });
 
-  it("rejects unsupported listing status updates", () => {
+  it("accepts admin listing removal", () => {
     expect(parseListingStatusInput({ listingId: "listing_1", status: "REMOVED" })).toEqual({
+      ok: true,
+      data: { listingId: "listing_1", status: "REMOVED" },
+    });
+  });
+
+  it("rejects unsupported listing status updates", () => {
+    expect(parseListingStatusInput({ listingId: "listing_1", status: "ARCHIVED" })).toEqual({
       ok: false,
-      error: "Listing status must be PUBLISHED or PAUSED",
+      error: "Listing status must be PUBLISHED, PAUSED, or REMOVED",
     });
   });
 

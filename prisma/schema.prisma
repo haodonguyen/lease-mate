@@ -201,6 +201,8 @@ model Enquiry {
   email     String
   message   String
   status    EnquiryStatus @default(NEW)
+  replyText String?
+  repliedAt DateTime?
   listingId String
   listing   Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
   userId    String?

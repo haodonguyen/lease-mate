@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { DemoRoleSwitcher } from "@/components/auth/demo-role-switcher";
 import { LogoutButton } from "@/components/auth/logout-button";
+import { MobileNav } from "@/components/mobile-nav";
 import { getAccountActionHref } from "@/lib/account-navigation";
 import { getCurrentAuthenticatedUser, getCurrentDemoUser, isDemoAuthEnabled } from "@/lib/server/auth";
 
@@ -26,7 +27,7 @@ export async function AppHeader() {
           </span>
           <span>LeaseMate</span>
         </Link>
-        <nav className="nav-actions" aria-label="Primary actions">
+        <nav className="nav-actions desktop-nav" aria-label="Primary actions">
           <DemoRoleSwitcher
             currentEmail={currentUser?.email}
             showDemoSwitcher={isDemoAuthEnabled()}
@@ -51,9 +52,14 @@ export async function AppHeader() {
                 <Search size={18} />
               </Link>
               {!canManage ? (
-                <Link className="icon-button" href={savedHref} aria-label="Saved listings">
-                  <Bell size={18} />
-                </Link>
+                <>
+                  <Link className="nav-link" href="/enquiries">
+                    My enquiries
+                  </Link>
+                  <Link className="icon-button" href={savedHref} aria-label="Saved listings">
+                    <Bell size={18} />
+                  </Link>
+                </>
               ) : null}
               {canManage ? (
                 <>
@@ -66,6 +72,9 @@ export async function AppHeader() {
                   </Link>
                 </>
               ) : null}
+              <Link className="nav-link" href="/account">
+                Account
+              </Link>
               <LogoutButton />
             </>
           ) : (
@@ -81,6 +90,15 @@ export async function AppHeader() {
             </>
           )}
         </nav>
+        <MobileNav
+          isAuthenticated={isAuthenticated}
+          canManage={canManage}
+          role={currentUser?.role}
+          savedHref={savedHref}
+          dashboardHref={dashboardHref}
+          adminHref={adminHref}
+          listTransferHref={listTransferHref}
+        />
       </div>
     </header>
   );

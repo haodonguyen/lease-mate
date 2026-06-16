@@ -53,7 +53,7 @@ export function EnquiryForm({
           form.reset();
           setSubmission({
             status: "success",
-            message: "Enquiry sent. The lister would be notified in the production version.",
+            message: "Enquiry sent. The lister has been emailed and a confirmation is on its way to you.",
           });
         } catch {
           setSubmission({

@@ -2,8 +2,8 @@ import { z } from "zod";
 
 const listingStatusSchema = z.object({
   listingId: z.string().min(1),
-  status: z.enum(["PUBLISHED", "PAUSED"], {
-    errorMap: () => ({ message: "Listing status must be PUBLISHED or PAUSED" }),
+  status: z.enum(["PUBLISHED", "PAUSED", "REMOVED"], {
+    errorMap: () => ({ message: "Listing status must be PUBLISHED, PAUSED, or REMOVED" }),
   }),
 });
 
