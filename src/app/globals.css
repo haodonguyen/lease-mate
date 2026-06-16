@@ -794,17 +794,17 @@ img {
   grid-template-columns: 1.3fr repeat(3, 1fr);
   gap: 16px;
   align-items: center;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  background: #eef3ff;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  background: transparent;
   color: var(--muted);
 }
 
 .trust-strip span {
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.72rem;
-  font-weight: 850;
+  letter-spacing: 0.16em;
+  font-size: 0.68rem;
+  font-weight: 600;
 }
 
 .trust-strip strong {
@@ -834,14 +834,22 @@ img {
 
 .flow-card {
   min-height: 220px;
-  padding: 24px;
+  padding: 28px;
   display: grid;
   align-content: start;
   gap: 14px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
   background: var(--surface-strong);
-  box-shadow: 0 8px 24px rgba(32, 33, 31, 0.04);
+  box-shadow: var(--tight-shadow);
+  transition:
+    transform 0.5s var(--ease-spring),
+    box-shadow 0.5s var(--ease-spring);
+}
+
+.flow-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow);
 }
 
 .flow-card.featured {
@@ -852,9 +860,9 @@ img {
 .flow-card span {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 8px;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-md);
   background: #dff4ee;
   color: var(--green-dark);
 }
@@ -1314,9 +1322,10 @@ img {
 }
 
 .meta-item {
-  padding: 10px;
-  border-radius: 8px;
-  background: #f5f7f8;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--hairline);
+  background: var(--surface);
 }
 
 .card-actions-row {
@@ -1333,10 +1342,10 @@ img {
 .icon-save-link {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
   background: #fff;
   color: var(--ink);
   cursor: pointer;
@@ -1369,15 +1378,22 @@ img {
 }
 
 .transfer-band {
+  position: relative;
+  overflow: hidden;
   max-width: 1180px;
   margin: 0 auto 12px;
-  padding: 42px;
+  padding: 56px 48px;
   display: flex;
   justify-content: space-between;
   gap: 22px;
   align-items: center;
-  background: var(--navy);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(31, 111, 83, 0.45), transparent 55%),
+    radial-gradient(120% 140% at 100% 100%, rgba(85, 214, 191, 0.18), transparent 50%),
+    var(--navy);
   color: white;
+  box-shadow: var(--shadow-ambient);
 }
 
 .transfer-band h2,
@@ -1406,8 +1422,9 @@ img {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
-  border-radius: 8px;
+  padding: 10px 15px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.86);
 }
@@ -1424,10 +1441,10 @@ img {
 }
 
 .empty-state {
-  padding: 42px;
+  padding: 48px;
   border: 1px dashed var(--line);
   background: var(--surface);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   text-align: center;
 }
 
@@ -1623,10 +1640,10 @@ img {
   display: flex;
   gap: 14px;
   align-items: flex-start;
-  padding: 16px;
-  border-radius: 8px;
-  border: 1px solid #b9dfcf;
-  background: #eaf7f2;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid #bfe0d3;
+  background: linear-gradient(135deg, #eef8f3, #e3f3ec);
 }
 
 .verification-panel svg {
@@ -1651,16 +1668,17 @@ img {
 }
 
 .detail-panel {
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
   background: var(--surface-strong);
-  padding: 18px;
-  animation: fade-slide-up 360ms ease both;
+  padding: 22px;
+  box-shadow: var(--tight-shadow);
+  animation: fade-slide-up 460ms var(--ease-out-soft) both;
 }
 
 .detail-panel h2 {
   margin: 0 0 14px;
-  font-size: 1.05rem;
+  font-size: 1.2rem;
 }
 
 .checklist {
@@ -1701,12 +1719,14 @@ img {
 
 .enquiry-card {
   position: sticky;
-  top: 86px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  top: 100px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xl);
   background: var(--surface-strong);
-  padding: 18px;
-  box-shadow: 0 12px 36px rgba(32, 33, 31, 0.08);
+  padding: 22px;
+  box-shadow:
+    var(--inner-highlight),
+    var(--shadow);
 }
 
 .enquiry-card h2 {
