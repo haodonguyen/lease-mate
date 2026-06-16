@@ -681,11 +681,12 @@ img {
 
 .stat-pill {
   min-width: 138px;
-  padding: 14px;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  border-radius: 8px;
-  animation: soft-pop 420ms ease both;
+  padding: 18px;
+  border: 1px solid var(--hairline);
+  background: var(--surface-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--tight-shadow);
+  animation: soft-pop 420ms var(--ease-out-soft) both;
 }
 
 .stat-pill:nth-child(2) {
@@ -707,7 +708,9 @@ img {
 
 .stat-pill strong {
   display: block;
-  font-size: 1.35rem;
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  letter-spacing: -0.02em;
 }
 
 .stat-pill span {
@@ -1102,16 +1105,20 @@ img {
 .form-field input,
 .form-field textarea {
   width: 100%;
-  min-height: 46px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  min-height: 48px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
   background: var(--surface-strong);
   color: var(--ink);
   outline: none;
   transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    background 160ms ease;
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+
+.form-field textarea {
+  border-radius: var(--radius-md);
 }
 
 .field input:hover,
@@ -2613,18 +2620,29 @@ img {
 }
 
 .site-footer {
-  margin-top: auto;
-  background: var(--navy);
+  margin: 64px 16px 16px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background:
+    radial-gradient(110% 130% at 0% 0%, rgba(31, 111, 83, 0.4), transparent 55%),
+    var(--navy);
   color: white;
+  box-shadow: var(--shadow-ambient);
 }
 
 .site-footer-inner {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 34px 22px;
+  padding: 44px 36px;
   display: flex;
   justify-content: space-between;
   gap: 28px;
+}
+
+.site-footer strong {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 600;
 }
 
 .site-footer p {
