@@ -93,6 +93,16 @@ export default async function ListingPage({
   const listing = listingRecordToLeaseListing(record);
   const galleryPhotos = listing.photos?.length ? listing.photos : [{ url: listing.imageUrl, alt: listing.title, sortOrder: 0 }];
   const readiness = getListingReadiness(listing);
+  const listingFeatureTags = [
+    listing.genderPreference === "female"
+      ? "Female only"
+      : listing.genderPreference === "male"
+        ? "Male only"
+        : null,
+    listing.furnished ? "Furnished" : "Unfurnished",
+    listing.billsIncluded ? "Bills included" : null,
+    listing.datesFlexible ? "Dates flexible" : null,
+  ].filter((tag): tag is string => Boolean(tag));
   const badgeClass =
     readiness.visibilityLabel === "Ready to transfer"
       ? "ready"
@@ -158,9 +168,16 @@ export default async function ListingPage({
             <div>
               <h1>{listing.title}</h1>
               <p>
-                <MapPin size={15} aria-hidden="true" /> {listing.suburb}, {listing.state}{" "}
-                {listing.postcode}
+                <MapPin size={15} aria-hidden="true" /> {listing.buildingName ? `${listing.buildingName}, ` : ""}
+                {listing.suburb}, {listing.state} {listing.postcode}
               </p>
+              {listingFeatureTags.length > 0 ? (
+                <ul className="detail-tags">
+                  {listingFeatureTags.map((tag) => (
+                    <li key={tag}>{tag}</li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
 
             <div className="verification-panel">

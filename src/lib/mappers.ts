@@ -1,10 +1,13 @@
 import type {
   ConsentStatus as PrismaConsentStatus,
+  GenderPreference as PrismaGenderPreference,
   HousingType as PrismaHousingType,
   Listing,
   ListingType as PrismaListingType,
 } from "@prisma/client";
 import type { ConsentStatus, HousingType, ListingType, TransferChecklist } from "./lease-rules";
+
+export type GenderPreference = "any" | "female" | "male";
 
 export function toDomainListingType(type: PrismaListingType): ListingType {
   const labels = {
@@ -58,6 +61,24 @@ export function toPrismaHousingType(type: HousingType): PrismaHousingType {
     student_accommodation: "STUDENT_ACCOMMODATION",
     share_house: "SHARE_HOUSE",
   }[type] as PrismaHousingType;
+}
+
+export function toDomainGenderPreference(value: PrismaGenderPreference): GenderPreference {
+  const labels = {
+    ANY: "any",
+    FEMALE: "female",
+    MALE: "male",
+  } satisfies Record<PrismaGenderPreference, GenderPreference>;
+
+  return labels[value];
+}
+
+export function toPrismaGenderPreference(value: GenderPreference): PrismaGenderPreference {
+  return {
+    any: "ANY",
+    female: "FEMALE",
+    male: "MALE",
+  }[value] as PrismaGenderPreference;
 }
 
 export function listingToChecklist(listing: Listing): TransferChecklist {

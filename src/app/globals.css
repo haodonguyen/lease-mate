@@ -1367,6 +1367,26 @@ svg.lucide {
   gap: 8px;
 }
 
+.detail-tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.detail-tags li {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: var(--surface-strong);
+  box-shadow: var(--tight-shadow);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
 .meta-item {
   padding: 14px;
   border-radius: var(--radius-md);

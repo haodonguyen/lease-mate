@@ -2,7 +2,13 @@ import type { Listing, ListingPhoto } from "@prisma/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ListingCreateForm, type ListingFormValues } from "@/components/listing-create-form";
-import { parseHighlights, toDomainConsentStatus, toDomainHousingType, toDomainListingType } from "@/lib/mappers";
+import {
+  parseHighlights,
+  toDomainConsentStatus,
+  toDomainGenderPreference,
+  toDomainHousingType,
+  toDomainListingType,
+} from "@/lib/mappers";
 import { getCurrentUser } from "@/lib/server/auth";
 import { canEditListing, getListingBySlugFromDb } from "@/lib/server/listing-service";
 
@@ -46,11 +52,16 @@ function listingToFormValues(listing: Listing & { photos?: ListingPhoto[] }): Li
   return {
     title: listing.title,
     suburb: listing.suburb,
+    buildingName: listing.buildingName ?? "",
     state: listing.state as ListingFormValues["state"],
     postcode: listing.postcode,
     listingType: toDomainListingType(listing.listingType),
     consentStatus: toDomainConsentStatus(listing.consentStatus),
     housingType: toDomainHousingType(listing.housingType),
+    genderPreference: toDomainGenderPreference(listing.genderPreference),
+    furnished: listing.furnished,
+    billsIncluded: listing.billsIncluded,
+    datesFlexible: listing.datesFlexible,
     rentPerWeek: listing.rentPerWeek,
     bondAmount: listing.bondAmount,
     bedrooms: listing.bedrooms,

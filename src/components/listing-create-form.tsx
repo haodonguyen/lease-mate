@@ -18,11 +18,16 @@ interface UploadedListingPhoto {
 export interface ListingFormValues {
   title: string;
   suburb: string;
+  buildingName: string;
   state: "ACT" | "NSW" | "NT" | "QLD" | "SA" | "TAS" | "VIC" | "WA";
   postcode: string;
   listingType: "lease_transfer" | "temporary_sublet" | "room_replacement";
   consentStatus: "approved" | "pending" | "not_started";
   housingType: "private_rental" | "student_accommodation" | "share_house";
+  genderPreference: "any" | "female" | "male";
+  furnished: boolean;
+  billsIncluded: boolean;
+  datesFlexible: boolean;
   rentPerWeek: number;
   bondAmount: number;
   bedrooms: number;
@@ -43,11 +48,16 @@ export interface ListingFormValues {
 const defaultValues: ListingFormValues = {
   title: "Carlton lease transfer near tram",
   suburb: "Carlton",
+  buildingName: "",
   state: "VIC",
   postcode: "3053",
   listingType: "lease_transfer",
   consentStatus: "approved",
   housingType: "private_rental",
+  genderPreference: "any",
+  furnished: true,
+  billsIncluded: false,
+  datesFlexible: false,
   rentPerWeek: 510,
   bondAmount: 2040,
   bedrooms: 1,
@@ -134,6 +144,15 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
           <label htmlFor="title">Title</label>
           <input id="title" name="title" defaultValue={initialValues.title} required />
         </div>
+        <div className="form-field">
+          <label htmlFor="buildingName">Building or complex name (optional)</label>
+          <input
+            id="buildingName"
+            name="buildingName"
+            defaultValue={initialValues.buildingName}
+            placeholder="e.g. 380 Melbourne, Botanic Building"
+          />
+        </div>
         <div className="form-row">
           <div className="form-field">
             <label htmlFor="suburb">Suburb</label>
@@ -174,6 +193,14 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
               <option value="student_accommodation">Student accommodation</option>
             </select>
           </div>
+          <div className="form-field">
+            <label htmlFor="genderPreference">Housemate preference</label>
+            <select id="genderPreference" name="genderPreference" defaultValue={initialValues.genderPreference}>
+              <option value="any">Any</option>
+              <option value="female">Female only</option>
+              <option value="male">Male only</option>
+            </select>
+          </div>
         </div>
       </fieldset>
 
@@ -208,6 +235,17 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
             <label htmlFor="leaseEnds">Lease ends</label>
             <input id="leaseEnds" name="leaseEnds" type="date" defaultValue={initialValues.leaseEnds} required />
           </div>
+        </div>
+        <div className="check-grid">
+          {[
+            { name: "furnished", label: "Furnished", checked: initialValues.furnished },
+            { name: "billsIncluded", label: "Bills included", checked: initialValues.billsIncluded },
+            { name: "datesFlexible", label: "Dates flexible", checked: initialValues.datesFlexible },
+          ].map(({ name, label, checked }) => (
+            <label key={name}>
+              <input type="checkbox" name={name} defaultChecked={checked} /> {label}
+            </label>
+          ))}
         </div>
       </fieldset>
 

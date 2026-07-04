@@ -38,6 +38,12 @@ enum ListingStatus {
   REMOVED
 }
 
+enum GenderPreference {
+  ANY
+  FEMALE
+  MALE
+}
+
 enum EnquiryStatus {
   NEW
   RESPONDED
@@ -147,6 +153,11 @@ model Listing {
   agentOrLandlordAware  Boolean              @default(false)
   newRenterAddedToLease Boolean              @default(false)
   understandsSubletRisk Boolean              @default(false)
+  genderPreference      GenderPreference     @default(ANY)
+  buildingName          String?
+  furnished             Boolean              @default(false)
+  billsIncluded         Boolean              @default(false)
+  datesFlexible         Boolean              @default(false)
   viewCount             Int                  @default(0)
   ownerId               String
   owner                 User                 @relation(fields: [ownerId], references: [id])

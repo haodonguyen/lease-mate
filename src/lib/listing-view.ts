@@ -1,6 +1,12 @@
 import type { Listing, ListingPhoto, Report, SavedListing, User } from "@prisma/client";
 import type { AustralianState, LeaseListing } from "./listings";
-import { parseHighlights, toDomainConsentStatus, toDomainHousingType, toDomainListingType } from "./mappers";
+import {
+  parseHighlights,
+  toDomainConsentStatus,
+  toDomainGenderPreference,
+  toDomainHousingType,
+  toDomainListingType,
+} from "./mappers";
 
 export type ListingWithOwner = Listing & {
   owner: Pick<User, "name" | "role">;
@@ -15,11 +21,16 @@ export function listingRecordToLeaseListing(listing: ListingWithOwner): LeaseLis
     slug: listing.slug,
     title: listing.title,
     suburb: listing.suburb,
+    buildingName: listing.buildingName ?? undefined,
     state: normaliseAustralianState(listing.state),
     postcode: listing.postcode,
     listingType: toDomainListingType(listing.listingType),
     consentStatus: toDomainConsentStatus(listing.consentStatus),
     housingType: toDomainHousingType(listing.housingType),
+    genderPreference: toDomainGenderPreference(listing.genderPreference),
+    furnished: listing.furnished,
+    billsIncluded: listing.billsIncluded,
+    datesFlexible: listing.datesFlexible,
     rentPerWeek: listing.rentPerWeek,
     bondAmount: listing.bondAmount,
     bedrooms: listing.bedrooms,

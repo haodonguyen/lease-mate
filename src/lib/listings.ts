@@ -5,17 +5,23 @@ import {
   type ListingType,
   type TransferChecklist,
 } from "./lease-rules";
+import type { GenderPreference } from "./mappers";
 
 export interface LeaseListing {
   id: string;
   slug: string;
   title: string;
   suburb: string;
+  buildingName?: string;
   state: AustralianState;
   postcode: string;
   listingType: ListingType;
   consentStatus: ConsentStatus;
   housingType: HousingType;
+  genderPreference?: GenderPreference;
+  furnished?: boolean;
+  billsIncluded?: boolean;
+  datesFlexible?: boolean;
   rentPerWeek: number;
   bondAmount: number;
   bedrooms: number;
