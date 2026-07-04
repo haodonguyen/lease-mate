@@ -358,6 +358,8 @@ svg.lucide {
 .filter-group input,
 .filter-group select {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 46px;
   border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
