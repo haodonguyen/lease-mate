@@ -12,6 +12,9 @@ const baseListing: LeaseListing = {
   listingType: "lease_transfer",
   consentStatus: "approved",
   housingType: "private_rental",
+  genderPreference: "female",
+  furnished: true,
+  billsIncluded: true,
   rentPerWeek: 520,
   bondAmount: 2080,
   bedrooms: 2,
@@ -47,6 +50,9 @@ const listings: LeaseListing[] = [
     postcode: "3128",
     listingType: "room_replacement",
     consentStatus: "pending",
+    genderPreference: "male",
+    furnished: false,
+    billsIncluded: false,
     rentPerWeek: 280,
     bedrooms: 1,
     availableFrom: "2026-05-30",
@@ -65,6 +71,9 @@ const listings: LeaseListing[] = [
     postcode: "3006",
     listingType: "temporary_sublet",
     consentStatus: "not_started",
+    genderPreference: "any",
+    furnished: false,
+    billsIncluded: false,
     rentPerWeek: 730,
     bedrooms: 1,
     availableFrom: "2026-08-15",
@@ -106,5 +115,35 @@ describe("listing filters", () => {
   it("does not mark invalid numeric values as active filters", () => {
     expect(hasActiveListingFilters({ maxRent: "not-a-number", minBedrooms: "" })).toBe(false);
     expect(hasActiveListingFilters({ maxRent: "700" })).toBe(true);
+  });
+
+  it("filters by housemate gender preference", () => {
+    expect(filterLeaseListings(listings, { genderPreference: "female" }).map((l) => l.slug)).toEqual([
+      "brunswick-lease-transfer",
+    ]);
+    expect(filterLeaseListings(listings, { genderPreference: "male" }).map((l) => l.slug)).toEqual([
+      "box-hill-room",
+    ]);
+    expect(filterLeaseListings(listings, { genderPreference: "all" })).toHaveLength(3);
+  });
+
+  it("filters by furnishing and bills-included", () => {
+    expect(filterLeaseListings(listings, { furnished: "furnished" }).map((l) => l.slug)).toEqual([
+      "brunswick-lease-transfer",
+    ]);
+    expect(filterLeaseListings(listings, { furnished: "unfurnished" }).map((l) => l.slug)).toEqual([
+      "box-hill-room",
+      "southbank-short-stay",
+    ]);
+    expect(filterLeaseListings(listings, { billsIncluded: "included" }).map((l) => l.slug)).toEqual([
+      "brunswick-lease-transfer",
+    ]);
+  });
+
+  it("marks the new preference filters as active only when set", () => {
+    expect(hasActiveListingFilters({ genderPreference: "all", furnished: "all", billsIncluded: "all" })).toBe(false);
+    expect(hasActiveListingFilters({ genderPreference: "female" })).toBe(true);
+    expect(hasActiveListingFilters({ furnished: "unfurnished" })).toBe(true);
+    expect(hasActiveListingFilters({ billsIncluded: "included" })).toBe(true);
   });
 });

@@ -60,6 +60,7 @@ export function listingRecordToLeaseListing(listing: ListingWithOwner): LeaseLis
 
 export function getListingFeatureTags(
   listing: Pick<LeaseListing, "genderPreference" | "furnished" | "billsIncluded" | "datesFlexible">,
+  options: { showUnfurnished?: boolean } = {},
 ): string[] {
   return [
     listing.genderPreference === "female"
@@ -67,7 +68,7 @@ export function getListingFeatureTags(
       : listing.genderPreference === "male"
         ? "Male only"
         : null,
-    listing.furnished ? "Furnished" : "Unfurnished",
+    listing.furnished ? "Furnished" : options.showUnfurnished ? "Unfurnished" : null,
     listing.billsIncluded ? "Bills included" : null,
     listing.datesFlexible ? "Dates flexible" : null,
   ].filter((tag): tag is string => Boolean(tag));

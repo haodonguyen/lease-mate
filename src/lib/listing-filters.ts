@@ -5,6 +5,9 @@ export interface ListingFilterState {
   query?: string;
   listingType?: "all" | ListingType;
   readiness?: "all" | "Ready to transfer" | "Consent pending" | "Needs caution";
+  genderPreference?: "all" | "female" | "male";
+  furnished?: "all" | "furnished" | "unfurnished";
+  billsIncluded?: "all" | "included";
   minRent?: string;
   maxRent?: string;
   minBedrooms?: string;
@@ -27,6 +30,13 @@ export function filterLeaseListings(listings: LeaseListing[], filters: ListingFi
       (query === "" || searchText.includes(query)) &&
       (!filters.listingType || filters.listingType === "all" || listing.listingType === filters.listingType) &&
       (!filters.readiness || filters.readiness === "all" || listingReadiness.visibilityLabel === filters.readiness) &&
+      (!filters.genderPreference ||
+        filters.genderPreference === "all" ||
+        listing.genderPreference === filters.genderPreference) &&
+      (!filters.furnished ||
+        filters.furnished === "all" ||
+        (filters.furnished === "furnished" ? listing.furnished === true : listing.furnished === false)) &&
+      (!filters.billsIncluded || filters.billsIncluded === "all" || listing.billsIncluded === true) &&
       (minRent === undefined || listing.rentPerWeek >= minRent) &&
       (maxRent === undefined || listing.rentPerWeek <= maxRent) &&
       (minBedrooms === undefined || listing.bedrooms >= minBedrooms) &&
@@ -40,6 +50,9 @@ export function hasActiveListingFilters(filters: ListingFilterState) {
     filters.query?.trim() ||
       (filters.listingType && filters.listingType !== "all") ||
       (filters.readiness && filters.readiness !== "all") ||
+      (filters.genderPreference && filters.genderPreference !== "all") ||
+      (filters.furnished && filters.furnished !== "all") ||
+      (filters.billsIncluded && filters.billsIncluded !== "all") ||
       toOptionalNumber(filters.minRent) !== undefined ||
       toOptionalNumber(filters.maxRent) !== undefined ||
       toOptionalNumber(filters.minBedrooms) !== undefined ||

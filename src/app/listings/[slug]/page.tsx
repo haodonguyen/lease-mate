@@ -94,7 +94,7 @@ export default async function ListingPage({
   const listing = listingRecordToLeaseListing(record);
   const galleryPhotos = listing.photos?.length ? listing.photos : [{ url: listing.imageUrl, alt: listing.title, sortOrder: 0 }];
   const readiness = getListingReadiness(listing);
-  const listingFeatureTags = getListingFeatureTags(listing);
+  const listingFeatureTags = getListingFeatureTags(listing, { showUnfurnished: true });
   const badgeClass =
     readiness.visibilityLabel === "Ready to transfer"
       ? "ready"

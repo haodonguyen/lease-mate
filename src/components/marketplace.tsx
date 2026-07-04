@@ -22,6 +22,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ReadinessScore } from "@/components/readiness-score";
 import { filterLeaseListings, hasActiveListingFilters, type ListingFilterState } from "@/lib/listing-filters";
+import { getListingFeatureTags } from "@/lib/listing-view";
 import {
   formatListingType,
   getListingReadiness,
@@ -91,13 +92,33 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
   const [readiness, setReadiness] = useState<ListingFilterState["readiness"]>(
     () => (searchParams.get("readiness") as ListingFilterState["readiness"]) ?? "all",
   );
+  const [genderPreference, setGenderPreference] = useState<ListingFilterState["genderPreference"]>(
+    () => (searchParams.get("gender") as ListingFilterState["genderPreference"]) ?? "all",
+  );
+  const [furnished, setFurnished] = useState<ListingFilterState["furnished"]>(
+    () => (searchParams.get("furnished") as ListingFilterState["furnished"]) ?? "all",
+  );
+  const [billsIncluded, setBillsIncluded] = useState<ListingFilterState["billsIncluded"]>(
+    () => (searchParams.get("bills") as ListingFilterState["billsIncluded"]) ?? "all",
+  );
   const [minRent, setMinRent] = useState(() => searchParams.get("minRent") ?? "");
   const [maxRent, setMaxRent] = useState(() => searchParams.get("maxRent") ?? "");
   const [minBedrooms, setMinBedrooms] = useState(() => searchParams.get("beds") ?? "");
   const [availableBy, setAvailableBy] = useState(() => searchParams.get("availableBy") ?? "");
   const filters = useMemo(
-    () => ({ query, listingType, readiness, minRent, maxRent, minBedrooms, availableBy }),
-    [availableBy, listingType, maxRent, minBedrooms, minRent, query, readiness],
+    () => ({
+      query,
+      listingType,
+      readiness,
+      genderPreference,
+      furnished,
+      billsIncluded,
+      minRent,
+      maxRent,
+      minBedrooms,
+      availableBy,
+    }),
+    [availableBy, billsIncluded, furnished, genderPreference, listingType, maxRent, minBedrooms, minRent, query, readiness],
   );
   const hasActiveFilters = hasActiveListingFilters(filters);
 
@@ -109,6 +130,9 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
     if (query.trim()) params.set("suburb", query.trim());
     if (listingType && listingType !== "all") params.set("type", listingType);
     if (readiness && readiness !== "all") params.set("readiness", readiness);
+    if (genderPreference && genderPreference !== "all") params.set("gender", genderPreference);
+    if (furnished && furnished !== "all") params.set("furnished", furnished);
+    if (billsIncluded && billsIncluded !== "all") params.set("bills", billsIncluded);
     if (minRent.trim()) params.set("minRent", minRent.trim());
     if (maxRent.trim()) params.set("maxRent", maxRent.trim());
     if (minBedrooms.trim()) params.set("beds", minBedrooms.trim());
@@ -120,12 +144,29 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
     if (next !== current) {
       router.replace(next, { scroll: false });
     }
-  }, [query, listingType, readiness, minRent, maxRent, minBedrooms, availableBy, pathname, router, searchParams]);
+  }, [
+    query,
+    listingType,
+    readiness,
+    genderPreference,
+    furnished,
+    billsIncluded,
+    minRent,
+    maxRent,
+    minBedrooms,
+    availableBy,
+    pathname,
+    router,
+    searchParams,
+  ]);
 
   const clearFilters = useCallback(() => {
     setQuery("");
     setListingType("all");
     setReadiness("all");
+    setGenderPreference("all");
+    setFurnished("all");
+    setBillsIncluded("all");
     setMinRent("");
     setMaxRent("");
     setMinBedrooms("");
@@ -372,6 +413,44 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
                 <option value="Needs caution">Needs caution</option>
               </select>
             </label>
+
+            <label className="filter-group">
+              <span>Housemate preference</span>
+              <select
+                value={genderPreference}
+                onChange={(event) => setGenderPreference(event.target.value as ListingFilterState["genderPreference"])}
+                aria-label="Filter by housemate preference"
+              >
+                <option value="all">Any housemate</option>
+                <option value="female">Female only</option>
+                <option value="male">Male only</option>
+              </select>
+            </label>
+
+            <label className="filter-group">
+              <span>Furnishing</span>
+              <select
+                value={furnished}
+                onChange={(event) => setFurnished(event.target.value as ListingFilterState["furnished"])}
+                aria-label="Filter by furnishing"
+              >
+                <option value="all">Furnished or not</option>
+                <option value="furnished">Furnished</option>
+                <option value="unfurnished">Unfurnished</option>
+              </select>
+            </label>
+
+            <label className="filter-group">
+              <span>Bills</span>
+              <select
+                value={billsIncluded}
+                onChange={(event) => setBillsIncluded(event.target.value as ListingFilterState["billsIncluded"])}
+                aria-label="Filter by bills"
+              >
+                <option value="all">Any bills</option>
+                <option value="included">Bills included</option>
+              </select>
+            </label>
           </aside>
 
           {filteredListings.length > 0 ? (
@@ -426,6 +505,7 @@ function ListingCard({
   onToggleSave: () => void;
 }) {
   const readiness = getListingReadiness(listing);
+  const featureTags = getListingFeatureTags(listing);
   const badgeClass =
     readiness.visibilityLabel === "Ready to transfer"
       ? "ready"
@@ -455,6 +535,13 @@ function ListingCard({
           </p>
           <h3>{listing.title}</h3>
         </div>
+        {featureTags.length > 0 ? (
+          <ul className="card-tags">
+            {featureTags.map((tag) => (
+              <li key={tag}>{tag}</li>
+            ))}
+          </ul>
+        ) : null}
         <div className="listing-card-summary">
           <span>
             <CalendarDays size={14} />
