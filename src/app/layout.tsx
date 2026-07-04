@@ -38,7 +38,7 @@ export default function RootLayout({
       <body>
         <div className="page-shell">
           <AppHeader />
-          {children}
+          <div className="page-main">{children}</div>
           <footer className="site-footer">
             <div className="site-footer-inner">
               <div>
