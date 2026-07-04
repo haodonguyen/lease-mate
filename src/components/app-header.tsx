@@ -1,16 +1,14 @@
 import { Bell, Building2, LogIn, Search, UserPlus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { DemoRoleSwitcher } from "@/components/auth/demo-role-switcher";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { MobileNav } from "@/components/mobile-nav";
 import { getAccountActionHref } from "@/lib/account-navigation";
-import { getCurrentAuthenticatedUser, getCurrentDemoUser, isDemoAuthEnabled } from "@/lib/server/auth";
+import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 
 export async function AppHeader() {
   const authenticatedUser = await getCurrentAuthenticatedUser();
-  const demoUser = authenticatedUser ? null : await getCurrentDemoUser();
-  const currentUser = authenticatedUser ?? demoUser;
+  const currentUser = authenticatedUser;
   const isAuthenticated = Boolean(authenticatedUser);
   const canManage = currentUser?.role === "OWNER" || currentUser?.role === "ADMIN";
   const savedHref = getAccountActionHref({ isAuthenticated, targetPath: "/saved" });
@@ -28,10 +26,6 @@ export async function AppHeader() {
           <span>LeaseMate</span>
         </Link>
         <nav className="nav-actions desktop-nav" aria-label="Primary actions">
-          <DemoRoleSwitcher
-            currentEmail={currentUser?.email}
-            showDemoSwitcher={isDemoAuthEnabled()}
-          />
           <Link className="nav-link" href="/marketplace#listings">
             Marketplace
           </Link>

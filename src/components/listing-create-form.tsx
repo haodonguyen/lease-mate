@@ -286,7 +286,7 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
           placeholder="https://example.com/photo.jpg"
         />
         <p id="imageUrl-help" className="field-help">
-          Upload photos for production listings. A public URL can still be used as a fallback for demos or migrated listings.
+          Upload photos for your listing. A public image URL can still be used as a fallback for migrated listings.
         </p>
         <div className={`image-preview ${imagePreview.status}`} aria-live="polite">
           {imagePreview.status === "ready" ? (

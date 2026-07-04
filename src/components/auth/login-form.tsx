@@ -6,12 +6,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface LoginFormProps {
-  defaultEmail?: string;
-  defaultPassword?: string;
   redirectTo?: string;
 }
 
-export function LoginForm({ defaultEmail = "", defaultPassword = "", redirectTo }: LoginFormProps) {
+export function LoginForm({ redirectTo }: LoginFormProps) {
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [isPending, setIsPending] = useState(false);
@@ -49,7 +47,6 @@ export function LoginForm({ defaultEmail = "", defaultPassword = "", redirectTo 
           name="email"
           type="email"
           autoComplete="email"
-          defaultValue={defaultEmail}
           placeholder="e.g. alex@example.com.au"
           required
         />
@@ -65,7 +62,6 @@ export function LoginForm({ defaultEmail = "", defaultPassword = "", redirectTo 
             name="password"
             type="password"
             autoComplete="current-password"
-            defaultValue={defaultPassword}
             required
           />
           <Eye size={17} aria-hidden="true" />

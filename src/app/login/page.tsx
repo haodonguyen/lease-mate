@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { LoginForm } from "@/components/auth/login-form";
 import { getSafeRedirectPath } from "@/lib/auth-redirect";
-import { getDemoLoginDefaults } from "@/lib/demo-auth";
 import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +13,6 @@ export default async function LoginPage({
   searchParams?: Promise<{ next?: string }>;
 }) {
   const currentUser = await getCurrentAuthenticatedUser();
-  const demoDefaults = getDemoLoginDefaults();
   const params = await searchParams;
   const redirectTo = getSafeRedirectPath(params?.next);
 
@@ -65,8 +63,7 @@ export default async function LoginPage({
               <h1>Welcome back</h1>
               <p>Enter your details to manage saved homes, enquiries, and lease transfers.</p>
             </div>
-            <LoginForm defaultEmail={demoDefaults.email} defaultPassword={demoDefaults.password} redirectTo={redirectTo} />
-            {demoDefaults.helperText ? <p className="muted auth-helper-text">{demoDefaults.helperText}</p> : null}
+            <LoginForm redirectTo={redirectTo} />
           </section>
         </div>
       )}

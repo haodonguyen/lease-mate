@@ -1,7 +1,6 @@
 import { Prisma, type UserRole } from "@prisma/client";
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { isDemoAuthEnabled } from "../demo-auth";
 import { prisma } from "./db";
 import { hashPassword, verifyPassword } from "./password";
 import {
@@ -11,12 +10,6 @@ import {
   isSessionExpired,
   SESSION_COOKIE_NAME,
 } from "./session";
-
-export const demoUsers = [
-  { email: "renter@leasemate.dev", name: "Riley Nguyen", role: "RENTER" as const },
-  { email: "owner@leasemate.dev", name: "Mia Tran", role: "OWNER" as const },
-  { email: "admin@leasemate.dev", name: "Alex Morgan", role: "ADMIN" as const },
-];
 
 const loginSchema = z.object({
   email: z.string().trim().email(),
@@ -39,12 +32,7 @@ export type LoginInput = z.output<typeof loginSchema>;
 export type SignupInput = z.output<typeof signupSchema>;
 
 export async function getCurrentUser() {
-  const authenticatedUser = await getCurrentAuthenticatedUser();
-  if (authenticatedUser) {
-    return authenticatedUser;
-  }
-
-  return getCurrentDemoUser();
+  return getCurrentAuthenticatedUser();
 }
 
 export async function getCurrentAuthenticatedUser() {
@@ -59,38 +47,6 @@ export async function getCurrentAuthenticatedUser() {
   }
 
   return null;
-}
-
-export async function getCurrentDemoUser() {
-  if (!isDemoAuthEnabled()) {
-    return null;
-  }
-
-  const store = await cookies();
-  const email = store.get("leasemate_user")?.value ?? demoUsers[0].email;
-  return prisma.user.findUnique({ where: { email } });
-}
-
-export { isDemoAuthEnabled };
-
-export async function setDemoUser(email: string) {
-  if (!isDemoAuthEnabled()) {
-    return null;
-  }
-
-  const user = demoUsers.find((candidate) => candidate.email === email);
-  if (!user) {
-    return null;
-  }
-
-  const store = await cookies();
-  store.set("leasemate_user", user.email, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-  });
-
-  return user;
 }
 
 export function isValidLoginInput(input: unknown) {

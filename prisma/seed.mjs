@@ -1,9 +1,20 @@
+// Local development seed. This wipes the database and creates sample accounts
+// and listings so contributors have data to work with. It must never run
+// against a production database — the accounts below use a shared, well-known
+// password and are for local/e2e use only.
 import { PrismaClient } from "@prisma/client";
 import { randomBytes, scrypt as scryptCallback } from "crypto";
 import { promisify } from "util";
 
+if (process.env.NODE_ENV === "production") {
+  throw new Error("Refusing to run the seed script with NODE_ENV=production.");
+}
+
 const prisma = new PrismaClient();
 const scrypt = promisify(scryptCallback);
+
+// Override with SEED_PASSWORD for anything beyond a throwaway local database.
+const SEED_PASSWORD = process.env.SEED_PASSWORD ?? "LeaseMate123!";
 
 async function hashPassword(password) {
   const salt = randomBytes(16).toString("hex");
@@ -120,7 +131,7 @@ const listings = [
 ];
 
 async function main() {
-  const demoPasswordHash = await hashPassword("LeaseMate123!");
+  const seedPasswordHash = await hashPassword(SEED_PASSWORD);
 
   await prisma.analyticsEvent.deleteMany();
   await prisma.notification.deleteMany();
@@ -137,7 +148,7 @@ async function main() {
     await prisma.user.create({
       data: {
         ...user,
-        passwordHash: demoPasswordHash,
+        passwordHash: seedPasswordHash,
         emailVerifiedAt: new Date(),
       },
     });
@@ -202,7 +213,7 @@ async function main() {
       listingId: firstListing.id,
       userId: renter.id,
       reason: "Missing inspection details",
-      details: "Demo moderation item for the admin queue.",
+      details: "Sample moderation item for the admin queue.",
     },
   });
 
