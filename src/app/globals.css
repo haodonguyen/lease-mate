@@ -134,6 +134,11 @@ img {
   max-width: 100%;
 }
 
+/* Refine Lucide icons to an ultra-light editorial line weight */
+svg.lucide {
+  stroke-width: 1.5;
+}
+
 .page-shell {
   min-height: 100vh;
   display: flex;
@@ -552,6 +557,37 @@ img {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     0 18px 36px -10px rgba(17, 70, 53, 0.7);
+}
+
+/* Button-in-button: the trailing icon lives in its own nested circle */
+.button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin: 0 -6px 0 2px;
+  border-radius: 999px;
+  transition: transform 0.4s var(--ease-spring);
+}
+
+.primary-button .button-icon {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.secondary-button .button-icon {
+  background: var(--hairline);
+}
+
+.compact-button .button-icon {
+  width: 22px;
+  height: 22px;
+  margin: 0 -4px 0 1px;
+}
+
+.primary-button:hover .button-icon,
+.secondary-button:hover .button-icon {
+  transform: translate(2px, -1px) scale(1.06);
 }
 
 .icon-button:focus-visible,

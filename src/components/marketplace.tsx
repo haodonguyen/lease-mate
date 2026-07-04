@@ -1,17 +1,19 @@
 "use client";
 
 import {
+  ArrowUpRight,
   Bath,
   BedDouble,
   CalendarDays,
-  ChevronRight,
-  ClipboardCheck,
+  FileCheck2,
   Heart,
   Home,
   MapPin,
+  PenLine,
   Search,
   ShieldCheck,
   SlidersHorizontal,
+  UsersRound,
   X,
 } from "lucide-react";
 import Image from "next/image";
@@ -167,6 +169,7 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
             </select>
             <a className="primary-button" href="#listings">
               Search listings
+              <span className="button-icon"><ArrowUpRight size={15} /></span>
             </a>
           </div>
           <div className="popular-row" aria-label="Popular suburbs">
@@ -231,13 +234,13 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
           </div>
         </div>
         <div className="flow-card-grid">
-          {[
-            ["1. List with ease", "Create a professional listing with documents and photos. We format it for Australian rental standards."],
-            ["2. Vetted matches", "Potential tenants are pre-vetted and communicate through structured property context."],
-            ["3. Legal transfer", "Generate RTBA-compatible transfer steps and keep consent, bond, and dates visible."],
-          ].map(([title, body], index) => (
+          {([
+            [PenLine, "1. List with ease", "Create a professional listing with documents and photos. We format it for Australian rental standards."],
+            [UsersRound, "2. Vetted matches", "Potential tenants are pre-vetted and communicate through structured property context."],
+            [FileCheck2, "3. Legal transfer", "Generate RTBA-compatible transfer steps and keep consent, bond, and dates visible."],
+          ] as const).map(([Icon, title, body], index) => (
             <article className={`flow-card ${index === 1 ? "featured" : ""}`} key={title}>
-              <span><ClipboardCheck size={18} /></span>
+              <span><Icon size={18} /></span>
               <h3>{title}</h3>
               <p>{body}</p>
             </article>
@@ -406,7 +409,7 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
         </div>
         <Link className="primary-button" href="/listings/new">
           Start transfer process
-          <ChevronRight size={18} />
+          <span className="button-icon"><ArrowUpRight size={15} /></span>
         </Link>
       </section>
     </main>
@@ -473,6 +476,7 @@ function ListingCard({
         <div className="card-actions-row">
           <Link className="secondary-button compact-button" href={`/listings/${listing.slug}`}>
             View listing
+            <span className="button-icon"><ArrowUpRight size={14} /></span>
           </Link>
           <button
             type="button"
