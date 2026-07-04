@@ -58,6 +58,21 @@ export function listingRecordToLeaseListing(listing: ListingWithOwner): LeaseLis
   };
 }
 
+export function getListingFeatureTags(
+  listing: Pick<LeaseListing, "genderPreference" | "furnished" | "billsIncluded" | "datesFlexible">,
+): string[] {
+  return [
+    listing.genderPreference === "female"
+      ? "Female only"
+      : listing.genderPreference === "male"
+        ? "Male only"
+        : null,
+    listing.furnished ? "Furnished" : "Unfurnished",
+    listing.billsIncluded ? "Bills included" : null,
+    listing.datesFlexible ? "Dates flexible" : null,
+  ].filter((tag): tag is string => Boolean(tag));
+}
+
 function normaliseListingPhotos(listing: Pick<ListingWithOwner, "imageUrl" | "title" | "photos">) {
   if (listing.photos && listing.photos.length > 0) {
     return listing.photos

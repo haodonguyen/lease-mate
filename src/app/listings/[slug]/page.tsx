@@ -7,7 +7,7 @@ import { ListingActions } from "@/components/listing-actions";
 import { ListingGallery } from "@/components/listing-gallery";
 import { ReadinessScore } from "@/components/readiness-score";
 import { formatListingType, getListingReadiness } from "@/lib/listings";
-import { listingRecordToLeaseListing } from "@/lib/listing-view";
+import { getListingFeatureTags, listingRecordToLeaseListing } from "@/lib/listing-view";
 import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 import { getListingBySlugFromDb } from "@/lib/server/listing-service";
 import { trackEvent } from "@/lib/server/analytics-service";
@@ -39,7 +39,8 @@ export async function generateMetadata({
   const listing = listingRecordToLeaseListing(record);
   const imageUrl = listing.photos?.[0]?.url ?? listing.imageUrl;
   const title = `${listing.title} — LeaseMate`;
-  const description = `${formatListingType(listing.listingType)} in ${listing.suburb}, ${listing.state} ${listing.postcode}. $${listing.rentPerWeek}/week, available from ${formatDate(listing.availableFrom)}.`;
+  const locationLabel = `${listing.buildingName ? `${listing.buildingName}, ` : ""}${listing.suburb}, ${listing.state} ${listing.postcode}`;
+  const description = `${formatListingType(listing.listingType)} in ${locationLabel}. $${listing.rentPerWeek}/week, available from ${formatDate(listing.availableFrom)}.`;
   const canonical = `${getAppBaseUrl()}/listings/${listing.slug}`;
 
   return {
@@ -93,16 +94,7 @@ export default async function ListingPage({
   const listing = listingRecordToLeaseListing(record);
   const galleryPhotos = listing.photos?.length ? listing.photos : [{ url: listing.imageUrl, alt: listing.title, sortOrder: 0 }];
   const readiness = getListingReadiness(listing);
-  const listingFeatureTags = [
-    listing.genderPreference === "female"
-      ? "Female only"
-      : listing.genderPreference === "male"
-        ? "Male only"
-        : null,
-    listing.furnished ? "Furnished" : "Unfurnished",
-    listing.billsIncluded ? "Bills included" : null,
-    listing.datesFlexible ? "Dates flexible" : null,
-  ].filter((tag): tag is string => Boolean(tag));
+  const listingFeatureTags = getListingFeatureTags(listing);
   const badgeClass =
     readiness.visibilityLabel === "Ready to transfer"
       ? "ready"
@@ -120,6 +112,7 @@ export default async function ListingPage({
     datePosted: listing.availableFrom,
     address: {
       "@type": "PostalAddress",
+      ...(listing.buildingName ? { streetAddress: listing.buildingName } : {}),
       addressLocality: listing.suburb,
       addressRegion: listing.state,
       postalCode: listing.postcode,
@@ -171,13 +164,11 @@ export default async function ListingPage({
                 <MapPin size={15} aria-hidden="true" /> {listing.buildingName ? `${listing.buildingName}, ` : ""}
                 {listing.suburb}, {listing.state} {listing.postcode}
               </p>
-              {listingFeatureTags.length > 0 ? (
-                <ul className="detail-tags">
-                  {listingFeatureTags.map((tag) => (
-                    <li key={tag}>{tag}</li>
-                  ))}
-                </ul>
-              ) : null}
+              <ul className="detail-tags">
+                {listingFeatureTags.map((tag) => (
+                  <li key={tag}>{tag}</li>
+                ))}
+              </ul>
             </div>
 
             <div className="verification-panel">
