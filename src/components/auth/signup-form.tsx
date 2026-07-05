@@ -5,11 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-type AccountType = "RENTER" | "OWNER";
-
 export function SignupForm() {
   const router = useRouter();
-  const [accountType, setAccountType] = useState<AccountType>("RENTER");
   const [message, setMessage] = useState("");
   const [isPending, setIsPending] = useState(false);
 
@@ -26,7 +23,6 @@ export function SignupForm() {
         name: formData.get("name"),
         email: formData.get("email"),
         password: formData.get("password"),
-        role: accountType,
         acceptedTerms: formData.get("terms") === "on",
       }),
     });
@@ -45,27 +41,6 @@ export function SignupForm() {
 
   return (
     <form className="form-grid elevated-auth-form" onSubmit={submitSignup}>
-      <div className="auth-segmented" role="tablist" aria-label="Account type">
-        <button
-          type="button"
-          className={accountType === "RENTER" ? "active" : ""}
-          onClick={() => setAccountType("RENTER")}
-          aria-pressed={accountType === "RENTER"}
-          disabled={isPending}
-        >
-          Renter
-        </button>
-        <button
-          type="button"
-          className={accountType === "OWNER" ? "active" : ""}
-          onClick={() => setAccountType("OWNER")}
-          aria-pressed={accountType === "OWNER"}
-          disabled={isPending}
-        >
-          Property owner
-        </button>
-      </div>
-
       <div className="form-field">
         <label htmlFor="signup-name">Full name</label>
         <input id="signup-name" name="name" autoComplete="name" placeholder="e.g. Sarah Jenkins" disabled={isPending} required />

@@ -1,4 +1,3 @@
-import type { UserRole } from "@prisma/client";
 import { z } from "zod";
 import { createEnquiry as validateEnquiry, type CreateEnquiryInput } from "../enquiries";
 import { prisma } from "./db";
@@ -93,7 +92,7 @@ export async function listEnquiriesForEmail(email: string) {
 
 export async function replyToEnquiry(
   enquiryId: string,
-  actor: { id: string; role: UserRole },
+  actor: { id: string },
   input: unknown,
 ) {
   const parsed = replySchema.safeParse(input);
@@ -113,8 +112,7 @@ export async function replyToEnquiry(
     return { ok: false as const, errors: { enquiry: "Enquiry could not be found" } };
   }
 
-  const isOwner = actor.role === "OWNER" && enquiry.listing.ownerId === actor.id;
-  if (actor.role !== "ADMIN" && !isOwner) {
+  if (enquiry.listing.ownerId !== actor.id) {
     return { ok: false as const, errors: { enquiry: "You cannot reply to this enquiry" } };
   }
 

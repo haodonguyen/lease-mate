@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { parseJsonRequest } from "@/lib/server/api-validation";
-import { canManageListings, getCurrentUser } from "@/lib/server/auth";
+import { getCurrentUser } from "@/lib/server/auth";
 import { updateListingDetails } from "@/lib/server/listing-service";
 
 export async function PATCH(
@@ -13,7 +13,7 @@ export async function PATCH(
 ) {
   const user = await getCurrentUser();
 
-  if (!user || !canManageListings(user.role)) {
+  if (!user) {
     return NextResponse.json({ ok: false, error: "Owner access required" }, { status: 403 });
   }
 

@@ -78,11 +78,9 @@ export default async function ListingPage({
 
   const authenticatedUser = await getCurrentAuthenticatedUser();
 
-  // Removed listings are hidden from the public, but the owner and admins can still view them.
+  // Removed listings are hidden from the public, but the owner can still view them.
   if (record.status === "REMOVED") {
-    const canView =
-      authenticatedUser?.role === "ADMIN" || authenticatedUser?.id === record.ownerId;
-    if (!canView) {
+    if (authenticatedUser?.id !== record.ownerId) {
       notFound();
     }
   }

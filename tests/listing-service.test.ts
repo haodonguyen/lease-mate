@@ -501,23 +501,13 @@ describe("listing service", () => {
     expect(readiness.visibilityLabel).toBe("Ready to transfer");
   });
 
-  it("allows admins and owning owners to update listing status", () => {
-    expect(canUpdateListingStatus({ id: "owner_1", role: "OWNER" }, "owner_1")).toBe(true);
-    expect(canUpdateListingStatus({ id: "admin_1", role: "ADMIN" }, "owner_1")).toBe(true);
+  it("allows the listing owner to update status and edit details", () => {
+    expect(canUpdateListingStatus({ id: "owner_1" }, "owner_1")).toBe(true);
+    expect(canEditListing({ id: "owner_1" }, "owner_1")).toBe(true);
   });
 
-  it("allows admins and owning owners to edit listing details", () => {
-    expect(canEditListing({ id: "owner_1", role: "OWNER" }, "owner_1")).toBe(true);
-    expect(canEditListing({ id: "admin_1", role: "ADMIN" }, "owner_1")).toBe(true);
-  });
-
-  it("rejects renters and non-owning owners from listing status updates", () => {
-    expect(canUpdateListingStatus({ id: "renter_1", role: "RENTER" }, "owner_1")).toBe(false);
-    expect(canUpdateListingStatus({ id: "owner_2", role: "OWNER" }, "owner_1")).toBe(false);
-  });
-
-  it("rejects renters and non-owning owners from listing edits", () => {
-    expect(canEditListing({ id: "renter_1", role: "RENTER" }, "owner_1")).toBe(false);
-    expect(canEditListing({ id: "owner_2", role: "OWNER" }, "owner_1")).toBe(false);
+  it("rejects anyone who does not own the listing from status updates and edits", () => {
+    expect(canUpdateListingStatus({ id: "someone_else" }, "owner_1")).toBe(false);
+    expect(canEditListing({ id: "someone_else" }, "owner_1")).toBe(false);
   });
 });

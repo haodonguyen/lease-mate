@@ -21,7 +21,7 @@ export default async function LoginPage({
       {currentUser ? (
         <div className="detail-panel auth-signed-in-panel">
           <h2>You are signed in as {currentUser.name}</h2>
-          <p className="muted">{currentUser.email} · {currentUser.role}</p>
+          <p className="muted">{currentUser.email}</p>
           <div className="action-stack horizontal">
             <Link className="primary-button" href={redirectTo}>
               Continue

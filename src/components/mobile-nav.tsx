@@ -8,21 +8,15 @@ import { LogoutButton } from "@/components/auth/logout-button";
 
 interface MobileNavProps {
   isAuthenticated: boolean;
-  canManage: boolean;
-  role?: string;
   savedHref: string;
   dashboardHref: string;
-  adminHref: string;
   listTransferHref: string;
 }
 
 export function MobileNav({
   isAuthenticated,
-  canManage,
-  role,
   savedHref,
   dashboardHref,
-  adminHref,
   listTransferHref,
 }: MobileNavProps) {
   const [open, setOpen] = useState(false);
@@ -113,26 +107,18 @@ export function MobileNav({
               <Link href="/marketplace#how-it-works">How it works</Link>
               <Link href="/marketplace#security">Security</Link>
 
-              {isAuthenticated && !canManage ? (
+              {isAuthenticated ? (
                 <>
                   <Link href={savedHref}>Saved listings</Link>
                   <Link href="/enquiries">My enquiries</Link>
-                </>
-              ) : null}
-
-              {canManage ? (
-                <>
                   <Link href={dashboardHref}>Dashboard</Link>
                   <Link className="primary-button mobile-nav-cta" href={listTransferHref}>
                     <Building2 size={18} />
-                    List transfer
+                    List a transfer
                   </Link>
+                  <Link href="/account">Account</Link>
                 </>
               ) : null}
-
-              {role === "ADMIN" ? <Link href={adminHref}>Admin</Link> : null}
-
-              {isAuthenticated ? <Link href="/account">Account</Link> : null}
             </nav>
 
             <div className="mobile-nav-footer">

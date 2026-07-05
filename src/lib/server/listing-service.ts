@@ -1,4 +1,4 @@
-import type { Listing, UserRole } from "@prisma/client";
+import type { Listing } from "@prisma/client";
 import { UTApi } from "uploadthing/server";
 import { z } from "zod";
 import {
@@ -372,15 +372,15 @@ export async function listOwnerListings(ownerId: string) {
   });
 }
 
-export function canUpdateListingStatus(actor: { id: string; role: UserRole }, listingOwnerId: string) {
-  return actor.role === "ADMIN" || (actor.role === "OWNER" && actor.id === listingOwnerId);
+export function canUpdateListingStatus(actor: { id: string }, listingOwnerId: string) {
+  return actor.id === listingOwnerId;
 }
 
-export function canEditListing(actor: { id: string; role: UserRole }, listingOwnerId: string) {
-  return actor.role === "ADMIN" || (actor.role === "OWNER" && actor.id === listingOwnerId);
+export function canEditListing(actor: { id: string }, listingOwnerId: string) {
+  return actor.id === listingOwnerId;
 }
 
-export async function updateListingDetails(listingId: string, actor: { id: string; role: UserRole }, input: unknown) {
+export async function updateListingDetails(listingId: string, actor: { id: string }, input: unknown) {
   const normalised = normaliseListingFormInput(input);
 
   if (!normalised.ok) {
@@ -434,7 +434,7 @@ export async function updateListingDetails(listingId: string, actor: { id: strin
 
 export async function updateListingStatus(
   listingId: string,
-  actor: { id: string; role: UserRole },
+  actor: { id: string },
   status: "PUBLISHED" | "PAUSED" | "REMOVED",
 ) {
   const listing = await prisma.listing.findUnique({

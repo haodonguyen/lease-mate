@@ -52,7 +52,7 @@ export function listingRecordToLeaseListing(listing: ListingWithOwner): LeaseLis
     },
     lister: {
       name: listing.owner.name,
-      role: listing.owner.role === "OWNER" ? "Outgoing renter" : "LeaseMate member",
+      role: "Outgoing renter",
       responseTime: "Usually replies same day",
     },
   };

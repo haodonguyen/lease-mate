@@ -1,4 +1,4 @@
-import { Bell, Building2, LogIn, Search, UserPlus } from "lucide-react";
+import { Building2, LogIn, UserPlus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -8,12 +8,9 @@ import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 
 export async function AppHeader() {
   const authenticatedUser = await getCurrentAuthenticatedUser();
-  const currentUser = authenticatedUser;
   const isAuthenticated = Boolean(authenticatedUser);
-  const canManage = currentUser?.role === "OWNER" || currentUser?.role === "ADMIN";
   const savedHref = getAccountActionHref({ isAuthenticated, targetPath: "/saved" });
   const dashboardHref = getAccountActionHref({ isAuthenticated, targetPath: "/dashboard" });
-  const adminHref = getAccountActionHref({ isAuthenticated, targetPath: "/admin" });
   const listTransferHref = getAccountActionHref({ isAuthenticated, targetPath: "/listings/new" });
 
   return (
@@ -35,37 +32,21 @@ export async function AppHeader() {
           <Link className="nav-link" href="/marketplace#security">
             Security
           </Link>
-          {currentUser?.role === "ADMIN" ? (
-            <Link className="secondary-button" href={adminHref}>
-              Admin
-            </Link>
-          ) : null}
           {authenticatedUser ? (
             <>
-              <Link className="icon-button" href="/marketplace#listings" aria-label="Open marketplace search">
-                <Search size={18} />
+              <Link className="nav-link" href="/enquiries">
+                My enquiries
               </Link>
-              {!canManage ? (
-                <>
-                  <Link className="nav-link" href="/enquiries">
-                    My enquiries
-                  </Link>
-                  <Link className="icon-button" href={savedHref} aria-label="Saved listings">
-                    <Bell size={18} />
-                  </Link>
-                </>
-              ) : null}
-              {canManage ? (
-                <>
-                  <Link className="secondary-button" href={dashboardHref}>
-                    Dashboard
-                  </Link>
-                  <Link className="primary-button" href={listTransferHref}>
-                    <Building2 size={18} />
-                    List transfer
-                  </Link>
-                </>
-              ) : null}
+              <Link className="nav-link" href={savedHref}>
+                Saved
+              </Link>
+              <Link className="secondary-button" href={dashboardHref}>
+                Dashboard
+              </Link>
+              <Link className="primary-button" href={listTransferHref}>
+                <Building2 size={18} />
+                List a transfer
+              </Link>
               <Link className="nav-link" href="/account">
                 Account
               </Link>
@@ -86,11 +67,8 @@ export async function AppHeader() {
         </nav>
         <MobileNav
           isAuthenticated={isAuthenticated}
-          canManage={canManage}
-          role={currentUser?.role}
           savedHref={savedHref}
           dashboardHref={dashboardHref}
-          adminHref={adminHref}
           listTransferHref={listTransferHref}
         />
       </div>

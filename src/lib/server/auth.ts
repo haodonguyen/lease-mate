@@ -1,4 +1,4 @@
-import { Prisma, type UserRole } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { prisma } from "./db";
@@ -20,9 +20,6 @@ const signupSchema = z.object({
   name: z.string().trim().min(2, "Name is required").max(80, "Name must be 80 characters or fewer"),
   email: z.string().trim().email("Enter a valid email address").transform((email) => email.toLowerCase()),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  role: z.enum(["RENTER", "OWNER"], {
-    errorMap: () => ({ message: "Choose renter or property owner" }),
-  }),
   acceptedTerms: z.literal(true, {
     errorMap: () => ({ message: "Accept the terms to create an account" }),
   }),
@@ -98,7 +95,6 @@ export async function createSignupUser(input: SignupInput) {
       name: input.name,
       email: input.email,
       passwordHash,
-      role: input.role,
     },
   }).catch((error: unknown) => {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
@@ -177,10 +173,3 @@ async function getUserForSessionToken(token: string) {
   return session.user;
 }
 
-export function canManageListings(role: UserRole) {
-  return role === "OWNER" || role === "ADMIN";
-}
-
-export function canModerate(role: UserRole) {
-  return role === "ADMIN";
-}

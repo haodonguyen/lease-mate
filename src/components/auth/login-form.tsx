@@ -34,7 +34,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
       return;
     }
 
-    router.push(redirectTo ?? (result.user.role === "RENTER" ? "/saved" : "/dashboard"));
+    router.push(redirectTo ?? "/");
     router.refresh();
   }
 

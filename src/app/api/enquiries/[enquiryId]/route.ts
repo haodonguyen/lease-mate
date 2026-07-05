@@ -18,6 +18,6 @@ export async function PATCH(
   }
 
   const { enquiryId } = await params;
-  const result = await replyToEnquiry(enquiryId, { id: user.id, role: user.role }, body.data);
+  const result = await replyToEnquiry(enquiryId, { id: user.id }, body.data);
   return NextResponse.json(result, { status: result.ok ? 200 : 400 });
 }

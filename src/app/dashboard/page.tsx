@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ListingStatusButton } from "@/components/dashboard-controls";
 import { EnquiryReply } from "@/components/enquiry-reply";
-import { canManageListings, getCurrentAuthenticatedUser } from "@/lib/server/auth";
+import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 import { getAnalyticsSummary } from "@/lib/server/analytics-service";
 import { listOwnerListings } from "@/lib/server/listing-service";
 
@@ -15,15 +15,6 @@ export default async function DashboardPage() {
     redirect("/login?next=/dashboard");
   }
 
-  if (!canManageListings(user.role)) {
-    return (
-      <main className="section">
-        <Link className="secondary-button" href="/">Back to marketplace</Link>
-        <div className="notice">Use an Owner or Admin account to view the listing dashboard.</div>
-      </main>
-    );
-  }
-
   const [listings, analytics] = await Promise.all([
     listOwnerListings(user.id),
     getAnalyticsSummary(),
@@ -34,7 +25,7 @@ export default async function DashboardPage() {
       <Link className="secondary-button" href="/">Back to marketplace</Link>
       <div className="dashboard-hero">
         <div>
-          <span className="eyebrow">Owner dashboard</span>
+          <span className="eyebrow">Your listings</span>
           <h1>Welcome back, {user.name}</h1>
           <p className="muted">Manage your Australian lease transfers and renter enquiries.</p>
         </div>
@@ -48,7 +39,7 @@ export default async function DashboardPage() {
       </div>
       <div className="section-heading-row dashboard-workflow-heading">
         <div>
-          <span className="eyebrow">Owner workflow</span>
+          <span className="eyebrow">Manage listings</span>
           <h2>Review, edit, and manage listing visibility</h2>
           <p className="muted">Keep lease details current before sharing the page back into rental groups.</p>
         </div>

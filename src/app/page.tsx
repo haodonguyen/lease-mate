@@ -1,7 +1,7 @@
 import { AuthenticatedHome } from "@/components/home/authenticated-home";
 import { GuestLanding } from "@/components/home/guest-landing";
 import { listingRecordToLeaseListing } from "@/lib/listing-view";
-import { canManageListings, getCurrentAuthenticatedUser } from "@/lib/server/auth";
+import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 import { listOwnerListings, listPublishedListings } from "@/lib/server/listing-service";
 import { getAnalyticsSummary } from "@/lib/server/analytics-service";
 import { listSavedListings } from "@/lib/server/social-service";
@@ -18,13 +18,13 @@ export default async function Home() {
 
   if (user) {
     const [savedListings, ownerListings] = await Promise.all([
-      user.role === "RENTER" ? listSavedListings(user.id) : Promise.resolve([]),
-      canManageListings(user.role) ? listOwnerListings(user.id) : Promise.resolve([]),
+      listSavedListings(user.id),
+      listOwnerListings(user.id),
     ]);
 
     return (
       <AuthenticatedHome
-        user={{ id: user.id, name: user.name, role: user.role }}
+        user={{ id: user.id, name: user.name }}
         recommendedListings={listings}
         savedListings={savedListings}
         ownerListings={ownerListings}

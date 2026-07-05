@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function SignupPage() {
   const currentUser = await getCurrentAuthenticatedUser();
   if (currentUser) {
-    redirect(currentUser.role === "RENTER" ? "/saved" : "/dashboard");
+    redirect("/");
   }
 
   return (

@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  canManageListings,
-  canModerate,
   getCurrentAuthenticatedUser,
   isValidLoginInput,
   isValidSignupInput,
@@ -19,41 +17,22 @@ describe("auth rules", () => {
     expect(isValidLoginInput({ email: "bad", password: "short" }).ok).toBe(false);
   });
 
-  it("validates signup payload shape and limits public roles", () => {
+  it("validates signup payload shape", () => {
     expect(
       isValidSignupInput({
         name: "Sarah Jenkins",
         email: "sarah@example.com.au",
-        password: "LeaseMate123!",
-        role: "OWNER",
+        password: "aStrongPass1",
         acceptedTerms: true,
       }).ok,
     ).toBe(true);
     expect(
       isValidSignupInput({
-        name: "Alex Morgan",
-        email: "alex@example.com.au",
-        password: "LeaseMate123!",
-        role: "ADMIN",
-        acceptedTerms: true,
-      }).ok,
-    ).toBe(false);
-    expect(
-      isValidSignupInput({
         name: "Riley",
         email: "bad",
         password: "short",
-        role: "RENTER",
         acceptedTerms: false,
       }).ok,
     ).toBe(false);
-  });
-
-  it("enforces role capabilities", () => {
-    expect(canManageListings("OWNER")).toBe(true);
-    expect(canManageListings("ADMIN")).toBe(true);
-    expect(canManageListings("RENTER")).toBe(false);
-    expect(canModerate("ADMIN")).toBe(true);
-    expect(canModerate("OWNER")).toBe(false);
   });
 });

@@ -1,6 +1,6 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
-import { canManageListings, getCurrentAuthenticatedUser } from "@/lib/server/auth";
+import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 import { prisma } from "@/lib/server/db";
 
 const uploadthing = createUploadthing();
@@ -15,7 +15,7 @@ export const leaseMateFileRouter = {
     .middleware(async () => {
       const user = await getCurrentAuthenticatedUser();
 
-      if (!user || !canManageListings(user.role)) {
+      if (!user) {
         throw new UploadThingError("Owner access required");
       }
 

@@ -19,7 +19,6 @@ interface AuthenticatedHomeProps {
   user: {
     id: string;
     name: string;
-    role: "RENTER" | "OWNER" | "ADMIN";
   };
   recommendedListings: LeaseListing[];
   savedListings: Array<{ id: string; updatedAt: Date; listing: ListingWithOwner }>;
@@ -40,7 +39,9 @@ export function AuthenticatedHome({
   ownerListings,
 }: AuthenticatedHomeProps) {
   const firstName = user.name.split(" ")[0] || user.name;
-  const isManager = user.role === "OWNER" || user.role === "ADMIN";
+  // Everyone is a single kind of member now; adapt the home to whether they
+  // have posted listings yet rather than to a role.
+  const isManager = ownerListings.length > 0;
   const activeTransfer = isManager ? ownerListings[0] : savedListings[0]?.listing;
   const enquiryCount = ownerListings.reduce((total, listing) => total + listing.enquiries.length, 0);
   const savedUpdates = savedListings.length;

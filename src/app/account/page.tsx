@@ -1,16 +1,10 @@
-import { Mail, ShieldCheck } from "lucide-react";
+import { Mail } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PasswordForm, ProfileForm } from "@/components/account/account-forms";
 import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 
 export const dynamic = "force-dynamic";
-
-const ROLE_LABELS: Record<string, string> = {
-  RENTER: "Renter",
-  OWNER: "Property owner",
-  ADMIN: "Administrator",
-};
 
 export default async function AccountPage() {
   const user = await getCurrentAuthenticatedUser();
@@ -36,13 +30,6 @@ export default async function AccountPage() {
           <div>
             <span className="muted">Email</span>
             <strong>{user.email}</strong>
-          </div>
-        </div>
-        <div className="account-summary-item">
-          <ShieldCheck size={16} aria-hidden="true" />
-          <div>
-            <span className="muted">Account type</span>
-            <strong>{ROLE_LABELS[user.role] ?? user.role}</strong>
           </div>
         </div>
       </div>
