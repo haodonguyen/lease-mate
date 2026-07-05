@@ -1526,6 +1526,36 @@ svg.lucide {
   background: rgba(31, 122, 90, 0.08);
 }
 
+.filter-amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-amenity {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: var(--surface-strong);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.filter-amenity.selected {
+  border-color: rgba(31, 122, 90, 0.5);
+  background: rgba(31, 122, 90, 0.08);
+  color: var(--ink);
+}
+
+.filter-amenity input {
+  accent-color: var(--green);
+}
+
 .meta-item {
   padding: 14px;
   border-radius: var(--radius-md);

@@ -15,6 +15,7 @@ const baseListing: LeaseListing = {
   genderPreference: "female",
   furnished: true,
   billsIncluded: true,
+  amenities: ["gym", "pool"],
   rentPerWeek: 520,
   bondAmount: 2080,
   bedrooms: 2,
@@ -53,6 +54,7 @@ const listings: LeaseListing[] = [
     genderPreference: "male",
     furnished: false,
     billsIncluded: false,
+    amenities: ["gym"],
     rentPerWeek: 280,
     bedrooms: 1,
     availableFrom: "2026-05-30",
@@ -74,6 +76,7 @@ const listings: LeaseListing[] = [
     genderPreference: "any",
     furnished: false,
     billsIncluded: false,
+    amenities: [],
     rentPerWeek: 730,
     bedrooms: 1,
     availableFrom: "2026-08-15",
@@ -145,5 +148,21 @@ describe("listing filters", () => {
     expect(hasActiveListingFilters({ genderPreference: "female" })).toBe(true);
     expect(hasActiveListingFilters({ furnished: "unfurnished" })).toBe(true);
     expect(hasActiveListingFilters({ billsIncluded: "included" })).toBe(true);
+  });
+
+  it("filters by required amenities (listing must have all selected)", () => {
+    expect(filterLeaseListings(listings, { amenities: ["pool"] }).map((l) => l.slug)).toEqual([
+      "brunswick-lease-transfer",
+    ]);
+    expect(filterLeaseListings(listings, { amenities: ["gym"] }).map((l) => l.slug)).toEqual([
+      "brunswick-lease-transfer",
+      "box-hill-room",
+    ]);
+    expect(filterLeaseListings(listings, { amenities: ["gym", "pool"] }).map((l) => l.slug)).toEqual([
+      "brunswick-lease-transfer",
+    ]);
+    expect(filterLeaseListings(listings, { amenities: [] })).toHaveLength(3);
+    expect(hasActiveListingFilters({ amenities: ["gym"] })).toBe(true);
+    expect(hasActiveListingFilters({ amenities: [] })).toBe(false);
   });
 });

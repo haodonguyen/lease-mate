@@ -21,6 +21,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ReadinessScore } from "@/components/readiness-score";
+import { LISTING_AMENITIES } from "@/lib/amenities";
 import { filterLeaseListings, hasActiveListingFilters, type ListingFilterState } from "@/lib/listing-filters";
 import { getListingFeatureTags } from "@/lib/listing-view";
 import {
@@ -101,6 +102,10 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
   const [billsIncluded, setBillsIncluded] = useState<ListingFilterState["billsIncluded"]>(
     () => (searchParams.get("bills") as ListingFilterState["billsIncluded"]) ?? "all",
   );
+  const [amenities, setAmenities] = useState<string[]>(() => {
+    const raw = searchParams.get("amenities");
+    return raw ? raw.split(",").filter(Boolean) : [];
+  });
   const [minRent, setMinRent] = useState(() => searchParams.get("minRent") ?? "");
   const [maxRent, setMaxRent] = useState(() => searchParams.get("maxRent") ?? "");
   const [minBedrooms, setMinBedrooms] = useState(() => searchParams.get("beds") ?? "");
@@ -113,12 +118,13 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
       genderPreference,
       furnished,
       billsIncluded,
+      amenities,
       minRent,
       maxRent,
       minBedrooms,
       availableBy,
     }),
-    [availableBy, billsIncluded, furnished, genderPreference, listingType, maxRent, minBedrooms, minRent, query, readiness],
+    [amenities, availableBy, billsIncluded, furnished, genderPreference, listingType, maxRent, minBedrooms, minRent, query, readiness],
   );
   const hasActiveFilters = hasActiveListingFilters(filters);
 
@@ -133,6 +139,7 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
     if (genderPreference && genderPreference !== "all") params.set("gender", genderPreference);
     if (furnished && furnished !== "all") params.set("furnished", furnished);
     if (billsIncluded && billsIncluded !== "all") params.set("bills", billsIncluded);
+    if (amenities.length) params.set("amenities", amenities.join(","));
     if (minRent.trim()) params.set("minRent", minRent.trim());
     if (maxRent.trim()) params.set("maxRent", maxRent.trim());
     if (minBedrooms.trim()) params.set("beds", minBedrooms.trim());
@@ -151,6 +158,7 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
     genderPreference,
     furnished,
     billsIncluded,
+    amenities,
     minRent,
     maxRent,
     minBedrooms,
@@ -167,10 +175,17 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
     setGenderPreference("all");
     setFurnished("all");
     setBillsIncluded("all");
+    setAmenities([]);
     setMinRent("");
     setMaxRent("");
     setMinBedrooms("");
     setAvailableBy("");
+  }, []);
+
+  const toggleAmenityFilter = useCallback((value: string) => {
+    setAmenities((current) =>
+      current.includes(value) ? current.filter((item) => item !== value) : [...current, value],
+    );
   }, []);
 
   return (
@@ -451,6 +466,25 @@ export function Marketplace({ listings, analytics, savedSlugs = [], isAuthentica
                 <option value="included">Bills included</option>
               </select>
             </label>
+
+            <div className="filter-group">
+              <span>Amenities</span>
+              <div className="filter-amenities">
+                {LISTING_AMENITIES.map((amenity) => (
+                  <label
+                    key={amenity.value}
+                    className={amenities.includes(amenity.value) ? "filter-amenity selected" : "filter-amenity"}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={amenities.includes(amenity.value)}
+                      onChange={() => toggleAmenityFilter(amenity.value)}
+                    />
+                    {amenity.label}
+                  </label>
+                ))}
+              </div>
+            </div>
           </aside>
 
           {filteredListings.length > 0 ? (

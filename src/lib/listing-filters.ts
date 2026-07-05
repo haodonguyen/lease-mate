@@ -8,6 +8,7 @@ export interface ListingFilterState {
   genderPreference?: "all" | "female" | "male";
   furnished?: "all" | "furnished" | "unfurnished";
   billsIncluded?: "all" | "included";
+  amenities?: string[];
   minRent?: string;
   maxRent?: string;
   minBedrooms?: string;
@@ -37,6 +38,9 @@ export function filterLeaseListings(listings: LeaseListing[], filters: ListingFi
         filters.furnished === "all" ||
         (filters.furnished === "furnished" ? listing.furnished === true : listing.furnished === false)) &&
       (!filters.billsIncluded || filters.billsIncluded === "all" || listing.billsIncluded === true) &&
+      (!filters.amenities ||
+        filters.amenities.length === 0 ||
+        filters.amenities.every((amenity) => listing.amenities?.includes(amenity))) &&
       (minRent === undefined || listing.rentPerWeek >= minRent) &&
       (maxRent === undefined || listing.rentPerWeek <= maxRent) &&
       (minBedrooms === undefined || listing.bedrooms >= minBedrooms) &&
@@ -53,6 +57,7 @@ export function hasActiveListingFilters(filters: ListingFilterState) {
       (filters.genderPreference && filters.genderPreference !== "all") ||
       (filters.furnished && filters.furnished !== "all") ||
       (filters.billsIncluded && filters.billsIncluded !== "all") ||
+      (filters.amenities && filters.amenities.length > 0) ||
       toOptionalNumber(filters.minRent) !== undefined ||
       toOptionalNumber(filters.maxRent) !== undefined ||
       toOptionalNumber(filters.minBedrooms) !== undefined ||
