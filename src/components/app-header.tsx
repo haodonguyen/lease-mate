@@ -1,7 +1,7 @@
 import { Building2, LogIn, UserPlus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { LogoutButton } from "@/components/auth/logout-button";
+import { AccountMenu } from "@/components/account-menu";
 import { MobileNav } from "@/components/mobile-nav";
 import { getAccountActionHref } from "@/lib/account-navigation";
 import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
@@ -26,34 +26,25 @@ export async function AppHeader() {
           <Link className="nav-link" href="/marketplace#listings">
             Marketplace
           </Link>
-          <Link className="nav-link" href="/marketplace#how-it-works">
-            How it works
-          </Link>
-          <Link className="nav-link" href="/marketplace#security">
-            Security
-          </Link>
           {authenticatedUser ? (
             <>
-              <Link className="nav-link" href="/enquiries">
-                My enquiries
-              </Link>
               <Link className="nav-link" href={savedHref}>
                 Saved
-              </Link>
-              <Link className="secondary-button" href={dashboardHref}>
-                Dashboard
               </Link>
               <Link className="primary-button" href={listTransferHref}>
                 <Building2 size={18} />
                 List a transfer
               </Link>
-              <Link className="nav-link" href="/account">
-                Account
-              </Link>
-              <LogoutButton />
+              <AccountMenu />
             </>
           ) : (
             <>
+              <Link className="nav-link" href="/marketplace#how-it-works">
+                How it works
+              </Link>
+              <Link className="nav-link" href="/marketplace#security">
+                Security
+              </Link>
               <Link className="secondary-button" href="/login">
                 <LogIn size={18} />
                 Sign in

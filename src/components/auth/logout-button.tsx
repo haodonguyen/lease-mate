@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function LogoutButton() {
+export function LogoutButton({ className = "secondary-button" }: { className?: string }) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
 
@@ -16,7 +16,7 @@ export function LogoutButton() {
   }
 
   return (
-    <button className="secondary-button" type="button" onClick={logout} disabled={isPending}>
+    <button className={className} type="button" onClick={logout} disabled={isPending}>
       <LogOut size={18} />
       {isPending ? "Signing out" : "Sign out"}
     </button>
