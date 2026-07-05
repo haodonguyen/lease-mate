@@ -23,21 +23,17 @@ async function hashPassword(password) {
   return `scrypt:${salt}:${derivedKey.toString("hex")}`;
 }
 
+// LeaseMate has a single access model: any signed-in member can post listings
+// as well as browse, save, and enquire. These two accounts exist only to give
+// the demo two sides of an interaction — a lister and someone contacting them.
 const users = [
   {
-    email: "renter@leasemate.dev",
-    name: "Riley Nguyen",
-    role: "RENTER",
-  },
-  {
-    email: "owner@leasemate.dev",
+    email: "demo@leasemate.dev",
     name: "Mia Tran",
-    role: "OWNER",
   },
   {
-    email: "admin@leasemate.dev",
-    name: "Alex Morgan",
-    role: "ADMIN",
+    email: "browser@leasemate.dev",
+    name: "Riley Nguyen",
   },
 ];
 
@@ -154,18 +150,18 @@ async function main() {
     });
   }
 
-  const owner = await prisma.user.findUniqueOrThrow({
-    where: { email: "owner@leasemate.dev" },
+  const lister = await prisma.user.findUniqueOrThrow({
+    where: { email: "demo@leasemate.dev" },
   });
-  const renter = await prisma.user.findUniqueOrThrow({
-    where: { email: "renter@leasemate.dev" },
+  const enquirer = await prisma.user.findUniqueOrThrow({
+    where: { email: "browser@leasemate.dev" },
   });
 
   for (const listing of listings) {
     const created = await prisma.listing.create({
       data: {
         ...listing,
-        ownerId: owner.id,
+        ownerId: lister.id,
         photos: {
           create: [
             {
@@ -194,16 +190,16 @@ async function main() {
   await prisma.enquiry.create({
     data: {
       listingId: firstListing.id,
-      userId: renter.id,
-      name: renter.name,
-      email: renter.email,
+      userId: enquirer.id,
+      name: enquirer.name,
+      email: enquirer.email,
       message: "Can I inspect this lease transfer this week?",
     },
   });
 
   await prisma.savedListing.create({
     data: {
-      userId: renter.id,
+      userId: enquirer.id,
       listingId: firstListing.id,
     },
   });
@@ -211,9 +207,9 @@ async function main() {
   await prisma.report.create({
     data: {
       listingId: firstListing.id,
-      userId: renter.id,
+      userId: enquirer.id,
       reason: "Missing inspection details",
-      details: "Sample moderation item for the admin queue.",
+      details: "Sample report on a listing.",
     },
   });
 

@@ -2,125 +2,99 @@
 
 [![LeaseMate CI](https://github.com/haodonguyen/lease-mate/actions/workflows/ci.yml/badge.svg)](https://github.com/haodonguyen/lease-mate/actions/workflows/ci.yml)
 
-LeaseMate is an Australia-wide lease transfer marketplace for renters who need to move into, take over, or transfer an existing rental agreement. The platform replaces scattered social media posts with structured listings, verified transfer readiness, account-based saved listings, renter enquiries, owner workflows, and admin moderation.
+**LeaseMate is a structured marketplace for Australian lease transfers** — taking over, subletting, or replacing a room on an existing rental agreement.
 
-Live app: [https://lease-mate-three.vercel.app](https://lease-mate-three.vercel.app)
+It replaces the scattered Facebook-group posts and DM threads that renters (originally, Vietnamese international students in Melbourne) rely on today with proper listings: transparent rent and bond, transfer-readiness signals, structured amenities, saved shortlists, and a real enquiry loop with transactional email.
 
-![LeaseMate marketplace screenshot](./public/leasemate-screenshot.png)
+**Live app → [lease-mate-three.vercel.app](https://lease-mate-three.vercel.app)**
 
-## Overview
+![LeaseMate marketplace](./public/leasemate-screenshot.png)
 
-Lease transfers are often managed through Facebook groups, screenshots, private messages, and informal comments. That makes it difficult for renters to understand whether a listing is legitimate, whether the rental provider has been contacted, what lease dates apply, and what transfer steps remain.
+LeaseMate is open-source and free to use — it exists to make lease transfers safer and clearer, not to make money.
 
-LeaseMate presents lease transfers as a professional rental marketplace. Listings include key rental details, availability dates, readiness indicators, consent status, bond context, saved-listing workflows, enquiries, and moderation tools. The goal is to make lease transfers clearer for renters while giving outgoing tenants and owners a structured way to manage handovers.
+---
 
-## Core Features
+## Try the demo
 
-- Public marketplace for lease transfers, room replacements, and short-term sublets
-- Shareable search with suburb, listing type, price, bedroom, date, and readiness filters persisted to the URL
-- Listing detail pages with an interactive photo gallery and lightbox, rent, bond, availability, lease dates, highlights, and explained readiness scoring
-- Email and password authentication with server-side sessions, email verification, and password reset
-- Renter accounts with inline saved listings, a sent-enquiry inbox, and enquiry workflows
-- Transactional email on enquiry: the lister is notified and the enquirer receives a confirmation (Resend)
-- Owner dashboard for listing management, status updates, and replying to enquiries by email
-- Listing creation and editing flow with photo uploads and Australian state and territory support
-- Admin moderation queue for reported listings with listing remove and restore actions
-- Account profile page with display-name updates and a verified change-password flow
-- Waitlist capture for early product validation
-- Analytics and notification service boundaries
-- SEO: per-listing Open Graph and Twitter metadata, `RealEstateListing` JSON-LD, dynamic sitemap, and robots.txt
-- Responsive UI with a mobile navigation drawer and loading skeletons
+The fastest way to see it is the [live app](https://lease-mate-three.vercel.app). You can browse the whole marketplace as a guest. To try posting, saving, and enquiring, sign up with any email — or, on a local install, use the seeded accounts below.
 
-## User Workflows
+**Guided walkthrough (≈2 minutes):**
 
-### Guest
+1. **Browse** — open the [marketplace](https://lease-mate-three.vercel.app/marketplace). Filter by suburb, price, bedrooms, move-in date, housemate preference, furnishing, bills, and amenities. Filters are stored in the URL, so any search is shareable.
+2. **Inspect a listing** — open a listing to see the photo gallery, rent/bond, lease dates, structured amenities, and an explained **transfer-readiness score** (has the provider consented? is the bond sorted? is the new renter on the lease?).
+3. **Sign up** — create an account to unlock the member actions below.
+4. **Save** — shortlist listings and track each one as *Interested → Inspecting → Applied*.
+5. **Enquire** — message a lister. They receive an email notification and you get a confirmation (both via Resend).
+6. **Post** — list your own lease transfer with photos, amenities, and readiness details, then manage status and reply to enquiries from your dashboard.
 
-1. Browse the landing page and marketplace.
-2. Search or filter available lease transfers.
-3. Open listing details to review rent, dates, readiness, and transfer context.
-4. Sign up to save listings or contact the lister.
+### Seeded demo accounts (local install only)
 
-### Renter
+After `npm run db:seed`, these accounts exist. Shared password: **`LeaseMate123!`**
 
-1. Create an account or sign in.
-2. Browse listings from the marketplace.
-3. Save listings into a private shortlist.
-4. Send enquiries from listing detail pages.
-5. Track saved listing status and notes from the saved listings page.
+| Account | Purpose |
+|---|---|
+| `demo@leasemate.dev` | Owns the sample listings — sign in to see a populated dashboard and enquiry inbox. |
+| `browser@leasemate.dev` | A second member — has a saved listing and a sent enquiry. |
 
-### Owner
+Any signed-in member can both post listings and browse/save/enquire — there is a single access model, no separate renter/owner/admin roles.
 
-1. Sign in to an owner account.
-2. Create a structured lease transfer listing.
-3. Manage listing status, readiness, and enquiries from the dashboard.
-4. Update listing details as the transfer progresses.
+---
 
-### Admin
+## Features
 
-1. Review reported listings.
-2. Approve, flag, or remove listings from the moderation queue.
-3. Maintain marketplace trust and listing quality.
+- **Public marketplace** for lease transfers, room replacements, and short-term sublets.
+- **Shareable, URL-persisted search** — suburb/keyword, listing type, price range, bedrooms, available-by date, transfer readiness, housemate preference, furnishing, bills-included, and a 15-item **structured amenity filter** (listings must match every selected amenity).
+- **Rich listing pages** — interactive photo gallery with lightbox, rent, bond, lease dates, highlights, amenity tags, and an **explained transfer-readiness score** derived from consent/bond/lease checklist state.
+- **Authentication** — email + password with server-side sessions, email verification, and password reset (all custom, rate-limited).
+- **Member accounts** — inline saved-listing shortlist with status tracking, a sent-enquiry inbox, and an account page with display-name and verified change-password flows.
+- **Enquiry loop with real email** — enquiring notifies the lister and confirms to the enquirer; listers reply by email from their dashboard (Resend).
+- **Listing management** — create/edit with photo uploads (UploadThing), all Australian states and territories, status control, and readiness capture.
+- **Report a listing** for review.
+- **SEO** — per-listing Open Graph/Twitter metadata, `RealEstateListing` JSON-LD, dynamic sitemap, and robots.txt.
+- **Responsive UI** with a mobile navigation drawer, loading skeletons, and a hand-built "editorial luxury" design system in plain CSS.
 
-## Tech Stack
+## Tech stack
 
-- Next.js App Router
-- React
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- Zod
-- Vitest
-- Playwright
-- ESLint
-- Lucide React
-- UploadThing
-- Vercel
-- Neon Postgres
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 15 (App Router, RSC) · React 19 · TypeScript |
+| Data | Prisma ORM · PostgreSQL (Neon) |
+| Validation | Zod at every API boundary |
+| Media / email | UploadThing (photos) · Resend (transactional email) |
+| Testing | Vitest (unit/integration) · Playwright (e2e) |
+| Tooling | ESLint · GitHub Actions CI |
+| Hosting | Vercel |
 
 ## Architecture
 
 ```text
 src/
-  app/                         Next.js pages and API route handlers
-    api/                       Auth, listings, enquiries, reports, saved listings
-    marketplace/               Public marketplace route
-  components/                  Reusable UI and workflow components
-    auth/                      Authentication forms and session controls
-    home/                      Guest and authenticated home experiences
-  lib/                         Domain rules, validation, mappers, shared helpers
-  lib/server/                  Prisma services, auth, analytics, notifications
+  app/                Next.js pages and API route handlers
+    api/              Auth, listings, enquiries, reports, saved listings, uploads
+    marketplace/      Public marketplace route
+  components/         UI and workflow components (auth, home, listing, account)
+  lib/                Domain rules, filters, validation, mappers, shared helpers
+  lib/server/         Prisma services, auth, sessions, email, analytics, rate limiting
 
 prisma/
-  schema.prisma                PostgreSQL data model
-  migrations/                  Database migration history
-  seed.mjs                     Demo data for local development and tests
+  schema.prisma       PostgreSQL data model
+  migrations/         Migration history (applied via `prisma migrate deploy`)
+  seed.mjs            Sample accounts and listings for local development
 
 tests/
-  *.test.ts                    Unit and integration tests
-  e2e/                         Playwright end-to-end tests
-
-public/
-  leasemate-screenshot.png     Project preview image
+  *.test.ts           Unit and integration tests (Vitest)
+  e2e/                End-to-end tests (Playwright)
 ```
 
-## Data Model
+The codebase keeps a strict boundary: **domain logic and validation live in `lib/`**, **all database and I/O access lives in `lib/server/`**, and **route handlers stay thin** — parse input with Zod, call a service, return a response. Business rules (transfer readiness, lease rules, amenity vocabulary, filter predicates) are pure functions with dedicated unit tests.
 
-LeaseMate uses PostgreSQL through Prisma. The main data entities are:
+## Data model
 
-- `User`
-- `Session`
-- `Listing`
-- `ListingPhoto`
-- `Enquiry`
-- `Report`
-- `SavedListing`
-- `Notification`
-- `AnalyticsEvent`
-- `WaitlistSignup`
+PostgreSQL via Prisma. Core entities: `User`, `Session`, `Listing`, `ListingPhoto`, `Enquiry`, `Report`, `SavedListing`, `Notification`, `AnalyticsEvent`, `WaitlistSignup`, plus email-verification and password-reset token tables.
 
-## Local Setup
+## Local setup
 
-Install dependencies:
+Requires Node 22+ and a PostgreSQL database (a free [Neon](https://neon.tech) database works well).
 
 ```bash
 npm install
@@ -130,54 +104,29 @@ Create a `.env` file in the project root:
 
 ```bash
 DATABASE_URL="postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require"
-UPLOADTHING_TOKEN="your-uploadthing-token"
-RESEND_API_KEY="your-resend-api-key"
+UPLOADTHING_TOKEN="your-uploadthing-token"        # optional locally; needed for photo uploads
+RESEND_API_KEY="your-resend-api-key"              # optional locally; needed to send email
 RESEND_FROM_EMAIL="LeaseMate <hello@your-domain.com>"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
-Prepare the database:
+Prepare the database and start the app:
 
 ```bash
-npm run db:push
-npm run db:seed
+npm run db:push    # apply the schema
+npm run db:seed    # load sample accounts and listings
+npm run dev        # http://localhost:3000
 ```
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-Open:
-
-```text
-http://localhost:3000
-```
-
-## Demo Accounts
-
-Seeded demo accounts use this password:
-
-```text
-LeaseMate123!
-```
-
-Available accounts:
-
-- `renter@leasemate.dev`
-- `owner@leasemate.dev`
-- `admin@leasemate.dev`
 
 ## Testing
 
 ```bash
-npm run lint
-npm test
-npm run build
+npm run lint       # ESLint
+npm test           # Vitest unit + integration suite
+npm run build      # production build
 ```
 
-End-to-end tests reset and seed their database. Use a dedicated test database:
+End-to-end tests reset and seed their database — point them at a dedicated test database:
 
 ```bash
 TEST_DATABASE_URL="postgresql://USER:PASSWORD@HOST/TEST_DATABASE?sslmode=require" npm run e2e
@@ -185,28 +134,14 @@ TEST_DATABASE_URL="postgresql://USER:PASSWORD@HOST/TEST_DATABASE?sslmode=require
 
 ## Deployment
 
-LeaseMate is deployed on Vercel and uses a hosted PostgreSQL database.
-
-Production URL:
-
-```text
-https://lease-mate-three.vercel.app
-```
-
-Production builds run database migrations, generate the Prisma client, and build the Next.js application:
+Deployed on Vercel against a hosted PostgreSQL database. The production build runs migrations, generates the Prisma client, and builds the app:
 
 ```bash
-prisma migrate deploy
-prisma generate
-next build
+prisma migrate deploy && prisma generate && next build
 ```
 
-Required production environment variable:
+Required production environment variables: `DATABASE_URL`, `UPLOADTHING_TOKEN`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `NEXT_PUBLIC_APP_URL`.
 
-```text
-DATABASE_URL
-UPLOADTHING_TOKEN
-RESEND_API_KEY
-RESEND_FROM_EMAIL
-NEXT_PUBLIC_APP_URL
-```
+## License
+
+[MIT](./LICENSE)

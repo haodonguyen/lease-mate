@@ -31,7 +31,7 @@ export default async function EditListingPage({
     return (
       <main className="section">
         <Link className="secondary-button" href={`/listings/${listing.slug}`}>Back to listing</Link>
-        <div className="notice">Only the listing owner or an admin can edit this listing.</div>
+        <div className="notice">Only the listing owner can edit this listing.</div>
       </main>
     );
   }
