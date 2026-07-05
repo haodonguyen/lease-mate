@@ -1,4 +1,5 @@
 import type { Listing, ListingPhoto, Report, SavedListing, User } from "@prisma/client";
+import { normaliseAmenities } from "./amenities";
 import type { AustralianState, LeaseListing } from "./listings";
 import {
   parseHighlights,
@@ -31,6 +32,7 @@ export function listingRecordToLeaseListing(listing: ListingWithOwner): LeaseLis
     furnished: listing.furnished,
     billsIncluded: listing.billsIncluded,
     datesFlexible: listing.datesFlexible,
+    amenities: normaliseAmenities(listing.amenities),
     rentPerWeek: listing.rentPerWeek,
     bondAmount: listing.bondAmount,
     bedrooms: listing.bedrooms,

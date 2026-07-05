@@ -3,6 +3,7 @@
 import { ImageIcon, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { LISTING_AMENITIES } from "@/lib/amenities";
 import { getListingImagePreviewState } from "@/lib/image-preview";
 import { UploadButton } from "@/lib/uploadthing";
 
@@ -28,6 +29,7 @@ export interface ListingFormValues {
   furnished: boolean;
   billsIncluded: boolean;
   datesFlexible: boolean;
+  amenities: string[];
   rentPerWeek: number;
   bondAmount: number;
   bedrooms: number;
@@ -58,6 +60,7 @@ const defaultValues: ListingFormValues = {
   furnished: true,
   billsIncluded: false,
   datesFlexible: false,
+  amenities: [],
   rentPerWeek: 510,
   bondAmount: 2040,
   bedrooms: 1,
@@ -84,6 +87,7 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [uploadedPhotos, setUploadedPhotos] = useState<UploadedListingPhoto[]>(initialValues.uploadedPhotos ?? []);
+  const [amenities, setAmenities] = useState<string[]>(initialValues.amenities ?? []);
   const [imageUrl, setImageUrl] = useState(initialValues.imageUrl);
   const [imageLoadError, setImageLoadError] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
@@ -91,6 +95,12 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
   const coverImageUrl = uploadedPhotos[0]?.url ?? imageUrl;
   const imagePreview = getListingImagePreviewState(coverImageUrl, imageLoadError);
   const isEditMode = mode === "edit";
+
+  function toggleAmenity(value: string) {
+    setAmenities((current) =>
+      current.includes(value) ? current.filter((item) => item !== value) : [...current, value],
+    );
+  }
 
   async function submitListing(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -364,6 +374,24 @@ export function ListingCreateForm({ mode = "create", listingId, initialValues = 
         <label htmlFor="highlights">Highlights</label>
         <textarea id="highlights" name="highlights" defaultValue={initialValues.highlights} />
       </div>
+      </fieldset>
+
+      <fieldset className="form-section">
+        <legend>Amenities</legend>
+        <p className="field-help">Select the building and apartment features renters can look for.</p>
+        <input type="hidden" name="amenities" value={JSON.stringify(amenities)} />
+        <div className="amenity-grid">
+          {LISTING_AMENITIES.map((amenity) => (
+            <label key={amenity.value} className={amenities.includes(amenity.value) ? "amenity-option selected" : "amenity-option"}>
+              <input
+                type="checkbox"
+                checked={amenities.includes(amenity.value)}
+                onChange={() => toggleAmenity(amenity.value)}
+              />
+              {amenity.label}
+            </label>
+          ))}
+        </div>
       </fieldset>
 
       <fieldset className="form-section">

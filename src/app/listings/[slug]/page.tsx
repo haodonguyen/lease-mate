@@ -7,6 +7,7 @@ import { ListingActions } from "@/components/listing-actions";
 import { ListingGallery } from "@/components/listing-gallery";
 import { ReadinessScore } from "@/components/readiness-score";
 import { formatListingType, getListingReadiness } from "@/lib/listings";
+import { amenityLabel } from "@/lib/amenities";
 import { getListingFeatureTags, listingRecordToLeaseListing } from "@/lib/listing-view";
 import { getCurrentAuthenticatedUser } from "@/lib/server/auth";
 import { getListingBySlugFromDb } from "@/lib/server/listing-service";
@@ -227,6 +228,17 @@ export default async function ListingPage({
                 </div>
               ) : null}
             </div>
+
+            {listing.amenities && listing.amenities.length > 0 ? (
+              <div className="detail-panel">
+                <h2>Amenities</h2>
+                <ul className="amenity-tags">
+                  {listing.amenities.map((amenity) => (
+                    <li key={amenity}>{amenityLabel(amenity)}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
         </div>
 

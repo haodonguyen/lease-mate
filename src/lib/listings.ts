@@ -22,6 +22,7 @@ export interface LeaseListing {
   furnished?: boolean;
   billsIncluded?: boolean;
   datesFlexible?: boolean;
+  amenities?: string[];
   rentPerWeek: number;
   bondAmount: number;
   bedrooms: number;

@@ -12,6 +12,7 @@ import {
   toPrismaListingType,
 } from "../mappers";
 import { assessListingReadiness, validateListingBasics } from "../lease-rules";
+import { normaliseAmenities } from "../amenities";
 import { slugify } from "../slug";
 import { prisma } from "./db";
 
@@ -78,6 +79,7 @@ const listingFormBaseSchema = z.object({
   furnished: checkboxBoolean,
   billsIncluded: checkboxBoolean,
   datesFlexible: checkboxBoolean,
+  amenities: z.unknown().transform((value) => normaliseAmenities(value)),
   rentPerWeek: z.coerce.number().int().positive("Weekly rent must be greater than $0"),
   bondAmount: z.coerce.number().int().min(0, "Bond cannot be negative"),
   bedrooms: z.coerce.number().int().min(1),
@@ -236,6 +238,7 @@ export function buildListingUpdateData(data: ListingFormData) {
     furnished: data.furnished,
     billsIncluded: data.billsIncluded,
     datesFlexible: data.datesFlexible,
+    amenities: JSON.stringify(data.amenities),
     rentPerWeek: data.rentPerWeek,
     bondAmount: data.bondAmount,
     bedrooms: data.bedrooms,

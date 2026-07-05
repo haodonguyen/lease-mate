@@ -2,6 +2,7 @@ import type { Listing, ListingPhoto } from "@prisma/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ListingCreateForm, type ListingFormValues } from "@/components/listing-create-form";
+import { normaliseAmenities } from "@/lib/amenities";
 import {
   parseHighlights,
   toDomainConsentStatus,
@@ -62,6 +63,7 @@ function listingToFormValues(listing: Listing & { photos?: ListingPhoto[] }): Li
     furnished: listing.furnished,
     billsIncluded: listing.billsIncluded,
     datesFlexible: listing.datesFlexible,
+    amenities: normaliseAmenities(listing.amenities),
     rentPerWeek: listing.rentPerWeek,
     bondAmount: listing.bondAmount,
     bedrooms: listing.bedrooms,

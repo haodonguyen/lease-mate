@@ -330,6 +330,7 @@ describe("listing service", () => {
         furnished: true,
         billsIncluded: false,
         datesFlexible: false,
+        amenities: [],
         rentPerWeek: 510,
         bondAmount: 2040,
         bedrooms: 1,
@@ -368,6 +369,7 @@ describe("listing service", () => {
       furnished: false,
       billsIncluded: true,
       datesFlexible: true,
+      amenities: ["gym", "pool"],
       rentPerWeek: 540,
       bondAmount: 2160,
       bedrooms: 2,
@@ -397,6 +399,7 @@ describe("listing service", () => {
         furnished: false,
         billsIncluded: true,
         datesFlexible: true,
+        amenities: "[\"gym\",\"pool\"]",
         highlights: "[\"Updated inspection times\",\"Close to train\"]",
       }),
     );

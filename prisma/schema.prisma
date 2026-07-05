@@ -158,6 +158,7 @@ model Listing {
   furnished             Boolean              @default(false)
   billsIncluded         Boolean              @default(false)
   datesFlexible         Boolean              @default(false)
+  amenities             String               @default("[]")
   viewCount             Int                  @default(0)
   ownerId               String
   owner                 User                 @relation(fields: [ownerId], references: [id])
